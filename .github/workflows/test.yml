@@ -2,7 +2,11 @@ name: CI
 
 on:
   push:
+    paths:
+      - 'packages/contracts/**'
   pull_request:
+    paths:
+      - 'packages/contracts/**'
   workflow_dispatch:
 
 env:
