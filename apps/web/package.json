@@ -1,0 +1,42 @@
+{
+  "name": "@metasavings/web",
+  "version": "0.0.1",
+  "type": "module",
+  "private": false,
+  "scripts": {
+    "build": "next build",
+    "check": "biome check .",
+    "check:write": "biome check --write .",
+    "dev": "next dev --turbopack",
+    "format": "bun run format:write",
+    "format:changed": "biome format --changed --write",
+    "format:check": "biome format .",
+    "format:commit": "biome format --since=HEAD~1 --write",
+    "format:staged": "biome format --staged --write",
+    "format:write": "biome format --write .",
+    "lint:check": "biome lint .",
+    "lint:error": "biome lint . --diagnostic-level=error",
+    "lint:eslint": "next lint",
+    "lint:write": "biome lint --write .",
+    "start": "next start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@metasavings/contracts": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "next": "15.3.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.0.0",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.4",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

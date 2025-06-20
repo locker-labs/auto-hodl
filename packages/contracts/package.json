@@ -1,0 +1,32 @@
+{
+  "name": "@metasavings/contracts",
+  "version": "0.0.1",
+  "type": "module",
+  "private": false,
+  "description": "Core contracts for MetaSavings",
+  "main": "index.ts",
+  "types": "./index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "build": "forge build",
+    "check": "biome check .",
+    "check:write": "biome check --write .",
+    "format": "bun run format:contracts && bun run format:write",
+    "format:changed": "biome format --changed --write",
+    "format:check": "biome format .",
+    "format:commit": "biome format --since=HEAD~1 --write",
+    "format:contracts": "forge fmt",
+    "format:staged": "biome format --staged --write",
+    "format:write": "biome format --write .",
+    "lint:check": "biome lint .",
+    "lint:error": "biome lint . --diagnostic-level=error",
+    "lint:write": "biome lint --write .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.0.0"
+  }
+}

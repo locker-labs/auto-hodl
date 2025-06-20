@@ -1,0 +1,41 @@
+node_modules
+# ---------------------
+# Global Node + Editor
+# ---------------------
+node_modules/
+dist/
+.env
+.env.local
+.DS_Store
+*.log
+*.lock
+*.tsbuildinfo
+
+# ---------------------
+# Bun
+# ---------------------
+bun.lockb
+
+# ---------------------
+# Turbo repo
+# ---------------------
+.turbo/
+
+# ---------------------
+# TypeScript
+# ---------------------
+*.tsbuildinfo
+
+# ---------------------
+# IDEs
+# ---------------------
+.idea/
+.vscode/
+*.sw?
+
+# ---------------------
+# OS
+# ---------------------
+Thumbs.db
+ehthumbs.db
+desktop.ini
