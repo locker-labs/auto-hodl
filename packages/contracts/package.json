@@ -1,9 +1,9 @@
 {
-  "name": "@metasavings/contracts",
+  "name": "@auto-hodl/contracts",
   "version": "0.0.1",
   "type": "module",
   "private": false,
-  "description": "Core contracts for MetaSavings",
+  "description": "Core contracts for Auto HODL",
   "main": "index.ts",
   "types": "./index.d.ts",
   "directories": {

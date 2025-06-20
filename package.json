@@ -1,21 +1,21 @@
 {
-  "name": "metasavings",
+  "name": "Auto HODL",
   "version": "0.0.1",
   "type": "module",
   "private": true,
-  "description": "Save USDC while you pay using MetaMask cards",
+  "description": "Save USDC in your Circle walllet while you pay using MetaMask Card and earn yield cross-chain with LiFi.",
   "workspaces": [
     "packages/contracts",
     "apps/web"
   ],
   "scripts": {
-    "build": "bun --filter '@metasavings/*' build",
-    "build:contracts": "bun --filter @metasavings/contracts build",
-    "build:web": "bun --filter @metasavings/web build",
+    "build": "bun --filter '@auto-hodl/*' build",
+    "build:contracts": "bun --filter @auto-hodl/contracts build",
+    "build:web": "bun --filter @auto-hodl/web build",
     "check": "biome check .",
     "check:write": "biome check --write .",
     "clean": "rm -rf node_modules packages/*/node_modules apps/*/node_modules",
-    "dev": "bun --filter @metasavings/web dev",
+    "dev": "bun --filter @auto-hodl/web dev",
     "format": "biome format --write .",
     "format:changed": "biome format --changed --write",
     "format:check": "biome format .",
@@ -24,7 +24,7 @@
     "lint": "biome lint --write .",
     "lint:check": "biome lint .",
     "lint:error": "biome lint . --diagnostic-level=error",
-    "test": "bun --filter='@metasavings/*' test"
+    "test": "bun --filter='@auto-hodl/*' test"
   },
   "keywords": [
     "blockchain",
@@ -36,7 +36,7 @@
     "foundry",
     "metamask",
     "metamask-card",
-    "metasavings",
+    "auto-hodl",
     "monorepo",
     "nextjs",
     "personal-finance",
@@ -47,6 +47,6 @@
     "usdc",
     "web3"
   ],
-  "author": "@locker-money",
+  "author": "Locker",
   "license": "ISC"
 }

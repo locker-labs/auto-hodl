@@ -1,6 +1,6 @@
-# 🪙 MetaSavings
+# 🪙 Auto HODL
 
-**MetaSavings** is a modular monorepo project that enables users to **automatically save** USDC while spending using their **MetaMask card**. It works by **rounding up** each transaction to the nearest dollar and sending the spare change to a **savings account** — effortlessly building a crypto savings habit.
+**Auto HODL** is a modular monorepo project that enables users to **automatically save** USDC while spending using their **MetaMask card**. It works by **rounding up** each transaction to the nearest dollar and sending the spare change to a **savings account** — effortlessly building a crypto savings habit.
 
 ---
 
@@ -9,7 +9,7 @@
 This project is organized as a **monorepo** to cleanly separate concerns across services and packages:
 
 ```
-metasavings/
+./
 │
 ├── apps/
 │   └── web/           # Frontend + Backend (Next.js)
@@ -51,8 +51,8 @@ metasavings/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/locker-labs/metasavings.git
-cd metasavings
+git clone https://github.com/locker-labs/auto-hodl.git
+cd auto-hodl
 ```
 
 ### 2. Install Dependencies

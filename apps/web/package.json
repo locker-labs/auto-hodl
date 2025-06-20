@@ -1,5 +1,5 @@
 {
-  "name": "@metasavings/web",
+  "name": "@auto-hodl/web",
   "version": "0.0.1",
   "type": "module",
   "private": false,
@@ -22,7 +22,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@metasavings/contracts": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "next": "15.3.4"
