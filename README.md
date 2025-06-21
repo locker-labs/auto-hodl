@@ -15,7 +15,8 @@ This project is organized as a **monorepo** to cleanly separate concerns across 
 │   └── web/           # Frontend + Backend (Next.js)
 │
 ├── packages/
-│   └── contracts/     # Smart contracts (Solidity, Foundry)
+│   |── contracts/     # Smart contracts (Solidity, Foundry)
+│   └── scripts/       # Scripts for moralis, etc
 │
 ├── .github/           # GitHub workflows (CI/CD)
 ├── package.json       # Monorepo root configuration (via turborepo or bun)
