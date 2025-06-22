@@ -42,3 +42,6 @@ next-env.d.ts
 
 .turbo/
 public/build/
+
+# a page for testing
+/src/app/dev
