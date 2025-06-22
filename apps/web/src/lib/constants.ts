@@ -1,0 +1,7 @@
+export const MM_CARD_ADDRESSES = [
+    // US
+    '0xA90b298d05C2667dDC64e2A4e17111357c215dD2',
+
+    // International 
+    '0x9dd23A4a0845f10d65D293776B792af1131c7B30'
+]
