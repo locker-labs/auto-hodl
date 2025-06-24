@@ -180,6 +180,46 @@ function setupERC20DelegationRedemption(signedDelegation: any, erc20Address: Add
     return { delegations, mode, executions };
 }
 
+// Delegation redemption setup for Aave deposit
+function setupAaveDelegationRedemption(signedDelegation: any) {
+    const delegations: Delegation[] = [signedDelegation];
+    const mode: ExecutionMode = SINGLE_DEFAULT_MODE;
+
+    // Aave addresses and constants
+    const AAVE_TOKEN = "0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a";
+    const AAVE_VAULT = "0x56771cEF0cb422e125564CcCC98BB05fdc718E77"; // From vanilla-aave.ts logs
+    const DEPOSIT_AMOUNT = parseUnits("1", 18); // 1 AAVE token (18 decimals)
+
+    // For this demo, let's just do the approval step to test the delegation mechanism
+    // In a real scenario, you'd first transfer AAVE tokens to the smart account
+    const approveCalldata = encodeFunctionData({
+        abi: [
+            {
+                name: "approve",
+                type: "function",
+                stateMutability: "nonpayable",
+                inputs: [
+                    { name: "spender", type: "address" },
+                    { name: "amount", type: "uint256" }
+                ],
+                outputs: [{ name: "", type: "bool" }]
+            }
+        ],
+        functionName: "approve",
+        args: [AAVE_VAULT as Address, DEPOSIT_AMOUNT]
+    });
+
+    const executions: ExecutionStruct[] = [
+        {
+            target: AAVE_TOKEN as Address,
+            value: parseUnits("0", 0),
+            callData: approveCalldata
+        }
+    ];
+
+    return { delegations, mode, executions };
+}
+
 // Transaction execution
 async function executeDelegationRedemption(
     config: ReturnType<typeof validateEnvironment>,
@@ -220,7 +260,7 @@ function logSummary(
     delegateEoa: any,
     signedDelegation: any,
     transactionHash: string,
-    transferType: 'ETH' | 'ERC20' = 'ETH',
+    transferType: 'ETH' | 'ERC20' | 'AAVE' = 'ETH',
     erc20Address?: Address
 ) {
     const delegationManager = getDeleGatorEnvironment(CHAIN.id).DelegationManager;
@@ -229,15 +269,23 @@ function logSummary(
     console.log(`   - Smart Account (Delegator): ${smartAccount.address}`);
     console.log(`   - Owner (Account 1): ${delegatorEoa.address}`);
     console.log(`   - Delegate (Account 2): ${delegateEoa.address}`);
-    console.log(`   - Target Address: ${TARGET_ADDRESS}`);
 
-    if (transferType === 'ERC20') {
-        console.log(`   - Transfer Type: ERC20 Token`);
-        console.log(`   - Token Address: ${erc20Address}`);
-        console.log(`   - Amount Sent: 1 token (6 decimals)`);
+    if (transferType === 'AAVE') {
+        console.log(`   - Action Type: Aave Token Approval`);
+        console.log(`   - AAVE Token: 0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a`);
+        console.log(`   - Aave Vault: 0x56771cEF0cb422e125564CcCC98BB05fdc718E77`);
+        console.log(`   - Amount Approved: 1 AAVE token (18 decimals)`);
+        console.log(`   - Note: This demo only approves tokens, doesn't deposit`);
     } else {
-        console.log(`   - Transfer Type: ETH`);
-        console.log(`   - Amount Sent: 1 wei`);
+        console.log(`   - Target Address: ${TARGET_ADDRESS}`);
+        if (transferType === 'ERC20') {
+            console.log(`   - Transfer Type: ERC20 Token`);
+            console.log(`   - Token Address: ${erc20Address}`);
+            console.log(`   - Amount Sent: 1 token (6 decimals)`);
+        } else {
+            console.log(`   - Transfer Type: ETH`);
+            console.log(`   - Amount Sent: 1 wei`);
+        }
     }
 
     console.log(`   - Delegation Manager: ${delegationManager}`);
@@ -254,8 +302,8 @@ function logSummary(
 }
 
 // Shared main execution function
-const executeScript = async (transferType: 'ETH' | 'ERC20' = 'ETH') => {
-    console.log(`🚀 Starting DTK delegation script (${transferType} Transfer)...`);
+const executeScript = async (transferType: 'ETH' | 'ERC20' | 'AAVE' = 'ETH') => {
+    console.log(`🚀 Starting DTK delegation script (${transferType === 'AAVE' ? 'Aave Token Approval' : transferType + ' Transfer'})...`);
 
     try {
         // Step 1: Validate environment and setup
@@ -275,9 +323,14 @@ const executeScript = async (transferType: 'ETH' | 'ERC20' = 'ETH') => {
         const signedDelegation = await createAndSignDelegation(smartAccount, delegateEoa);
 
         // Step 4: Setup redemption parameters based on transfer type
-        const { delegations, mode, executions } = transferType === 'ERC20'
-            ? setupERC20DelegationRedemption(signedDelegation, config.ERC20_ADDRESS!, TARGET_ADDRESS)
-            : setupDelegationRedemption(signedDelegation);
+        let delegations, mode, executions;
+        if (transferType === 'AAVE') {
+            ({ delegations, mode, executions } = setupAaveDelegationRedemption(signedDelegation));
+        } else if (transferType === 'ERC20') {
+            ({ delegations, mode, executions } = setupERC20DelegationRedemption(signedDelegation, config.ERC20_ADDRESS!, TARGET_ADDRESS));
+        } else {
+            ({ delegations, mode, executions } = setupDelegationRedemption(signedDelegation));
+        }
 
         // Step 5: Execute delegation redemption
         const transactionHash = await executeDelegationRedemption(
@@ -308,7 +361,8 @@ const executeScript = async (transferType: 'ETH' | 'ERC20' = 'ETH') => {
 // Convenience functions
 const mainEth = () => executeScript('ETH');
 const mainERC20 = () => executeScript('ERC20');
+const mainAave = () => executeScript('AAVE');
 
-// Run the script - Change this to mainERC20() to use ERC20 transfer instead
-const main = mainERC20;
+// Run the script - Change this to mainERC20() or mainAave() to use different variants
+const main = mainAave;
 main().catch(console.error);
