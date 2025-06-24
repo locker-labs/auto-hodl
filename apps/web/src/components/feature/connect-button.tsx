@@ -1,10 +1,11 @@
 'use client';
 
+import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 
 export const ConnectButton = () => {
-  const { address } = useAccount();
+  const { isConnected, isConnecting } = useAccount();
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
 
@@ -14,6 +15,7 @@ export const ConnectButton = () => {
     return (
       <div>
         <Link
+          // metamask chrome extension
           href='https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en'
           target='_blank'
         >
@@ -25,15 +27,23 @@ export const ConnectButton = () => {
 
   return (
     <div>
-      {address ? (
-        <button type='button' onClick={() => disconnect()}>
-          Disconnect
-        </button>
-      ) : (
-        <button type='button' key={connector.uid} onClick={() => connect({ connector })}>
-          Connect
-        </button>
-      )}
+      <button
+        className='w-full h-12 bg-[#ff7a45] hover:bg-[#ff6a35] disabled:bg-[#ffb399] text-white rounded-xl font-bold text-base'
+        type='button'
+        onClick={isConnected ? () => disconnect() : () => connect({ connector })}
+        disabled={isConnecting}
+      >
+        {isConnecting ? (
+          <div className={'flex items-center justify-center gap-2'}>
+            <Loader2 className={'animate-spin size-5'} color={'white'} />
+            <span>Connecting</span>
+          </div>
+        ) : isConnected ? (
+          'Disconnect'
+        ) : (
+          'Connect'
+        )}
+      </button>
     </div>
   );
 };
