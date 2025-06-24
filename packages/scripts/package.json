@@ -10,8 +10,10 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@metamask/delegation-toolkit": "^0.11.0",
     "@types/node": "^24.0.3",
     "dotenv": "^16.5.0",
-    "moralis": "^2.27.2"
+    "moralis": "^2.27.2",
+    "permissionless": "^0.2.47"
   }
 }
