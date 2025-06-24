@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import Moralis from 'moralis';
 import path from 'path';
 
-dotenv.config({ path: path.resolve(__dirname, '../.env.stream') });
+dotenv.config({ path: path.resolve(__dirname, ".env.stream.dev") });
 
 // Only needs to listen on Linea, where MetaMask Card payments happen
 // https://docs.moralis.io/supported-chains
