@@ -20,7 +20,8 @@ import {
     parseUnits,
     type Address,
     zeroAddress,
-    parseEther
+    parseEther,
+    encodeFunctionData
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { lineaSepolia, sepolia } from "viem/chains";
@@ -41,6 +42,7 @@ function validateEnvironment() {
     const PRIVATE_KEY_DELEGATOR = process.env.PRIVATE_KEY_DELEGATOR as `0x${string}`;
     const PRIVATE_KEY_DELEGATE = process.env.PRIVATE_KEY_DELEGATE as `0x${string}`;
     const PIMLICO_API_KEY = process.env.PIMLICO_API_KEY;
+    const ERC20_ADDRESS = process.env.ERC20_ADDRESS as Address;
 
     if (!RPC_URL) {
         throw new Error("RPC_URL must be set in environment variables");
@@ -58,7 +60,8 @@ function validateEnvironment() {
         RPC_URL,
         PRIVATE_KEY_DELEGATOR,
         PRIVATE_KEY_DELEGATE,
-        PIMLICO_API_KEY
+        PIMLICO_API_KEY,
+        ERC20_ADDRESS
     };
 }
 
@@ -145,6 +148,38 @@ function setupDelegationRedemption(signedDelegation: any) {
     return { delegations, mode, executions };
 }
 
+// Delegation redemption setup for ERC20 transfer
+function setupERC20DelegationRedemption(signedDelegation: any, erc20Address: Address, recipientAddress: Address) {
+    const delegations: Delegation[] = [signedDelegation];
+    const mode: ExecutionMode = SINGLE_DEFAULT_MODE;
+
+    // ERC20 transfer function signature: transfer(address to, uint256 amount)
+    const transferCalldata = encodeFunctionData({
+        abi: [
+            {
+                name: "transfer",
+                type: "function",
+                stateMutability: "nonpayable",
+                inputs: [
+                    { name: "to", type: "address" },
+                    { name: "amount", type: "uint256" }
+                ],
+                outputs: [{ name: "", type: "bool" }]
+            }
+        ],
+        functionName: "transfer",
+        args: [recipientAddress, 1n] // 1 unit with 6 decimal places
+    });
+
+    const executions: ExecutionStruct[] = [{
+        target: erc20Address,
+        value: parseUnits("0", 0), // No ETH value for ERC20 transfer
+        callData: transferCalldata
+    }];
+
+    return { delegations, mode, executions };
+}
+
 // Transaction execution
 async function executeDelegationRedemption(
     config: ReturnType<typeof validateEnvironment>,
@@ -184,7 +219,9 @@ function logSummary(
     delegatorEoa: any,
     delegateEoa: any,
     signedDelegation: any,
-    transactionHash: string
+    transactionHash: string,
+    transferType: 'ETH' | 'ERC20' = 'ETH',
+    erc20Address?: Address
 ) {
     const delegationManager = getDeleGatorEnvironment(CHAIN.id).DelegationManager;
 
@@ -193,7 +230,16 @@ function logSummary(
     console.log(`   - Owner (Account 1): ${delegatorEoa.address}`);
     console.log(`   - Delegate (Account 2): ${delegateEoa.address}`);
     console.log(`   - Target Address: ${TARGET_ADDRESS}`);
-    console.log(`   - Amount Sent: 1 wei`);
+
+    if (transferType === 'ERC20') {
+        console.log(`   - Transfer Type: ERC20 Token`);
+        console.log(`   - Token Address: ${erc20Address}`);
+        console.log(`   - Amount Sent: 1 token (6 decimals)`);
+    } else {
+        console.log(`   - Transfer Type: ETH`);
+        console.log(`   - Amount Sent: 1 wei`);
+    }
+
     console.log(`   - Delegation Manager: ${delegationManager}`);
 
     console.log("\n🔍 Delegation Details:");
@@ -207,13 +253,18 @@ function logSummary(
     console.log(`   - Transaction Hash: ${transactionHash}`);
 }
 
-// Main execution function
-const main = async () => {
-    console.log("🚀 Starting DTK delegation script...");
+// Shared main execution function
+const executeScript = async (transferType: 'ETH' | 'ERC20' = 'ETH') => {
+    console.log(`🚀 Starting DTK delegation script (${transferType} Transfer)...`);
 
     try {
         // Step 1: Validate environment and setup
         const config = validateEnvironment();
+
+        if (transferType === 'ERC20' && !config.ERC20_ADDRESS) {
+            throw new Error("ERC20_ADDRESS must be set in environment variables for ERC20 transfer");
+        }
+
         const { delegatorEoa, delegateEoa } = setupAccounts(config);
         const { publicClient, walletClient } = setupClients(config, delegatorEoa);
 
@@ -223,8 +274,10 @@ const main = async () => {
         // Step 3: Create and sign delegation
         const signedDelegation = await createAndSignDelegation(smartAccount, delegateEoa);
 
-        // Step 4: Setup redemption parameters
-        const { delegations, mode, executions } = setupDelegationRedemption(signedDelegation);
+        // Step 4: Setup redemption parameters based on transfer type
+        const { delegations, mode, executions } = transferType === 'ERC20'
+            ? setupERC20DelegationRedemption(signedDelegation, config.ERC20_ADDRESS!, TARGET_ADDRESS)
+            : setupDelegationRedemption(signedDelegation);
 
         // Step 5: Execute delegation redemption
         const transactionHash = await executeDelegationRedemption(
@@ -236,7 +289,15 @@ const main = async () => {
         );
 
         // Step 6: Log summary
-        logSummary(smartAccount, delegatorEoa, delegateEoa, signedDelegation, transactionHash);
+        logSummary(
+            smartAccount,
+            delegatorEoa,
+            delegateEoa,
+            signedDelegation,
+            transactionHash,
+            transferType,
+            transferType === 'ERC20' ? config.ERC20_ADDRESS : undefined
+        );
 
     } catch (error) {
         console.error("❌ Error occurred:", error);
@@ -244,5 +305,10 @@ const main = async () => {
     }
 };
 
-// Run the script
+// Convenience functions
+const mainEth = () => executeScript('ETH');
+const mainERC20 = () => executeScript('ERC20');
+
+// Run the script - Change this to mainERC20() to use ERC20 transfer instead
+const main = mainERC20;
 main().catch(console.error);
