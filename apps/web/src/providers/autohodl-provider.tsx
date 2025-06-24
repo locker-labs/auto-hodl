@@ -24,7 +24,9 @@ type Props = {
 
 export const AutoHodlProvider: FC<Props> = ({ children }) => {
   const [metaMaskCardAddress, setMetaMaskCardAddress] = useState<string | null>(null);
-  console.log('metaMaskCardAddress', metaMaskCardAddress);
+  if (process.env.NODE_ENV === 'development') {
+    console.log('metaMaskCardAddress', metaMaskCardAddress);
+  }
 
   return (
     <AutoHodlContext.Provider value={{ metaMaskCardAddress, setMetaMaskCardAddress }}>
