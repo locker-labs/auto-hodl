@@ -10,10 +10,12 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@bgd-labs/aave-address-book": "^4.22.3",
     "@metamask/delegation-toolkit": "^0.11.0",
     "@types/node": "^24.0.3",
     "dotenv": "^16.5.0",
     "moralis": "^2.27.2",
-    "permissionless": "^0.2.47"
+    "permissionless": "^0.2.47",
+    "viem": "^2.31.4"
   }
 }
