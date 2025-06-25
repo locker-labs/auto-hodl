@@ -182,7 +182,7 @@ function setupERC20DelegationRedemption(signedDelegation: any, erc20Address: Add
 
 // Delegation redemption setup for Aave deposit
 function setupAaveDelegationRedemption(signedDelegation: any) {
-    const delegations: Delegation[] = [signedDelegation];
+    const delegations: Delegation[] = [signedDelegation, signedDelegation]; // Same delegation twice for two executions
     const mode: ExecutionMode = SINGLE_DEFAULT_MODE;
 
     // Aave addresses and constants
@@ -190,8 +190,7 @@ function setupAaveDelegationRedemption(signedDelegation: any) {
     const AAVE_VAULT = "0x56771cEF0cb422e125564CcCC98BB05fdc718E77"; // From vanilla-aave.ts logs
     const DEPOSIT_AMOUNT = parseUnits("1", 18); // 1 AAVE token (18 decimals)
 
-    // For this demo, let's just do the approval step to test the delegation mechanism
-    // In a real scenario, you'd first transfer AAVE tokens to the smart account
+    // Step 1: Approve AAVE to vault
     const approveCalldata = encodeFunctionData({
         abi: [
             {
@@ -209,11 +208,35 @@ function setupAaveDelegationRedemption(signedDelegation: any) {
         args: [AAVE_VAULT as Address, DEPOSIT_AMOUNT]
     });
 
+    // Step 2: Deposit to Aave vault (like vanilla-aave.ts step 6)
+    const depositCalldata = encodeFunctionData({
+        abi: [
+            {
+                name: "deposit",
+                type: "function",
+                stateMutability: "nonpayable",
+                inputs: [
+                    { name: "assets", type: "uint256" },
+                    { name: "receiver", type: "address" }
+                ],
+                outputs: [{ name: "shares", type: "uint256" }]
+            }
+        ],
+        functionName: "deposit",
+        args: [DEPOSIT_AMOUNT, signedDelegation.delegator as Address] // Deposit to smart account
+    });
+
+    // Use separate delegations for each execution as per MetaMask docs pattern
     const executions: ExecutionStruct[] = [
         {
             target: AAVE_TOKEN as Address,
             value: parseUnits("0", 0),
             callData: approveCalldata
+        },
+        {
+            target: AAVE_VAULT as Address,
+            value: parseUnits("0", 0),
+            callData: depositCalldata
         }
     ];
 
@@ -228,7 +251,7 @@ async function executeDelegationRedemption(
     mode: ExecutionMode,
     executions: ExecutionStruct[]
 ) {
-    console.log("💸 Redeeming delegation to send 1 wei...");
+    console.log("💸 Redeeming delegation...");
 
     const delegateWalletClient = createWalletClient({
         account: delegateEoa,
@@ -236,10 +259,15 @@ async function executeDelegationRedemption(
         transport: http(config.RPC_URL),
     });
 
+    // For multiple delegations, we need to provide arrays for each delegation
+    const delegationsArray = delegations.map(delegation => [delegation]);
+    const modesArray = delegations.map(() => mode);
+    const executionsArray = executions.map(execution => [execution]);
+
     const redeemDelegationCalldata = DelegationFramework.encode.redeemDelegations({
-        delegations: [delegations],
-        modes: [mode],
-        executions: [executions]
+        delegations: delegationsArray,
+        modes: modesArray,
+        executions: executionsArray
     });
 
     const transactionHash = await delegateWalletClient.sendTransaction({
@@ -271,11 +299,11 @@ function logSummary(
     console.log(`   - Delegate (Account 2): ${delegateEoa.address}`);
 
     if (transferType === 'AAVE') {
-        console.log(`   - Action Type: Aave Token Approval`);
+        console.log(`   - Action Type: Aave Token Approval + Deposit`);
         console.log(`   - AAVE Token: 0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a`);
         console.log(`   - Aave Vault: 0x56771cEF0cb422e125564CcCC98BB05fdc718E77`);
-        console.log(`   - Amount Approved: 1 AAVE token (18 decimals)`);
-        console.log(`   - Note: This demo only approves tokens, doesn't deposit`);
+        console.log(`   - Amount: 1 AAVE token (18 decimals)`);
+        console.log(`   - Operations: 1) Approve AAVE to vault, 2) Deposit AAVE to vault`);
     } else {
         console.log(`   - Target Address: ${TARGET_ADDRESS}`);
         if (transferType === 'ERC20') {
@@ -303,7 +331,7 @@ function logSummary(
 
 // Shared main execution function
 const executeScript = async (transferType: 'ETH' | 'ERC20' | 'AAVE' = 'ETH') => {
-    console.log(`🚀 Starting DTK delegation script (${transferType === 'AAVE' ? 'Aave Token Approval' : transferType + ' Transfer'})...`);
+    console.log(`🚀 Starting DTK delegation script (${transferType === 'AAVE' ? 'Aave Token Approval + Deposit' : transferType + ' Transfer'})...`);
 
     try {
         // Step 1: Validate environment and setup
