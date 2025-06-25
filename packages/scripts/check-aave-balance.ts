@@ -23,9 +23,10 @@ dotenv.config({ path: path.resolve(__dirname, '.env.delegate') });
 
 const RPC_URL = process.env.RPC_URL;
 const PRIVATE_KEY_DELEGATOR = process.env.PRIVATE_KEY_DELEGATOR as `0x${string}`;
+const PRIVATE_KEY_DELEGATE = process.env.PRIVATE_KEY_DELEGATE as `0x${string}`;
 
-if (!RPC_URL || !PRIVATE_KEY_DELEGATOR) {
-    throw new Error('RPC_URL and PRIVATE_KEY_DELEGATOR must be set in environment variables');
+if (!RPC_URL || !PRIVATE_KEY_DELEGATOR || !PRIVATE_KEY_DELEGATE) {
+    throw new Error('RPC_URL and PRIVATE_KEY_DELEGATOR and PRIVATE_KEY_EOA must be set in environment variables');
 }
 
 // Addresses from your successful runs
@@ -49,6 +50,9 @@ const main = async () => {
         deploySalt: "0x",
         signatory: { account: delegatorEoa },
     });
+    // const smartAccount = privateKeyToAccount(PRIVATE_KEY_DELEGATOR);
+    // const smartAccount = privateKeyToAccount(PRIVATE_KEY_DELEGATE);
+
 
     console.log(`📋 Account Details:`);
     console.log(`   Smart Account: ${smartAccount.address}`);
