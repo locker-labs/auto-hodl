@@ -39,7 +39,7 @@
       "style": {
         "useImportType": "warn",
         "useTemplate": "warn",
-        "noUnusedTemplateLiteral": "warn",
+        "noUnusedTemplateLiteral": "off",
         "useNumberNamespace": "warn",
         "noUselessElse": "warn",
         "noParameterAssign": "error",

@@ -7,11 +7,13 @@ import { Card, CardContent } from '@/components/ui/card';
 export interface BankAccountProps {
   onNext: () => void;
   onBack: () => void;
+  setupDelegator: () => Promise<void>;
 }
 
-export const CreateDelegation = ({ onNext, onBack }: BankAccountProps): React.ReactNode => {
+export const CreateDelegation = ({ onNext, onBack, setupDelegator }: BankAccountProps): React.ReactNode => {
   const handleContinue = () => {
-    onNext();
+    // onNext();
+    setupDelegator();
   };
 
   return (

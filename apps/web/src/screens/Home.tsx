@@ -3,14 +3,16 @@
 import Image from 'next/image';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import useSteps from '@/hooks/use-steps';
+import useSteps from '@/hooks/useSteps';
 import { CreateDelegation } from '@/screens/CreateDelegation';
 import { ConnectWallet } from '@/screens/ConnectWallet';
 import LoadingScreen from '@/screens/LoadingScreen';
 import { MetaMaskCard } from '@/screens/MetaMaskCard';
+import { useMetaMaskDTK } from '@/hooks/useMetaMaskDTK';
 
 function Home() {
   const { step, next, prev, totalSteps, progress } = useSteps();
+  const { setupDelegator } = useMetaMaskDTK();
 
   // Render the appropriate screen based on the current step
   function renderStep() {
@@ -20,7 +22,7 @@ function Home() {
       case 2:
         return <MetaMaskCard onNext={next} onBack={prev} />;
       case 3:
-        return <CreateDelegation onNext={next} onBack={prev} />;
+        return <CreateDelegation onNext={next} onBack={prev} setupDelegator={setupDelegator} />;
       default:
         return <LoadingScreen />;
     }
