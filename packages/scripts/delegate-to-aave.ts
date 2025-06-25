@@ -85,13 +85,13 @@ function setupClients(config: ReturnType<typeof validateEnvironment>, delegatorE
         transport: http(config.RPC_URL),
     });
 
-    const walletClient = createWalletClient({
+    const delegatorWalletClient = createWalletClient({
         account: delegatorEoa,
         chain: CHAIN,
         transport: http(config.RPC_URL),
     });
 
-    return { publicClient, walletClient };
+    return { publicClient, delegatorWalletClient };
 }
 
 // Smart account creation
@@ -314,7 +314,7 @@ const executeScript = async (transferType: 'ETH' | 'ERC20' | 'AAVE' = 'ETH') => 
         }
 
         const { delegatorEoa, delegateEoa } = setupAccounts(config);
-        const { publicClient, walletClient } = setupClients(config, delegatorEoa);
+        const { publicClient, delegatorWalletClient } = setupClients(config, delegatorEoa);
 
         // Step 2: Create smart account
         const smartAccount = await createSmartAccount(publicClient, delegatorEoa);
