@@ -6,23 +6,24 @@ import { Separator } from '@/components/ui/separator';
 import useSteps from '@/hooks/useSteps';
 import { CreateDelegation } from '@/screens/CreateDelegation';
 import { ConnectWallet } from '@/screens/ConnectWallet';
+import { FundSavingsSource } from '@/screens/FundSavingsSource';
 import LoadingScreen from '@/screens/LoadingScreen';
 import { MetaMaskCard } from '@/screens/MetaMaskCard';
 import { useMetaMaskDTK } from '@/hooks/useMetaMaskDTK';
 
 function Home() {
   const { step, next, prev, totalSteps, progress } = useSteps();
-  const { setupDelegator } = useMetaMaskDTK();
-
   // Render the appropriate screen based on the current step
   function renderStep() {
     switch (step) {
       case 1:
         return <ConnectWallet />;
       case 2:
-        return <MetaMaskCard onNext={next} onBack={prev} />;
+        return <FundSavingsSource onNext={next} onBack={prev} />;
       case 3:
-        return <CreateDelegation onNext={next} onBack={prev} setupDelegator={setupDelegator} />;
+        return <MetaMaskCard onNext={next} onBack={prev} />;
+      case 4:
+        return <CreateDelegation onNext={next} onBack={prev} />;
       default:
         return <LoadingScreen />;
     }
@@ -44,7 +45,7 @@ function Home() {
         />
 
         <div className='hidden md:block md:pl-[16px] font-normal text-[#6b6b6b] text-xl md:text-2xl tracking-[0.24px] leading-[normal]'>
-          automatically save cryptocurrency by rounding up your purchases.
+          automatically save USDC by rounding up your purchases
         </div>
       </div>
 

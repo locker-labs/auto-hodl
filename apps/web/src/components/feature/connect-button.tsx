@@ -28,7 +28,7 @@ export const ConnectButton = () => {
   return (
     <div>
       <button
-        className='w-full h-12 bg-[#ff7a45] hover:bg-[#ff6a35] disabled:bg-[#ffb399] text-white rounded-xl font-bold text-base'
+        className='w-full h-12 bg-[#ff7a45] hover:bg-[#ff6a35] disabled:bg-[#ffb399] text-white rounded-xl font-bold text-base cursor-pointer'
         type='button'
         onClick={isConnected ? () => disconnect() : () => connect({ connector })}
         disabled={isConnecting}

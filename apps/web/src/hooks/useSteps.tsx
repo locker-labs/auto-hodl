@@ -7,7 +7,7 @@ export default function useSteps() {
   const { isConnected, isConnecting } = useAccount();
   const [step, setStep] = useState(0);
 
-  const totalSteps = 3;
+  const totalSteps = 4;
   const progress: number = step === 0 ? 0 : Math.round(((step - 1) / totalSteps) * 100);
 
   const next = () => setStep((prevStep) => prevStep + 1);

@@ -1,13 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useSignMessage, useSignTypedData } from 'wagmi';
 import type { MetaMaskSmartAccount } from '@metamask/delegation-toolkit';
 import { toMetaMaskSmartAccount, Implementation } from '@metamask/delegation-toolkit';
 import { createWalletClient, custom } from 'viem';
 import { VIEM_CHAIN } from '@/config';
 import { publicClient } from '@/clients/publicClient';
-
 export function useMetaMaskDTK() {
   const [creatingDelegator, setCreatingDelegator] = useState(false);
   const [delegator, setDelegator] = useState<MetaMaskSmartAccount<Implementation> | null>(null);
@@ -15,13 +14,14 @@ export function useMetaMaskDTK() {
   // const [creatingDelegate, setCreatingDelegate] = useState(false);
 
   const { address, isConnected } = useAccount();
-
+  const { signMessage } = useSignMessage()
+  const { signTypedData } = useSignTypedData()
   console.log('delegator', delegator);
 
   async function setupDelegator(): Promise<void> {
     try {
       if (!!address && isConnected && !!window.ethereum) {
-        if (!delegator) {
+        if (!delegator && !creatingDelegator) {
           // start creating delegator
           setCreatingDelegator(true);
           console.log('creating delegator');
@@ -39,7 +39,7 @@ export function useMetaMaskDTK() {
             deployParams: [address, [], [], []],
             deploySalt: '0x',
             // @ts-ignore
-            signatory: delegatorWalletClient,
+            signatory: { account: { address, signMessage, signTypedData } },
           });
 
           // end creating delegator
