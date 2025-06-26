@@ -7,7 +7,9 @@ if (Number.isNaN(chainId)) {
 }
 
 const VIEM_CHAIN: Chain = chainId === linea.id ? linea : chainId === lineaSepolia.id ? lineaSepolia : sepolia;
-const RPC_URL: string = env.NEXT_PUBLIC_RPC_URL;
-const PRIVATE_KEY_DELEGATE = env.NEXT_PUBLIC_PRIVATE_KEY_DELEGATE as `0x${string}`;
 
-export { RPC_URL, VIEM_CHAIN, PRIVATE_KEY_DELEGATE };
+const RPC_URL: string = env.NEXT_PUBLIC_RPC_URL!;
+const PRIVATE_KEY_DELEGATE = env.PRIVATE_KEY_DELEGATE! as `0x${string}`;
+const DELEGATE_ADDRESS = env.NEXT_PUBLIC_DELEGATE_ADDRESS! as `0x${string}`;
+
+export { RPC_URL, VIEM_CHAIN, PRIVATE_KEY_DELEGATE, DELEGATE_ADDRESS };

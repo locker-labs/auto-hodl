@@ -13,7 +13,7 @@ export interface BankAccountProps {
 }
 
 export const CreateDelegation = ({ onNext, onBack }: BankAccountProps): React.ReactNode => {
-  const { setupDelegator, delegator, creatingDelegator } = useMetaMaskDTK();
+  const { setupDelegator, delegator, creatingDelegator, createDelegation, creatingDelegation, signedDelegation } = useMetaMaskDTK();
   const { address, isConnected } = useAccount();
 
   // Setup delegator when component mounts
@@ -23,9 +23,35 @@ export const CreateDelegation = ({ onNext, onBack }: BankAccountProps): React.Re
     }
   }, [setupDelegator, delegator, creatingDelegator]);
 
-  const handleContinue = () => {
-    // onNext();
-    setupDelegator();
+  // Automatically proceed to next step when delegation is successfully created
+  useEffect(() => {
+    if (signedDelegation && !creatingDelegation) {
+      // Small delay to show the "Delegation Created!" state briefly
+      const timer = setTimeout(() => {
+        onNext();
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [signedDelegation, creatingDelegation, onNext]);
+
+  const handleContinue = async () => {
+    try {
+      if (signedDelegation) {
+        console.log('Delegation already exists, proceeding to next step');
+        // Delegation already exists, proceed to next step
+        onNext();
+      } else {
+        console.log('Starting delegation creation...');
+        // Create the delegation (this will update signedDelegation state)
+        await createDelegation();
+        console.log('createDelegation() completed - should have signature now');
+      }
+    } catch (error) {
+      console.error('Failed to create delegation:', error);
+      // Reset any loading states since delegation failed
+      // The error will be handled by the createDelegation function's finally block
+    }
   };
 
   return (
@@ -48,10 +74,10 @@ export const CreateDelegation = ({ onNext, onBack }: BankAccountProps): React.Re
         <div className='flex flex-col space-y-4'>
           <Button
             onClick={handleContinue}
-            disabled={false}
-            className='w-full h-12 bg-[#ff7a45] hover:bg-[#ff6a35] disabled:bg-[#ffb399] disabled:cursor-not-allowed text-white rounded-xl font-bold text-base'
+            disabled={!delegator || creatingDelegation}
+            className='w-full h-12 bg-[#ff7a45] hover:bg-[#ff6a35] disabled:bg-[#ffb399] disabled:cursor-not-allowed text-white rounded-xl font-bold text-base cursor-pointer'
           >
-            Complete Setup
+            {creatingDelegation ? 'Creating Delegation...' : signedDelegation ? 'Delegation Created! Proceeding...' : 'Grant Permission'}
           </Button>
           <Button
             onClick={onBack}
