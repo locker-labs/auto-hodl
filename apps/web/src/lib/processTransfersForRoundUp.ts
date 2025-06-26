@@ -31,11 +31,13 @@ export async function processTransferForRoundUp(transfer: ITransfer) {
   const asset = transfer.tokenAddress as `0x${string}`;
   const amount = calculateSavingsAmount(BigInt(transfer.amount), BigInt(roundUpAmount), BigInt(tokenBalance));
   const onBehalfOf = transfer.from as `0x${string}`; // Or fetched savings address
+
   const encodedSupplyCallData = encodeSupplyCallData(asset, amount, onBehalfOf);
-  const encodedApproveCallData = encodeApproveTokensCallData(asset, BigInt(1000000000000000000));
+  const encodedApproveCallData = encodeApproveTokensCallData(asset, amount);
   const approvalExecution = createExecution(asset,0n,encodedApproveCallData,);
   const supplyExecution = createExecution(AAVE_POOL_ADDRESS,0n,encodedSupplyCallData,);
   const executions = [approvalExecution, supplyExecution];
+  
   const redeemDelegationCalldata = DelegationFramework.encode.redeemDelegations({
     delegations: [ delegations ],
     modes: [ SINGLE_DEFAULT_MODE ],
