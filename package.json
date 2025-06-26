@@ -3,9 +3,10 @@
   "version": "0.0.1",
   "type": "module",
   "private": true,
-  "description": "Save USDC in your Circle walllet while you pay using MetaMask Card and earn yield cross-chain with LiFi.",
+  "description": "Save USDC in your Circle wallet while you pay using MetaMask Card and earn yield cross-chain with LiFi.",
   "workspaces": [
     "packages/contracts",
+    "packages/scripts",
     "apps/web"
   ],
   "scripts": {
