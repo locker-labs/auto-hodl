@@ -34,8 +34,8 @@ export async function processTransferForRoundUp(transfer: ITransfer) {
 
   const encodedSupplyCallData = encodeSupplyCallData(asset, amount, onBehalfOf);
   const encodedApproveCallData = encodeApproveTokensCallData(asset, amount);
-  const approvalExecution = createExecution(asset,0n,encodedApproveCallData,);
-  const supplyExecution = createExecution(AAVE_POOL_ADDRESS,0n,encodedSupplyCallData,);
+  const approvalExecution = createExecution(asset,BigInt(0),encodedApproveCallData,);
+  const supplyExecution = createExecution(AAVE_POOL_ADDRESS,BigInt(0),encodedSupplyCallData,);
   const executions = [approvalExecution, supplyExecution];
   
   const redeemDelegationCalldata = DelegationFramework.encode.redeemDelegations({
