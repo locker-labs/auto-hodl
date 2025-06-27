@@ -102,6 +102,11 @@ If a migration fails or needs to be rolled back:
 - **Solution**: Ensure the link command runs in the `apps/web` directory before migrations
 - **Check**: Verify your `SUPABASE_PROJECT_ID` is the correct Reference ID from Supabase dashboard
 
+#### "No such container: supabase_db_*" 
+- **Cause**: Trying to run local Supabase commands in a remote deployment context
+- **Solution**: This error occurs when using `supabase status` or other local commands in GitHub Actions
+- **Note**: GitHub Actions deploys to remote Supabase projects, not local containers
+
 #### "Access denied" 
 - **Cause**: Invalid or insufficient permissions on access token
 - **Solution**: Check that your Supabase access token is valid and has the right permissions
