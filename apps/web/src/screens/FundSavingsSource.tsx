@@ -42,7 +42,7 @@ export const FundSavingsSource = ({ onNext }: FundSavingsSourceProps): React.Rea
       </div>
       <CardContent className='pb-0 px-[30px]'>
         <Alert className='flex items-center gap-[30px] bg-[#FFF1ED] border-[#ffa2a2] mb-6'>
-          <CircleCheckBig className='size-5 min-w-5 min-h-5 text-[#773410]' />
+          <CircleCheckBig className='size-5 min-w-5 min-h-5' color={'#ff6f35'} />
           <AlertDescription className='font-medium text-[#773410] text-base tracking-[0] leading-[normal]'>
             {delegator ? (
               <>

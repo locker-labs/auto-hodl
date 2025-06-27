@@ -4,16 +4,17 @@ import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useMetaMaskDTK } from './useMetaMaskDTK';
 import { useCheckChain } from '@/hooks/useCheckChain';
+import { EStep } from '@/enums/step.enums';
 
 export default function useSteps() {
   const { isConnected, isConnecting } = useAccount();
   const { shouldSwitchChain } = useCheckChain();
   const { signedDelegation, checkingExistingAccount } = useMetaMaskDTK();
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(EStep.CONNECT_WALLET);
 
-  const totalSteps = 5;
-  const progress: number = step === 0 ? 0 : Math.round(((step - 1) / totalSteps) * 100);
+  const totalSteps = EStep.PORTFOLIO;
+  const progress: number = step === EStep.LOADING ? EStep.LOADING : Math.round(((step - 1) / totalSteps) * 100);
 
   const next = () => setStep((prevStep) => prevStep + 1);
   const prev = () => setStep((prevStep) => prevStep - 1);
@@ -21,13 +22,13 @@ export default function useSteps() {
   useEffect(() => {
     if (!isConnecting && !checkingExistingAccount) {
       if (!isConnected || shouldSwitchChain) {
-        setStep(1);
+        setStep(EStep.CONNECT_WALLET);
       } else {
         // If user has existing delegation, go directly to Portfolio
         if (signedDelegation) {
-          setStep(5);
+          setStep(EStep.PORTFOLIO);
         } else {
-          setStep(2);
+          setStep(EStep.FUND_SAVINGS_SOURCE);
         }
       }
     }
