@@ -16,6 +16,7 @@ You need to set up the following secrets in your GitHub repository:
 
 - `SUPABASE_PROJECT_ID` - Your Supabase project ID (Reference ID)
 - `SUPABASE_ACCESS_TOKEN` - Supabase access token
+- `SUPABASE_DB_PASSWORD` - Your database password
 
 ## How to Set Up GitHub Secrets
 
@@ -43,6 +44,16 @@ You need to set up the following secrets in your GitHub repository:
 8. **Copy the token immediately** (you won't be able to see it again)
 
 **Important**: The access token acts as your authentication for all Supabase CLI operations, including database migrations. Keep it secure and never commit it to your repository.
+
+#### Database Password
+1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
+2. Select your project
+3. Go to **Settings** → **Database**
+4. Look for **Database password** section
+5. If you don't remember it, click **Reset database password**
+6. Copy the password and save it securely
+
+**Note**: This is the password you set when creating your Supabase project. It's needed for direct database connections during migration deployment.
 
 ## Workflow Triggers
 
