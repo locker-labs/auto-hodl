@@ -3,10 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useMetaMaskDTK } from './useMetaMaskDTK';
+import { useCheckChain } from '@/hooks/useCheckChain';
 
 export default function useSteps() {
   const { isConnected, isConnecting } = useAccount();
+  const { shouldSwitchChain } = useCheckChain();
   const { signedDelegation, checkingExistingAccount } = useMetaMaskDTK();
+
   const [step, setStep] = useState(0);
 
   const totalSteps = 5;
@@ -17,7 +20,7 @@ export default function useSteps() {
 
   useEffect(() => {
     if (!isConnecting && !checkingExistingAccount) {
-      if (!isConnected) {
+      if (!isConnected || shouldSwitchChain) {
         setStep(1);
       } else {
         // If user has existing delegation, go directly to Portfolio
@@ -28,7 +31,7 @@ export default function useSteps() {
         }
       }
     }
-  }, [isConnected, isConnecting, signedDelegation, checkingExistingAccount]);
+  }, [isConnected, isConnecting, signedDelegation, checkingExistingAccount, shouldSwitchChain]);
 
   return { step, next, prev, totalSteps, progress };
 }

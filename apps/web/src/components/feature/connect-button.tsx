@@ -3,11 +3,14 @@
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { useCheckChain } from '@/hooks/useCheckChain';
+import { VIEM_CHAIN } from '@/config';
 
 export const ConnectButton = () => {
   const { isConnected, isConnecting } = useAccount();
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
+  const { shouldSwitchChain, switchToTargetChain } = useCheckChain();
 
   const connector = connectors.find((c) => c.id === 'metaMaskSDK' || c.type === 'metaMask');
 
@@ -30,7 +33,13 @@ export const ConnectButton = () => {
       <button
         className='w-full h-12 bg-[#ff7a45] hover:bg-[#ff6a35] disabled:bg-[#ffb399] text-white rounded-xl font-bold text-base cursor-pointer'
         type='button'
-        onClick={isConnected ? () => disconnect() : () => connect({ connector })}
+        onClick={
+          isConnected
+            ? shouldSwitchChain
+              ? () => switchToTargetChain()
+              : () => disconnect()
+            : () => connect({ connector })
+        }
         disabled={isConnecting}
       >
         {isConnecting ? (
@@ -39,7 +48,11 @@ export const ConnectButton = () => {
             <span>Connecting</span>
           </div>
         ) : isConnected ? (
-          'Disconnect'
+          shouldSwitchChain ? (
+            `Switch to ${VIEM_CHAIN.name}`
+          ) : (
+            'Disconnect'
+          )
         ) : (
           'Connect'
         )}
