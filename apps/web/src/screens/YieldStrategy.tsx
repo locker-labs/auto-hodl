@@ -18,7 +18,7 @@ export const YieldStrategy = ({ onNext, onBack }: Props): React.JSX.Element => {
       benefit: 'Stable returns',
       isSelected: true,
       color: 'text-[#187710]',
-      bgColor: 'bg-[#f5fef2]',
+      bgColor: 'bg-[#f5fef2] hover:bg-[#197710]/10 active:bg-[#197710]/15',
       borderColor: 'border-[#197710]',
       disabled: false,
     },
@@ -51,10 +51,10 @@ export const YieldStrategy = ({ onNext, onBack }: Props): React.JSX.Element => {
         {strategies.map((strategy) => (
           <div
             key={strategy.id}
-            className={`w-full py-[18px] px-5 rounded-xl border border-solid
+            className={`w-full py-[18px] px-5 rounded-xl border border-solid transition-colors duration-200
              ${
                strategy.disabled
-                 ? 'cursor-not-allowed bg-[#e1e1e2] border-[#a0a0a0]'
+                 ? 'cursor-not-allowed bg-[#a0a0a0]/10 hover:bg-[#a0a0a0]/30 border-[#a0a0a0]'
                  : `cursor-pointer ${strategy.bgColor} ${strategy.borderColor}`
              }
                 relative`}

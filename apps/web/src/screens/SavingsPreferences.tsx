@@ -65,8 +65,10 @@ export const SavingsPreferences = ({ onNext, onBack }: Props): React.JSX.Element
         {transactionOptions.map((option) => (
           <div
             key={option.id}
-            className={`flex flex-col w-full items-start gap-2.5 pt-[25px] pb-[19px] px-[18px] rounded-xl border border-solid ${
-              option.selected ? 'bg-[#fef6f2] border-[#ff7a45]' : 'border-[#a0a0a0] bg-[#e1e1e2]'
+            className={`flex flex-col w-full items-start gap-2.5 pt-[25px] pb-[19px] px-[18px] rounded-xl border border-solid transition-colors duration-200 ${
+              option.selected
+                ? 'bg-[#fef6f2] border-[#ff7a45] hover:bg-[#ff7a45]/15 active:bg-[#ff7a45]/20'
+                : 'border-[#a0a0a0] bg-[#a0a0a0]/10 hover:bg-[#a0a0a0]/30'
             }
             ${option.disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
             `}
@@ -76,14 +78,14 @@ export const SavingsPreferences = ({ onNext, onBack }: Props): React.JSX.Element
 
               <div className='flex flex-col items-center gap-1 relative self-stretch w-full flex-[0_0_auto]'>
                 <div
-                  className={`relative self-stretch  text-base text-center tracking-[0] leading-[normal] ${
+                  className={`relative self-stretch  text-base text-center tracking-[0] leading-[normal] select-none ${
                     option.selected ? 'font-bold text-[#773410]' : 'font-semibold text-[#2d2d2d]'
                   }`}
                 >
                   {option.title}
                 </div>
 
-                <div className='relative self-stretch light text-[#6b6b6b] text-xs text-center tracking-[0] leading-[normal]'>
+                <div className='relative self-stretch light text-[#6b6b6b] text-xs text-center tracking-[0] leading-[normal] select-none'>
                   {option.description}
                 </div>
               </div>
@@ -100,8 +102,8 @@ export const SavingsPreferences = ({ onNext, onBack }: Props): React.JSX.Element
         {roundingOptions.map((option) => (
           <div
             key={`rounding-${option.value}`}
-            className={`flex flex-col w-full items-start gap-2.5 pt-[18px] pb-[19px] px-[18px] rounded-xl border border-solid
-            ${option.selected ? 'bg-[#fef6f2] border-[#ff7a45]' : 'border-[#a0a0a0] bg-[#e1e1e2]'}
+            className={`flex flex-col w-full items-start gap-2.5 pt-[18px] pb-[19px] px-[18px] rounded-xl border border-solid transition-colors duration-200
+            ${option.selected ? 'bg-[#fef6f2] border-[#ff7a45] hover:bg-[#ff7a45]/15 active:bg-[#ff7a45]/20' : 'border-[#a0a0a0]  bg-[#a0a0a0]/10 hover:bg-[#a0a0a0]/30'}
             
             ${option.disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
             `}
@@ -109,7 +111,7 @@ export const SavingsPreferences = ({ onNext, onBack }: Props): React.JSX.Element
             <div className='flex flex-col w-full items-center gap-[23px] relative flex-[0_0_auto] mb-[-1.00px]'>
               <div className='flex flex-col items-center gap-1 relative self-stretch w-full flex-[0_0_auto]'>
                 <div
-                  className={`relative self-stretch mt-[-1.00px] text-[32px] text-center tracking-[0] leading-[normal] font-bold ${
+                  className={`relative self-stretch mt-[-1.00px] text-[32px] text-center tracking-[0] leading-[normal] font-bold select-none ${
                     option.selected ? 'text-[#773410]' : 'text-[#a0a0a0]'
                   }`}
                 >
