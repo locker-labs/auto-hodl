@@ -4,7 +4,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useMetaMaskDTK } from '@/hooks/useMetaMaskDTK';
-import { useAccount } from 'wagmi';
 import { useEffect } from 'react';
 
 export interface BankAccountProps {
@@ -14,7 +13,6 @@ export interface BankAccountProps {
 
 export const CreateDelegation = ({ onNext, onBack }: BankAccountProps): React.ReactNode => {
   const { setupDelegator, delegator, creatingDelegator, createDelegation, creatingDelegation, signedDelegation } = useMetaMaskDTK();
-  const { address, isConnected } = useAccount();
 
   // Setup delegator when component mounts
   useEffect(() => {
@@ -65,8 +63,8 @@ export const CreateDelegation = ({ onNext, onBack }: BankAccountProps): React.Re
         </p>
 
         <ol className='w-fit mx-auto mt-2 font-medium text-[#773410] text-base tracking-[0] leading-[normal] list-decimal list-inside space-y-1'>
-          <li>Use or simulate usage of a MetaMask Card by sending USDC from {address}</li>
-          <li>We'll withdraw funds from your source of funds {delegator?.address} and deposit into Aave to earn yield.</li>
+          <li>Use or simulate usage of a MetaMask Card by sending USDC from your wallet.</li>
+          <li>We'll withdraw funds from your source of funds and deposit into Aave to earn yield.</li>
         </ol>
       </div>
 
