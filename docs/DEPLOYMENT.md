@@ -96,9 +96,26 @@ If a migration fails or needs to be rolled back:
 3. Click on any run to see detailed logs
 
 ### Common Issues
-- **Access denied**: Check that your Supabase access token is valid and has the right permissions
-- **Project not found**: Verify the project ID is correct
-- **Migration conflicts**: Ensure migrations don't conflict with existing schema
+
+#### "Cannot find project ref. Have you run supabase link?"
+- **Cause**: The `supabase link` command failed or wasn't run in the correct directory
+- **Solution**: Ensure the link command runs in the `apps/web` directory before migrations
+- **Check**: Verify your `SUPABASE_PROJECT_ID` is the correct Reference ID from Supabase dashboard
+
+#### "Access denied" 
+- **Cause**: Invalid or insufficient permissions on access token
+- **Solution**: Check that your Supabase access token is valid and has the right permissions
+- **Check**: Regenerate the access token with "All access" permissions
+
+#### "Project not found"
+- **Cause**: Incorrect project ID
+- **Solution**: Verify the project ID is correct (it should be the Reference ID, not the project name)
+- **Check**: Go to Settings → General in your Supabase project to get the Reference ID
+
+#### "Migration conflicts"
+- **Cause**: New migrations conflict with existing schema
+- **Solution**: Ensure migrations don't conflict with existing schema
+- **Check**: Test migrations locally first with `supabase db reset`
 
 ### Manual Migration (Emergency)
 If the automated workflow fails, you can run migrations manually:
