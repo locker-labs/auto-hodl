@@ -9,6 +9,7 @@ import { ConnectWallet } from '@/screens/ConnectWallet';
 import { FundSavingsSource } from '@/screens/FundSavingsSource';
 import LoadingScreen from '@/screens/LoadingScreen';
 import { MetaMaskCard } from '@/screens/MetaMaskCard';
+import { Portfolio } from '@/screens/Portfolio';
 import { useMetaMaskDTK } from '@/hooks/useMetaMaskDTK';
 
 function Home() {
@@ -24,6 +25,8 @@ function Home() {
         return <MetaMaskCard onNext={next} onBack={prev} />;
       case 4:
         return <CreateDelegation onNext={next} onBack={prev} />;
+      case 5:
+        return <Portfolio onNext={next} onBack={prev} />;
       default:
         return <LoadingScreen />;
     }
