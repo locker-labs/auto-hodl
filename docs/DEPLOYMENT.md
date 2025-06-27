@@ -133,6 +133,15 @@ If a migration fails or needs to be rolled back:
 - **Solution**: Ensure migrations don't conflict with existing schema
 - **Check**: Test migrations locally first with `supabase db reset`
 
+#### "failed SASL auth (invalid SCRAM server-final-message received from server)"
+- **Cause**: Database password authentication failure, often due to special characters or incorrect password
+- **Solution**: 
+  1. Verify your database password is correct in GitHub secrets
+  2. If the password contains special characters, try resetting it to use only alphanumeric characters
+  3. Go to Supabase Dashboard → Settings → Database → Reset database password
+  4. Update the `SUPABASE_DB_PASSWORD` secret with the new password
+- **Check**: Test the password by connecting to your database directly using a PostgreSQL client
+
 ### Manual Migration (Emergency)
 If the automated workflow fails, you can run migrations manually:
 
