@@ -5,22 +5,49 @@ import { useAccount, useSignMessage, useSignTypedData } from 'wagmi';
 import type { MetaMaskSmartAccount } from '@metamask/delegation-toolkit';
 import { toMetaMaskSmartAccount, Implementation, createDelegation as createDelegationToolkit, type Delegation } from '@metamask/delegation-toolkit';
 import { createWalletClient, custom, type SignableMessage } from 'viem';
-import { VIEM_CHAIN, DELEGATE_ADDRESS } from '@/config';
+import { VIEM_CHAIN, DELEGATE_ADDRESS, DEPLOY_SALT } from '@/config';
 import { publicClient } from '@/clients/publicClient';
 import { privateKeyToAccount } from 'viem/accounts';
+import { createAccountWithSignature, getAccountBySignerAddress } from '@/lib/supabase/createAccount';
+import { useAutoHodl } from '@/providers/autohodl-provider';
 
 export function useMetaMaskDTK() {
   const [creatingDelegator, setCreatingDelegator] = useState(false);
   const [delegator, setDelegator] = useState<MetaMaskSmartAccount<Implementation> | null>(null);
   const [creatingDelegation, setCreatingDelegation] = useState(false);
   const [signedDelegation, setSignedDelegation] = useState<Delegation | null>(null);
+  const [checkingExistingAccount, setCheckingExistingAccount] = useState(false);
   // const [delegate, setDelegate] = useState(null);
   // const [creatingDelegate, setCreatingDelegate] = useState(false);
 
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { signTypedDataAsync } = useSignTypedData();
+  const { metaMaskCardAddress } = useAutoHodl();
   console.log('delegator', delegator);
+
+  // Check for existing account when wallet connects
+  useEffect(() => {
+    async function checkExistingAccount() {
+      if (!address || !isConnected || checkingExistingAccount) return;
+
+      try {
+        setCheckingExistingAccount(true);
+        const existingAccount = await getAccountBySignerAddress(address);
+        
+        if (existingAccount && existingAccount.delegation) {
+          console.log('✅ Found existing delegation for user:', address);
+          setSignedDelegation(existingAccount.delegation);
+        }
+      } catch (error) {
+        console.error('Error checking existing account:', error);
+      } finally {
+        setCheckingExistingAccount(false);
+      }
+    }
+
+    checkExistingAccount();
+  }, [address, isConnected]);
 
   async function setupDelegator(): Promise<void> {
     try {
@@ -48,7 +75,7 @@ export function useMetaMaskDTK() {
             client: publicClient,
             implementation: Implementation.Hybrid,
             deployParams: [address, [], [], []],
-            deploySalt: '0x',
+            deploySalt: DEPLOY_SALT as `0x${string}`,
             signatory: { account: connectedAccount },
           });
 
@@ -70,6 +97,14 @@ export function useMetaMaskDTK() {
     try {
       if (!delegator) {
         throw new Error('Delegator smart account not created yet');
+      }
+
+      if (!address) {
+        throw new Error('Wallet not connected');
+      }
+
+      if (!metaMaskCardAddress) {
+        throw new Error('MetaMask Card address not provided');
       }
 
       setCreatingDelegation(true);
@@ -104,6 +139,20 @@ export function useMetaMaskDTK() {
 
       console.log('✅ Delegation created and signed!', newSignedDelegation);
       setSignedDelegation(newSignedDelegation);
+
+      // Save account to database after successful delegation creation using secure API
+      try {
+        await createAccountWithSignature({
+          signerAddress: address,
+          tokenSourceAddress: delegator.address,
+          triggerAddress: metaMaskCardAddress,
+          delegation: newSignedDelegation,
+        });
+        console.log('✅ Account saved to database via secure API');
+      } catch (dbError) {
+        console.error('❌ Failed to save account to database:', dbError);
+        // Don't throw here - delegation was successful, DB save is secondary
+      }
     } catch (err) {
       console.error('Error creating delegation:', err);
       throw err;
@@ -121,6 +170,7 @@ export function useMetaMaskDTK() {
     // creatingDelegate,
     creatingDelegator,
     creatingDelegation,
+    checkingExistingAccount,
     // delegate,
     delegator,
     signedDelegation,

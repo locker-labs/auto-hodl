@@ -4,9 +4,11 @@ create table "public"."accounts" (
     "signerAddress" text not null,
     "tokenSourceAddress" text not null,
     "triggerAddress" text not null,
-    "roundUpToDollar" smallint not null,
+    "roundUpToDollar" smallint not null default '1'::smallint,
     "roundUpMode" text not null default 'card-only'::text,
-    "delegation" jsonb not null
+    "delegation" jsonb not null,
+    "savingsAddress" text,
+    "deploySalt" text not null
 );
 
 
@@ -14,7 +16,11 @@ alter table "public"."accounts" enable row level security;
 
 CREATE UNIQUE INDEX accounts_pkey ON public.accounts USING btree (id);
 
+CREATE UNIQUE INDEX "accounts_signerAddress_deploySalt_key" ON public.accounts USING btree ("signerAddress", "deploySalt");
+
 alter table "public"."accounts" add constraint "accounts_pkey" PRIMARY KEY using index "accounts_pkey";
+
+alter table "public"."accounts" add constraint "accounts_signerAddress_deploySalt_key" UNIQUE using index "accounts_signerAddress_deploySalt_key";
 
 grant delete on table "public"."accounts" to "anon";
 

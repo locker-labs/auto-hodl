@@ -17,9 +17,9 @@ export type Database = {
     Functions: {
       graphql: {
         Args: {
+          extensions?: Json
           operationName?: string
           query?: string
-          extensions?: Json
           variables?: Json
         }
         Returns: Json
@@ -38,9 +38,11 @@ export type Database = {
         Row: {
           createdAt: string
           delegation: Json
+          deploySalt: string
           id: string
           roundUpMode: string
           roundUpToDollar: number
+          savingsAddress: string | null
           signerAddress: string
           tokenSourceAddress: string
           triggerAddress: string
@@ -48,9 +50,11 @@ export type Database = {
         Insert: {
           createdAt?: string
           delegation: Json
+          deploySalt: string
           id?: string
           roundUpMode?: string
-          roundUpToDollar: number
+          roundUpToDollar?: number
+          savingsAddress?: string | null
           signerAddress: string
           tokenSourceAddress: string
           triggerAddress: string
@@ -58,9 +62,11 @@ export type Database = {
         Update: {
           createdAt?: string
           delegation?: Json
+          deploySalt?: string
           id?: string
           roundUpMode?: string
           roundUpToDollar?: number
+          savingsAddress?: string | null
           signerAddress?: string
           tokenSourceAddress?: string
           triggerAddress?: string
@@ -69,7 +75,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      accounts_view: {
+        Row: {
+          createdAt: string | null
+          signerAddress: string | null
+          triggerAddress: string | null
+        }
+        Insert: {
+          createdAt?: string | null
+          signerAddress?: string | null
+          triggerAddress?: string | null
+        }
+        Update: {
+          createdAt?: string | null
+          signerAddress?: string | null
+          triggerAddress?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
