@@ -11,6 +11,7 @@ import LoadingScreen from '@/screens/LoadingScreen';
 import { MetaMaskCard } from '@/screens/MetaMaskCard';
 import { Portfolio } from '@/screens/Portfolio';
 import { SavingsPreferences } from '@/screens/SavingsPreferences';
+import { YieldStrategy } from '@/screens/YieldStrategy';
 import { EStep } from '@/enums/step.enums';
 
 function Home() {
@@ -26,6 +27,8 @@ function Home() {
         return <MetaMaskCard onNext={next} onBack={prev} />;
       case EStep.SAVING_PREFERENCES:
         return <SavingsPreferences onNext={next} onBack={prev} />;
+      case EStep.YIELD_STRATEGY:
+        return <YieldStrategy onNext={next} onBack={prev} />;
       case EStep.CREATE_DELEGATION:
         return <CreateDelegation onNext={next} onBack={prev} />;
       case EStep.PORTFOLIO:
