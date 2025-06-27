@@ -10,22 +10,25 @@ import { FundSavingsSource } from '@/screens/FundSavingsSource';
 import LoadingScreen from '@/screens/LoadingScreen';
 import { MetaMaskCard } from '@/screens/MetaMaskCard';
 import { Portfolio } from '@/screens/Portfolio';
-import { useMetaMaskDTK } from '@/hooks/useMetaMaskDTK';
+import { SavingsPreferences } from '@/screens/SavingsPreferences';
+import { EStep } from '@/enums/step.enums';
 
 function Home() {
   const { step, next, prev, totalSteps, progress } = useSteps();
   // Render the appropriate screen based on the current step
   function renderStep() {
     switch (step) {
-      case 1:
+      case EStep.CONNECT_WALLET:
         return <ConnectWallet />;
-      case 2:
+      case EStep.FUND_SAVINGS_SOURCE:
         return <FundSavingsSource onNext={next} onBack={prev} />;
-      case 3:
+      case EStep.METAMASK_CARD:
         return <MetaMaskCard onNext={next} onBack={prev} />;
-      case 4:
+      case EStep.SAVING_PREFERENCES:
+        return <SavingsPreferences onNext={next} onBack={prev} />;
+      case EStep.CREATE_DELEGATION:
         return <CreateDelegation onNext={next} onBack={prev} />;
-      case 5:
+      case EStep.PORTFOLIO:
         return <Portfolio onNext={next} onBack={prev} />;
       default:
         return <LoadingScreen />;

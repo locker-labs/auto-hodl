@@ -11,12 +11,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAutoHodl } from '@/providers/autohodl-provider';
 
-export interface MetaMaskCardProps {
+interface Props {
   onNext: () => void;
   onBack: () => void;
 }
 
-export const MetaMaskCard = ({ onNext }: MetaMaskCardProps): React.ReactNode => {
+export const MetaMaskCard = ({ onNext, onBack }: Props): React.ReactNode => {
   const { metaMaskCardAddress, setMetaMaskCardAddress } = useAutoHodl();
   const { address: connectedAddress, isConnected } = useAccount();
 
@@ -72,12 +72,12 @@ export const MetaMaskCard = ({ onNext }: MetaMaskCardProps): React.ReactNode => 
           Address to Trigger Savings
         </h2>
         <p className='w-fit mx-auto mt-2 font-medium text-[#5D5D5D] text-base tracking-[0] leading-[normal]'>
-          Every time this address sends USDC to MetaMask Card contract, the amount will be rounded up and savings will be taken from the connected wallet from the previous step.
+          Every time this address sends USDC to MetaMask Card contract, the amount will be rounded up and savings will
+          be taken from the connected wallet from the previous step.
         </p>
         <Alert className='flex items-center gap-[30px] bg-[#fff1ed63] border-[#ffa2a2] mb-6 mt-[30px]'>
-          <div className='flex flex-col w-[30px] h-[30px] items-center justify-center rounded-[15px] border-[2.5px] border-solid border-[#773410]'>
-            <InfoIcon className='w-5 h-5 text-[#773410]' />
-          </div>
+          <InfoIcon className='size-5 min-w-5 min-h-5' color={'#ff6f35'} />
+
           <AlertDescription className='font-medium text-[#773410] text-base tracking-[0] leading-[normal]'>
             Unless you have a MetaMask Card, this should be the same address that was connected in step 1.
           </AlertDescription>
@@ -95,13 +95,14 @@ export const MetaMaskCard = ({ onNext }: MetaMaskCardProps): React.ReactNode => 
                   value={metaMaskCardAddress ?? ''}
                   onChange={handleAddressChange}
                   placeholder='0x1234567890abcdef1234567890abcdef12345678'
-                  className={`w-full pl-10 pr-20 py-3 border rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#ff7a45] focus:border-transparent ${!isValidAddress && !!metaMaskCardAddress ? 'border-red-500 bg-red-50' : 'border-[#e0e0e0] bg-white'
-                    }`}
+                  className={`w-full pl-10 pr-20 py-3 border rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#ff7a45] focus:border-transparent ${
+                    !isValidAddress && !!metaMaskCardAddress ? 'border-red-500 bg-red-50' : 'border-[#e0e0e0] bg-white'
+                  }`}
                 />
                 <button
                   type='button'
                   onClick={handlePasteAddress}
-                  className='absolute inset-y-0 right-0 pr-3 flex items-center text-[#ff7a45] hover:text-[#ff6a35] font-medium text-sm'
+                  className='absolute inset-y-0 right-0 pr-3 flex items-center text-[#ff7a45] hover:text-[#ff6a35] font-medium text-sm cursor-pointer'
                 >
                   Paste
                 </button>
@@ -121,13 +122,22 @@ export const MetaMaskCard = ({ onNext }: MetaMaskCardProps): React.ReactNode => 
           </CardContent>
         </Card>
 
-        <Button
-          onClick={handleContinue}
-          disabled={!isValidAddress}
-          className='w-full h-12 bg-[#ff7a45] hover:bg-[#ff6a35] disabled:bg-[#ffb399] disabled:cursor-not-allowed text-white rounded-xl font-bold text-base'
-        >
-          Continue
-        </Button>
+        <div className='flex flex-col space-y-4'>
+          <Button
+            onClick={handleContinue}
+            disabled={!isValidAddress}
+            className='w-full h-12 bg-[#ff7a45] hover:bg-[#ff6a35] disabled:bg-[#ffb399] disabled:cursor-not-allowed text-white rounded-xl font-bold text-base cursor-pointer'
+          >
+            Continue
+          </Button>
+          <Button
+            onClick={onBack}
+            variant='outline'
+            className='w-full h-12 border-[#e0e0e0] text-[#6b6b6b] hover:bg-[#f5f5f5] rounded-xl font-medium text-base cursor-pointer'
+          >
+            Back
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

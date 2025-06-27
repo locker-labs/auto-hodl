@@ -21,7 +21,8 @@ export const ConnectWallet = (): React.ReactNode => {
         <Alert className='flex items-center gap-[30px] bg-[#FFF1ED] border-[#ffa2a2] mb-6'>
           <CircleCheckBig className='size-5 min-w-5 min-h-5 text-[#773410]' />
           <AlertDescription className='font-medium text-[#773410] text-base tracking-[0] leading-[normal]'>
-            In production, this would be the EOA that is funding your MetaMask Card and we'd use 7715 to request delegation permissions from the 7702 linked account.
+            In production, this would be the EOA that is funding your MetaMask Card and we'd use 7715 to request
+            delegation permissions from the 7702 linked account.
           </AlertDescription>
         </Alert>
         <ConnectButton />
