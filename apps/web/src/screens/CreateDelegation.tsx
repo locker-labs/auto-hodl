@@ -12,7 +12,8 @@ export interface BankAccountProps {
 }
 
 export const CreateDelegation = ({ onNext, onBack }: BankAccountProps): React.ReactNode => {
-  const { setupDelegator, delegator, creatingDelegator, createDelegation, creatingDelegation, signedDelegation } = useMetaMaskDTK();
+  const { setupDelegator, delegator, creatingDelegator, createDelegation, creatingDelegation, signedDelegation } =
+    useMetaMaskDTK();
 
   // Setup delegator when component mounts
   useEffect(() => {
@@ -75,7 +76,11 @@ export const CreateDelegation = ({ onNext, onBack }: BankAccountProps): React.Re
             disabled={!delegator || creatingDelegation}
             className='w-full h-12 bg-[#ff7a45] hover:bg-[#ff6a35] disabled:bg-[#ffb399] disabled:cursor-not-allowed text-white rounded-xl font-bold text-base cursor-pointer'
           >
-            {creatingDelegation ? 'Creating Delegation...' : signedDelegation ? 'Delegation Created! Proceeding...' : 'Grant Permission'}
+            {creatingDelegation
+              ? 'Creating Delegation...'
+              : signedDelegation
+                ? 'Delegation Created! Proceeding...'
+                : 'Grant Permission'}
           </Button>
           <Button
             onClick={onBack}

@@ -72,7 +72,8 @@ export const MetaMaskCard = ({ onNext }: MetaMaskCardProps): React.ReactNode => 
           Address to Trigger Savings
         </h2>
         <p className='w-fit mx-auto mt-2 font-medium text-[#5D5D5D] text-base tracking-[0] leading-[normal]'>
-          Every time this address sends USDC to MetaMask Card contract, the amount will be rounded up and savings will be taken from the connected wallet from the previous step.
+          Every time this address sends USDC to MetaMask Card contract, the amount will be rounded up and savings will
+          be taken from the connected wallet from the previous step.
         </p>
         <Alert className='flex items-center gap-[30px] bg-[#fff1ed63] border-[#ffa2a2] mb-6 mt-[30px]'>
           <div className='flex flex-col w-[30px] h-[30px] items-center justify-center rounded-[15px] border-[2.5px] border-solid border-[#773410]'>
@@ -95,8 +96,9 @@ export const MetaMaskCard = ({ onNext }: MetaMaskCardProps): React.ReactNode => 
                   value={metaMaskCardAddress ?? ''}
                   onChange={handleAddressChange}
                   placeholder='0x1234567890abcdef1234567890abcdef12345678'
-                  className={`w-full pl-10 pr-20 py-3 border rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#ff7a45] focus:border-transparent ${!isValidAddress && !!metaMaskCardAddress ? 'border-red-500 bg-red-50' : 'border-[#e0e0e0] bg-white'
-                    }`}
+                  className={`w-full pl-10 pr-20 py-3 border rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#ff7a45] focus:border-transparent ${
+                    !isValidAddress && !!metaMaskCardAddress ? 'border-red-500 bg-red-50' : 'border-[#e0e0e0] bg-white'
+                  }`}
                 />
                 <button
                   type='button'

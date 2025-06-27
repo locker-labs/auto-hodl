@@ -3,7 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useAccount, useSignMessage, useSignTypedData } from 'wagmi';
 import type { MetaMaskSmartAccount } from '@metamask/delegation-toolkit';
-import { toMetaMaskSmartAccount, Implementation, createDelegation as createDelegationToolkit, type Delegation } from '@metamask/delegation-toolkit';
+import {
+  toMetaMaskSmartAccount,
+  Implementation,
+  createDelegation as createDelegationToolkit,
+  type Delegation,
+} from '@metamask/delegation-toolkit';
 import { createWalletClient, custom, type SignableMessage } from 'viem';
 import { VIEM_CHAIN, DELEGATE_ADDRESS, DEPLOY_SALT } from '@/config';
 import { publicClient } from '@/clients/publicClient';
@@ -34,7 +39,7 @@ export function useMetaMaskDTK() {
       try {
         setCheckingExistingAccount(true);
         const existingAccount = await getAccountBySignerAddress(address);
-        
+
         if (existingAccount && existingAccount.delegation) {
           console.log('✅ Found existing delegation for user:', address);
           setSignedDelegation(existingAccount.delegation);

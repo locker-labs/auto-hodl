@@ -21,9 +21,7 @@ export const Portfolio = ({ onNext, onBack }: PortfolioProps): React.ReactNode =
       <CardContent className='pb-6 px-[30px]'>
         <div className='flex flex-col items-center justify-center min-h-[200px] space-y-4'>
           <div className='text-center'>
-            <p className='text-[#6b6b6b] text-lg font-medium'>
-              Coming Soon
-            </p>
+            <p className='text-[#6b6b6b] text-lg font-medium'>Coming Soon</p>
             <p className='text-[#6b6b6b] text-sm mt-2'>
               Your delegation is active and ready to start saving automatically.
             </p>
@@ -32,4 +30,4 @@ export const Portfolio = ({ onNext, onBack }: PortfolioProps): React.ReactNode =
       </CardContent>
     </Card>
   );
-}; 
+};
