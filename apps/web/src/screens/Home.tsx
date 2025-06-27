@@ -9,13 +9,14 @@ import { ConnectWallet } from '@/screens/ConnectWallet';
 import { FundSavingsSource } from '@/screens/FundSavingsSource';
 import LoadingScreen from '@/screens/LoadingScreen';
 import { MetaMaskCard } from '@/screens/MetaMaskCard';
-import { Portfolio } from '@/screens/Portfolio';
 import { SavingsPreferences } from '@/screens/SavingsPreferences';
 import { YieldStrategy } from '@/screens/YieldStrategy';
+import { Portfolio } from '@/screens/Portfolio';
 import { EStep } from '@/enums/step.enums';
 
 function Home() {
   const { step, next, prev, totalSteps, progress } = useSteps();
+
   // Render the appropriate screen based on the current step
   function renderStep() {
     switch (step) {
@@ -32,7 +33,7 @@ function Home() {
       case EStep.CREATE_DELEGATION:
         return <CreateDelegation onNext={next} onBack={prev} />;
       case EStep.PORTFOLIO:
-        return <Portfolio onNext={next} onBack={prev} />;
+        return <Portfolio />;
       default:
         return <LoadingScreen />;
     }
@@ -61,8 +62,10 @@ function Home() {
       <Separator className='mt-4 md:mt-8 w-full h-px bg-[#e6e6e6]' />
 
       <div className='w-full flex items-center justify-center'>
-        {step === 0 ? (
+        {step === EStep.LOADING ? (
           <LoadingScreen />
+        ) : step === EStep.PORTFOLIO ? (
+          <Portfolio />
         ) : (
           <div className='w-full max-w-xl justify-center items-start px-4'>
             {/* Progress bar info */}
