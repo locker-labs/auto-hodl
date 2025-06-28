@@ -49,8 +49,5 @@
     "web3"
   ],
   "author": "Locker",
-  "license": "ISC",
-  "dependencies": {
-    "webauthn-p256": "^0.0.10"
-  }
+  "license": "ISC"
 }
