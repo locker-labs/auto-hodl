@@ -1,4 +1,4 @@
-import { type Delegation, type ExecutionStruct, getDeleGatorEnvironment } from '@metamask/delegation-toolkit';
+import { type Delegation, type ExecutionStruct, getDeleGatorEnvironment, DelegationFramework, ExecutionMode, SINGLE_DEFAULT_MODE } from '@metamask/delegation-toolkit';
 import { encodeSupplyCallData, erc20Abi, encodeApproveTokensCallData } from './yield /aave';
 import { delegateWalletClient } from '@/clients/delegateWalletClient';
 import { publicClient } from '@/clients/publicClient';
@@ -15,15 +15,15 @@ import { AAVE_POOL_ADDRESS, MM_CARD_ADDRESSES, TOKEN_DECIMAL_MULTIPLIER, USDC_AD
  * 2. Signed delegations from the smart account owner
  * 3. Proper error handling and validation
  */
-async function redeemAaveDelegations(delegations: Delegation[], executions: ExecutionStruct[]): Promise<`0x${string}`> {
+export async function redeemAaveDelegations(delegations: Delegation[], executions: ExecutionStruct[]): Promise<`0x${string}`> {
   // Following the DTK documentation pattern for redeeming with an EOA
   // For multiple executions, we need arrays for delegations, modes, and executions
   const delegationsArray = delegations.map((delegation) => [delegation]);
   const executionsArray = executions.map((execution) => [execution]);
 
   // SINGLE_DEFAULT_MODE from the working script
-  const SINGLE_DEFAULT_MODE = '0x00';
-  const modesArray = delegations.map(() => SINGLE_DEFAULT_MODE);
+  const mode: ExecutionMode = SINGLE_DEFAULT_MODE;
+  const modesArray = delegations.map(() => mode);
 
   // TODO: Replace with proper DelegationFramework.encode.redeemDelegations()
   // This is a placeholder that demonstrates the structure
@@ -34,10 +34,16 @@ async function redeemAaveDelegations(delegations: Delegation[], executions: Exec
     delegationManager: getDeleGatorEnvironment(VIEM_CHAIN.id).DelegationManager,
   });
 
+  const redeemDelegationCalldata = DelegationFramework.encode.redeemDelegations({
+    delegations: delegationsArray,
+    modes: modesArray,
+    executions: executionsArray,
+  });
+
   // Placeholder transaction - in production this would use the proper DTK encoding
   const transactionHash = await delegateWalletClient.sendTransaction({
     to: getDeleGatorEnvironment(VIEM_CHAIN.id).DelegationManager,
-    data: '0x', // TODO: Use DelegationFramework.encode.redeemDelegations()
+    data: redeemDelegationCalldata,
     chain: VIEM_CHAIN,
   });
 
