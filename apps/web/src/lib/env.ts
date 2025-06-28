@@ -12,6 +12,8 @@ const clientEnv: Record<string, string> = {
 const serverEnv: Record<string, string> = {
   SUPABASE_SERVICE_ROLE: process.env.SUPABASE_SERVICE_ROLE ?? '',
   PRIVATE_KEY_DELEGATE: process.env.PRIVATE_KEY_DELEGATE ?? '',
+  MORALIS_STREAM_ID: process.env.MORALIS_STREAM_ID ?? '',
+  MORALIS_API_KEY: process.env.MORALIS_API_KEY ?? '',
 };
 
 // Validate client-side variables

@@ -22,6 +22,9 @@ export function useMetaMaskDTK() {
   const [creatingDelegation, setCreatingDelegation] = useState(false);
   const [signedDelegation, setSignedDelegation] = useState<Delegation | null>(null);
   const [checkingExistingAccount, setCheckingExistingAccount] = useState(false);
+  const [existingAccount, setExistingAccount] = useState<any | null>(null);
+  const [accountSaved, setAccountSaved] = useState(false);
+  const [accountSaveError, setAccountSaveError] = useState<string | null>(null);
   // const [delegate, setDelegate] = useState(null);
   // const [creatingDelegate, setCreatingDelegate] = useState(false);
 
@@ -34,18 +37,28 @@ export function useMetaMaskDTK() {
   // Check for existing account when wallet connects
   useEffect(() => {
     async function checkExistingAccount() {
-      if (!address || !isConnected || checkingExistingAccount) return;
+      if (!address || !isConnected) {
+        return;
+      }
 
       try {
         setCheckingExistingAccount(true);
-        const existingAccount = await getAccountBySignerAddress(address);
+        const accountData = await getAccountBySignerAddress(address);
 
-        if (existingAccount && existingAccount.delegation) {
-          console.log('✅ Found existing delegation for user:', address);
-          setSignedDelegation(existingAccount.delegation);
+        if (accountData) {
+          console.log('✅ Found existing account for user:', address);
+          setExistingAccount(accountData);
+          
+          if (accountData.delegation) {
+            console.log('✅ Found existing delegation for user:', address);
+            setSignedDelegation(accountData.delegation);
+          }
+        } else {
+          setExistingAccount(null);
         }
       } catch (error) {
         console.error('Error checking existing account:', error);
+        setExistingAccount(null);
       } finally {
         setCheckingExistingAccount(false);
       }
@@ -143,7 +156,10 @@ export function useMetaMaskDTK() {
       };
 
       console.log('✅ Delegation created and signed!', newSignedDelegation);
-      setSignedDelegation(newSignedDelegation);
+      
+      // Clear any previous errors
+      setAccountSaveError(null);
+      setAccountSaved(false);
 
       // Save account to database after successful delegation creation using secure API
       try {
@@ -154,9 +170,14 @@ export function useMetaMaskDTK() {
           delegation: newSignedDelegation,
         });
         console.log('✅ Account saved to database via secure API');
+        setAccountSaved(true);
+        setSignedDelegation(newSignedDelegation); // Only set this after successful save
       } catch (dbError) {
         console.error('❌ Failed to save account to database:', dbError);
-        // Don't throw here - delegation was successful, DB save is secondary
+        const errorMessage = dbError instanceof Error ? dbError.message : 'Failed to save account';
+        setAccountSaveError(errorMessage);
+        // Don't set signedDelegation if account save fails
+        throw new Error(`Account creation failed: ${errorMessage}`);
       }
     } catch (err) {
       console.error('Error creating delegation:', err);
@@ -176,9 +197,12 @@ export function useMetaMaskDTK() {
     creatingDelegator,
     creatingDelegation,
     checkingExistingAccount,
+    existingAccount,
     // delegate,
     delegator,
     signedDelegation,
+    accountSaved,
+    accountSaveError,
     setupDelegator,
     createDelegation,
   };

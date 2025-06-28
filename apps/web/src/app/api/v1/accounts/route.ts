@@ -4,7 +4,8 @@ import { supabaseServer } from '@/lib/supabase/supabaseServer';
 import { createAccountMessage } from '@/lib/createAccountMessage';
 import { toMetaMaskSmartAccount, Implementation } from '@metamask/delegation-toolkit';
 import { publicClient } from '@/clients/publicClient';
-import { DEPLOY_SALT } from '@/config';
+import { DEPLOY_SALT, MORALIS_STREAM_ID } from '@/config';
+import { addAddressToMoralisStream } from '@/lib/moralis';
 
 interface CreateAccountRequest {
   signerAddress: string;
@@ -115,6 +116,20 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('Account created successfully via API:', data);
+
+    // Add the triggerAddress to the Moralis stream for monitoring
+    try {
+      const streamUpdateSuccess = await addAddressToMoralisStream(MORALIS_STREAM_ID, triggerAddress);
+      if (!streamUpdateSuccess) {
+        console.warn('Failed to add address to Moralis stream, but account was created successfully');
+      } else {
+        console.log(`Successfully added ${triggerAddress} to Moralis stream`);
+      }
+    } catch (error) {
+      console.error('Error updating Moralis stream:', error);
+      // Don't fail the account creation if stream update fails
+    }
+
     return NextResponse.json({ success: true, data });
   } catch (error) {
     console.error('API error:', error);
