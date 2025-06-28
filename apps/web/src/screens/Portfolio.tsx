@@ -1,4 +1,4 @@
-import { BanknoteArrowUp, Cog, DollarSign, Shield, TrendingUp, MoveUpRight } from 'lucide-react';
+import { BanknoteArrowUp, Cog, DollarSign, Shield, TrendingUp, MoveUpRight, Loader2 } from 'lucide-react';
 import type React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -6,46 +6,26 @@ import { Card, CardContent } from '@/components/ui/card';
 import SavingsChart from '@/components/feature/SavingsChart';
 import Link from 'next/link';
 import { getTransactionLink } from '@/lib/blockExplorer';
+import { useTransactions } from '@/hooks/useTransactions';
+import { formatUnits } from 'viem';
+import moment from 'moment';
 
 export const Portfolio = (): React.JSX.Element => {
+  const { txs: transactions, loading } = useTransactions();
+
+  let totalSavings = 0;
+
+  for (const tx of transactions) {
+    const amount = Number(formatUnits(BigInt(tx.yieldDepositAmount ?? 0), 18));
+    totalSavings += amount;
+  }
+
   const data = {
     totalYield: '76',
-    totalSavings: '555',
+    totalSavings,
     growth: '+13.69',
     apy: '4.8',
   };
-
-  // Transaction data for mapping
-  const transactions = [
-    {
-      txHash: '0xf3871fab28ffe6a801a1dd0846c6116010b5e1d3cbbb96511c17ddbe195fa890',
-      store: 'Hazelnut Coffee',
-      date: 'Jan 13, 06:05 PM',
-      amount: '$0.25',
-      from: '$4.75',
-    },
-    {
-      txHash: '0x1ae369a9a3301bf885113b5afe3d2254a08f798f88ac71b68de9fd5cb1a9d2d0',
-      store: 'Grocery Store',
-      date: 'Jan 13, 06:05 PM',
-      amount: '$0.77',
-      from: '$61.23',
-    },
-    {
-      txHash: '0xf1c33316f48acf71bebb5888997ff5eff23221a69395964ec8e657f171a77853',
-      store: 'BBQ',
-      date: 'Jan 13, 06:05 PM',
-      amount: '$0.25',
-      from: '$4.75',
-    },
-    {
-      txHash: '0x0b159608052a47b825b97396cf91a6643ee6354c2d256384715c9d3aab61448a',
-      store: 'Grocery Store',
-      date: 'Jan 13, 06:05 PM',
-      amount: '$0.25',
-      from: '$4.75',
-    },
-  ];
 
   const chartData = [
     { month: 'Jan', value: 245.5 },
@@ -74,7 +54,7 @@ export const Portfolio = (): React.JSX.Element => {
             <div>
               <p className='text-black text-base text-left sm:text-center md:text-left'>Total Savings</p>
               <p className='font-bold text-[#ff7a45] text-2xl mt-1 text-left sm:text-center md:text-left'>
-                ${data.totalSavings}
+                {loading ? <Loader2 className={'animate-spin size-8'} color={'#ff7a45'} /> : `${data.totalSavings}`}
               </p>
             </div>
           </CardContent>
@@ -169,35 +149,52 @@ export const Portfolio = (): React.JSX.Element => {
               <p className='font-normal text-[#6b6b6b] text-base'>Your latest round-up savings</p>
             </div>
 
-            <div className='mt-[15px] overflow-y-auto max-h-[274px]'>
-              {transactions.map((transaction) => (
-                <Link
-                  key={transaction.txHash}
-                  href={getTransactionLink(transaction.txHash)}
-                  target='_blank'
-                  className='no-underline'
-                >
-                  <div className='flex flex-col gap-5 mb-3 bg-[#f8f8f8] rounded-[5px] cursor-pointer hover:bg-[#f0f0f0] transition-colors duration-200'>
-                    <div className='flex items-center justify-between px-3 py-3.5'>
-                      <div className='flex items-center gap-[9px]'>
-                        <div className='w-[23px] h-[23px] bg-[#d2e2fd] rounded-[11.5px] flex items-center justify-center'>
-                          <MoveUpRight className='min-w-3 min-h-3' size={12} color='#1e40af' />
-                        </div>
-                        <div>
-                          <p className='font-normal text-black text-base text-left'>{transaction.store}</p>
-                          <p className='font-normal text-[#6b6b6b] text-xs text-left'>{transaction.date}</p>
-                        </div>
-                      </div>
+            {loading ? (
+              <div className={'w-full h-full flex justify-center items-center'}>
+                <Loader2 className={'animate-spin size-8'} color={'#ff7a45'} />
+              </div>
+            ) : transactions.length === 0 ? (
+              <div className='mt-[15px] overflow-y-auto max-h-[274px] py-12 flex items-center justify-center w-full h-full '>
+                <p>No recent transactions</p>
+              </div>
+            ) : (
+              <div className='mt-[15px] overflow-y-auto max-h-[274px]'>
+                {transactions.map((transaction) => {
+                  const hash = transaction.spendTxHash ?? transaction.yieldDepositTxHash;
 
-                      <div className='text-right'>
-                        <p className='font-normal text-black text-base text-center'>{transaction.amount}</p>
-                        <p className='font-normal text-[#6b6b6b] text-xs text-center'>from {transaction.from}</p>
+                  return (
+                    <Link key={transaction.id} href={getTransactionLink(hash)} target='_blank' className='no-underline'>
+                      <div className='flex flex-col gap-5 mb-3 bg-[#f8f8f8] rounded-[5px] cursor-pointer hover:bg-[#f0f0f0] transition-colors duration-200'>
+                        <div className='flex items-center justify-between px-3 py-3.5'>
+                          <div className='flex items-center gap-[9px]'>
+                            <div className='w-[23px] h-[23px] bg-[#d2e2fd] rounded-[11.5px] flex items-center justify-center'>
+                              <MoveUpRight className='min-w-3 min-h-3' size={12} color='#1e40af' />
+                            </div>
+                            <div>
+                              <p className='font-normal text-black text-base text-left'>
+                                {`${hash.slice(0, 6)}...${hash.slice(-4)}`}
+                              </p>
+                              <p className='font-normal text-[#6b6b6b] text-xs text-left'>
+                                {moment(transaction.spendAt).format('MMM D, hh:mm A')}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className='text-right'>
+                            <p className='font-normal text-black text-base text-center'>
+                              {formatUnits(BigInt(transaction.yieldDepositAmount ?? 0), 18)}
+                            </p>
+                            <p className='font-normal text-[#6b6b6b] text-xs text-center'>
+                              from ${formatUnits(BigInt(transaction.spendAmount), 18)}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
