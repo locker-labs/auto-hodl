@@ -9,7 +9,7 @@ import { EStep } from '@/enums/step.enums';
 export default function useSteps() {
   const { isConnected, isConnecting } = useAccount();
   const { shouldSwitchChain } = useCheckChain();
-  const { signedDelegation, checkingExistingAccount } = useMetaMaskDTK();
+  const { checkingExistingAccount, existingAccount } = useMetaMaskDTK();
 
   const [step, setStep] = useState(EStep.CONNECT_WALLET);
 
@@ -24,15 +24,15 @@ export default function useSteps() {
       if (!isConnected || shouldSwitchChain) {
         setStep(EStep.CONNECT_WALLET);
       } else {
-        // If user has existing delegation, go directly to Portfolio
-        if (signedDelegation) {
+        // If user has existing account, go directly to Portfolio
+        if (existingAccount) {
           setStep(EStep.PORTFOLIO);
         } else {
           setStep(EStep.FUND_SAVINGS_SOURCE);
         }
       }
     }
-  }, [isConnected, isConnecting, signedDelegation, checkingExistingAccount, shouldSwitchChain]);
+  }, [isConnected, isConnecting, existingAccount, checkingExistingAccount, shouldSwitchChain]);
 
   return { step, next, prev, totalSteps, progress };
 }

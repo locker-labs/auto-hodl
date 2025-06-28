@@ -2,35 +2,22 @@ import { supabaseClient } from '@/lib/supabase/supabaseClient';
 import { createAccountMessage } from '@/lib/createAccountMessage';
 import { DEPLOY_SALT } from '@/config';
 
-export async function getAccountBySignerAddress(signerAddress: string, deploySalt?: string) {
-  const supabase = supabaseClient;
-  const saltToUse = deploySalt || DEPLOY_SALT;
-  console.log('Checking for existing account with signerAddress:', signerAddress, 'and deploySalt:', saltToUse);
+export async function getAccountBySignerAddress(signerAddress: string) {
+  console.log('Checking for existing account with signerAddress:', signerAddress);
 
   try {
-    // Query the main accounts table to include deploySalt in the filter
-    const { data: allData, error: allError } = await supabase
-      .from('accounts')
-      .select('signerAddress, createdAt, triggerAddress, delegation')
-      .eq('signerAddress', signerAddress)
-      .eq('deploySalt', saltToUse);
+    const response = await fetch(`/api/v1/accounts/check?signerAddress=${encodeURIComponent(signerAddress)}`);
 
-    if (allError) {
-      console.error('Supabase error details:', {
-        code: allError.code,
-        message: allError.message,
-        details: allError.details,
-        hint: allError.hint,
-      });
-      throw allError;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to check account');
     }
 
-    // Return the first match if any, otherwise null
-    const data = allData && allData.length > 0 ? allData[0] : null;
-    console.log('Existing account found:', !!data);
-    return data;
+    const result = await response.json();
+    console.log('Account check result:', result);
+    return result.data; // Returns the account data or null
   } catch (error) {
-    console.error('Network or other error:', error);
+    console.error('Error checking existing account:', error);
     throw error;
   }
 }

@@ -1,8 +1,7 @@
 import Web3 from 'web3';
 import { MM_CARD_ADDRESSES, USDC_ADDRESSES } from './constants';
 import { IWebhook } from '@moralisweb3/streams-typings';
-import { getChainName } from './evm';
-import { ITransfer } from './types';
+import { IAutoHodlTx } from '../types/auto-hodl.types';
 
 // Helper function to verify webhook signature
 export function verifySignature(body: string, signature: string, secret: string): boolean {
@@ -33,8 +32,8 @@ export function isUSDC(tokenAddress: string): boolean {
 }
 
 // Helper function to process ERC20 transfers
-export function getTransfersForRoundUp(payload: IWebhook): ITransfer[] {
-  const relevantTransfers: ITransfer[] = [];
+export function adaptWebhook2AutoHodlTxs(payload: IWebhook): IAutoHodlTx[] {
+  const relevantTransfers: IAutoHodlTx[] = [];
 
   for (const transfer of payload.erc20Transfers) {
     // Check if the transfer is TO one of the MM_CARD_ADDRESSES
@@ -42,19 +41,49 @@ export function getTransfersForRoundUp(payload: IWebhook): ITransfer[] {
 
     if (shouldProcess) {
       relevantTransfers.push({
-        transactionHash: transfer.transactionHash,
-        from: transfer.from,
-        to: transfer.to,
-        tokenAddress: transfer.contract,
-        amount: transfer.value,
-        tokenSymbol: transfer.tokenSymbol,
-        tokenDecimals: transfer.tokenDecimals,
-        chain: getChainName(payload.chainId),
-        blockNumber: payload.block.number,
-        timestamp: payload.block.timestamp,
+        createdAt: new Date().toISOString(),
+        spendAmount: transfer.value,
+        spendFrom: transfer.from,
+        spendTo: transfer.to,
+        spendToken: transfer.contract,
+        spendTxHash: transfer.transactionHash,
+        spendChainId: Number(payload.chainId),
+        spendAt: new Date(Number(payload.block.timestamp) * 1000).toISOString(),
       });
     }
   }
 
   return relevantTransfers;
+}
+
+/**
+ * Add an address to the Moralis stream to monitor transactions
+ * @param streamId - The Moralis stream ID
+ * @param address - The address to monitor (triggerAddress)
+ * @returns Promise<boolean> - Success status
+ */
+export async function addAddressToMoralisStream(streamId: string, address: string): Promise<boolean> {
+  try {
+    // Import Moralis dynamically to avoid issues if not installed
+    const Moralis = await import('moralis');
+
+    // Initialize Moralis if not already done
+    if (!Moralis.default.Core.isStarted) {
+      await Moralis.default.start({
+        apiKey: process.env.MORALIS_API_KEY,
+      });
+    }
+
+    // Add the address to the stream
+    await Moralis.default.Streams.addAddress({
+      id: streamId,
+      address: [address],
+    });
+
+    console.log(`Successfully added address ${address} to Moralis stream ${streamId}`);
+    return true;
+  } catch (error) {
+    console.error('Error adding address to Moralis stream:', error);
+    return false;
+  }
 }

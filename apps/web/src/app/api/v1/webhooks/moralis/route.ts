@@ -1,3 +1,5 @@
+'use server';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { handleStream } from '@/lib/handleStream';
 
@@ -23,7 +25,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No signature provided' }, { status: 401 });
     }
 
-    return handleStream(body, signature, streamSecret);
+    return await handleStream(body, signature, streamSecret);
   } catch (error) {
     console.error('Error processing Moralis webhook:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -1,7 +1,8 @@
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import type React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useMetaMaskDTK } from '@/hooks/useMetaMaskDTK';
 import { useEffect } from 'react';
 
@@ -11,8 +12,16 @@ export interface Props {
 }
 
 export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => {
-  const { setupDelegator, delegator, creatingDelegator, createDelegation, creatingDelegation, signedDelegation } =
-    useMetaMaskDTK();
+  const { 
+    setupDelegator, 
+    delegator, 
+    creatingDelegator, 
+    createDelegation, 
+    creatingDelegation, 
+    signedDelegation,
+    accountSaved,
+    accountSaveError
+  } = useMetaMaskDTK();
 
   // Setup delegator when component mounts
   useEffect(() => {
@@ -21,17 +30,17 @@ export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => 
     }
   }, [setupDelegator, delegator, creatingDelegator]);
 
-  // Automatically proceed to next step when delegation is successfully created
+  // Automatically proceed to next step when delegation is successfully created AND account is saved
   useEffect(() => {
-    if (signedDelegation && !creatingDelegation) {
-      // Small delay to show the "Delegation Created!" state briefly
+    if (signedDelegation && accountSaved && !creatingDelegation && !accountSaveError) {
+      // Small delay to show the "Account Created!" state briefly
       const timer = setTimeout(() => {
         onNext();
       }, 1500);
 
       return () => clearTimeout(timer);
     }
-  }, [signedDelegation, creatingDelegation, onNext]);
+  }, [signedDelegation, accountSaved, creatingDelegation, accountSaveError, onNext]);
 
   const handleContinue = async () => {
     try {
@@ -70,6 +79,14 @@ export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => 
 
       <CardContent className='p-0'>
         <div className='flex flex-col space-y-4'>
+          {accountSaveError && (
+            <Alert className='border-red-200 bg-red-50'>
+              <AlertCircle className='h-4 w-4 text-red-600' />
+              <AlertDescription className='text-red-800'>
+                Failed to create account: {accountSaveError}. Please try again.
+              </AlertDescription>
+            </Alert>
+          )}
           <Button
             onClick={handleContinue}
             disabled={!delegator || creatingDelegation}
@@ -78,13 +95,15 @@ export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => 
             {creatingDelegation ? (
               <div className={'flex items-center justify-center gap-2'}>
                 <Loader2 className={'animate-spin size-5'} color={'white'} />
-                <span>Creating Delegation</span>
+                <span>Creating Account</span>
               </div>
-            ) : signedDelegation ? (
+            ) : signedDelegation && accountSaved ? (
               <div className={'flex items-center justify-center gap-2'}>
                 <Loader2 className={'animate-spin size-5'} color={'white'} />
-                <span>Delegation Created! Proceeding</span>
+                <span>Account Created! Proceeding</span>
               </div>
+            ) : accountSaveError ? (
+              'Retry Account Creation'
             ) : (
               'Grant Permission'
             )}
