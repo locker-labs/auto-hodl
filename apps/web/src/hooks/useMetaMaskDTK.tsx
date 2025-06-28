@@ -11,7 +11,7 @@ import {
 } from '@metamask/delegation-toolkit';
 import { DELEGATE_ADDRESS, DEPLOY_SALT } from '@/config';
 import { publicClient } from '@/clients/publicClient';
-import {  getAccountBySignerAddress } from '@/lib/supabase/createAccount';
+import {  createAccountWithSignature, getAccountBySignerAddress } from '@/lib/supabase/createAccount';
 import { useAutoHodl } from '@/providers/autohodl-provider';
 import { getAaveCaveats } from '@/lib/yield /caveats';
 
@@ -165,23 +165,23 @@ export function useMetaMaskDTK() {
       setAccountSaved(false);
 
       // Save account to database after successful delegation creation using secure API
-      // try {
-      //   await createAccountWithSignature({
-      //     signerAddress: address,
-      //     tokenSourceAddress: delegator.address,
-      //     triggerAddress: metaMaskCardAddress,
-      //     delegation: newSignedDelegation,
-      //   });
-      //   console.log('✅ Account saved to database via secure API');
-      //   setAccountSaved(true);
-      //   setSignedDelegation(newSignedDelegation); // Only set this after successful save
-      // } catch (dbError) {
-      //   console.error('❌ Failed to save account to database:', dbError);
-      //   const errorMessage = dbError instanceof Error ? dbError.message : 'Failed to save account';
-      //   setAccountSaveError(errorMessage);
-      //   // Don't set signedDelegation if account save fails
-      //   throw new Error(`Account creation failed: ${errorMessage}`);
-      // }
+      try {
+        await createAccountWithSignature({
+          signerAddress: address,
+          tokenSourceAddress: delegator.address,
+          triggerAddress: metaMaskCardAddress,
+          delegation: newSignedDelegation,
+        });
+        console.log('✅ Account saved to database via secure API');
+        setAccountSaved(true);
+        setSignedDelegation(newSignedDelegation); // Only set this after successful save
+      } catch (dbError) {
+        console.error('❌ Failed to save account to database:', dbError);
+        const errorMessage = dbError instanceof Error ? dbError.message : 'Failed to save account';
+        setAccountSaveError(errorMessage);
+        // Don't set signedDelegation if account save fails
+        throw new Error(`Account creation failed: ${errorMessage}`);
+      }
     } catch (err) {
       console.error('Error creating delegation:', err);
       throw err;
