@@ -17,7 +17,7 @@ export const DEPLOY_SALT = env.NEXT_PUBLIC_DEPLOY_SALT;
 export const MORALIS_STREAM_ID = env.MORALIS_STREAM_ID;
 
 // For Sepolia
-
+export const AAVE_POOL_ADDRESS = "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951" as `0x${string}`;
 const config = {
   RPC_URL,
   VIEM_CHAIN,

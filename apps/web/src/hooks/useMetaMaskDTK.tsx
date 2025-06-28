@@ -9,12 +9,12 @@ import {
   createDelegation as createDelegationToolkit,
   type Delegation,
 } from '@metamask/delegation-toolkit';
-import { createWalletClient, custom, type SignableMessage } from 'viem';
-import { VIEM_CHAIN, DELEGATE_ADDRESS, DEPLOY_SALT } from '@/config';
+import { DELEGATE_ADDRESS, DEPLOY_SALT } from '@/config';
 import { publicClient } from '@/clients/publicClient';
-import { privateKeyToAccount } from 'viem/accounts';
-import { createAccountWithSignature, getAccountBySignerAddress } from '@/lib/supabase/createAccount';
+import {  createAccountWithSignature, getAccountBySignerAddress } from '@/lib/supabase/createAccount';
 import { useAutoHodl } from '@/providers/autohodl-provider';
+import { getAaveCaveats } from '@/lib/yield /caveats';
+
 
 export function useMetaMaskDTK() {
   const [creatingDelegator, setCreatingDelegator] = useState(false);
@@ -97,6 +97,7 @@ export function useMetaMaskDTK() {
             signatory: { account: connectedAccount },
           });
 
+
           // end creating delegator
           console.log('created delegator');
           setDelegator(delegatorSmartAccount);
@@ -127,13 +128,15 @@ export function useMetaMaskDTK() {
 
       setCreatingDelegation(true);
       console.log('📜 Creating delegation...');
-
+      // Update to savings roundUpTo value
+      const caveats = getAaveCaveats(delegator,BigInt(1000000));
       // Create delegation
       const delegation = createDelegationToolkit({
         to: DELEGATE_ADDRESS,
         from: delegator.address,
-        caveats: [], // Root delegation with no restrictions
-      });
+        caveats, 
+      });      
+
 
       console.log('✍️ Signing delegation...');
       console.log('About to call signDelegation - MetaMask popup should appear');
