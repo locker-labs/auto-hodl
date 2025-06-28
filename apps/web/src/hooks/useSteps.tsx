@@ -28,7 +28,9 @@ export default function useSteps() {
   const prev = () => setStep((prevStep) => prevStep - 1);
 
   useEffect(() => {
-    if (!isConnecting && !checkingExistingAccount) {
+    if (checkingExistingAccount) {
+      setStep(EStep.LOADING);
+    } else if (!isConnecting && !checkingExistingAccount) {
       if (!isConnected || shouldSwitchChain) {
         setStep(EStep.CONNECT_WALLET);
       } else {

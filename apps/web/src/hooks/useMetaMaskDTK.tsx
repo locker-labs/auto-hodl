@@ -9,10 +9,8 @@ import {
   createDelegation as createDelegationToolkit,
   type Delegation,
 } from '@metamask/delegation-toolkit';
-import { createWalletClient, custom, type SignableMessage } from 'viem';
 import { VIEM_CHAIN, DELEGATE_ADDRESS, DEPLOY_SALT } from '@/config';
 import { publicClient } from '@/clients/publicClient';
-import { privateKeyToAccount } from 'viem/accounts';
 import { createAccountWithSignature, getAccountBySignerAddress } from '@/lib/supabase/createAccount';
 import { useAutoHodl } from '@/providers/autohodl-provider';
 
@@ -25,10 +23,8 @@ export function useMetaMaskDTK() {
   const [existingAccount, setExistingAccount] = useState<any | null>(null);
   const [accountSaved, setAccountSaved] = useState(false);
   const [accountSaveError, setAccountSaveError] = useState<string | null>(null);
-  // const [delegate, setDelegate] = useState(null);
-  // const [creatingDelegate, setCreatingDelegate] = useState(false);
 
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { signTypedDataAsync } = useSignTypedData();
   const { metaMaskCardAddress } = useAutoHodl();
@@ -37,7 +33,7 @@ export function useMetaMaskDTK() {
   // Check for existing account when wallet connects
   useEffect(() => {
     async function checkExistingAccount() {
-      if (!address || !isConnected) {
+      if (!address || !isConnected || !chainId || chainId !== VIEM_CHAIN.id) {
         return;
       }
 
@@ -65,7 +61,7 @@ export function useMetaMaskDTK() {
     }
 
     checkExistingAccount();
-  }, [address, isConnected]);
+  }, [address, isConnected, chainId]);
 
   async function setupDelegator(): Promise<void> {
     try {
@@ -187,18 +183,11 @@ export function useMetaMaskDTK() {
     }
   }
 
-  useEffect(() => {
-    // TODO: uncomment this to create delegator after connecting wallet in step 1
-    // setupDelegator();
-  }, [address, isConnected]);
-
   return {
-    // creatingDelegate,
     creatingDelegator,
     creatingDelegation,
     checkingExistingAccount,
     existingAccount,
-    // delegate,
     delegator,
     signedDelegation,
     accountSaved,
