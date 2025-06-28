@@ -64,8 +64,8 @@ export const Portfolio = (): React.JSX.Element => {
       {/* Left side */}
       <div className='col-span-12 lg:col-span-9 grid sm:grid-cols-3 gap-5'>
         {/* 1 - Total Savings Card */}
-        <Card className='rounded-xl border-2 border-[#fce2d8]'>
-          <CardContent className='flex flex-row sm:flex-col items-center md:flex-row gap-8 sm:gap-5'>
+        <Card className='flex items-center justify-start rounded-xl border-2 border-[#fce2d8]'>
+          <CardContent className='h-full w-full flex flex-row sm:flex-col items-center md:flex-row gap-8 sm:gap-5'>
             {/* Icon */}
             <div className='shrink-0 size-16 sm:size-20 md:size-16 lg:size-20 bg-[#ffc3ab] rounded-[5px] flex items-center justify-center'>
               <DollarSign className='min-w-12 min-h-12' size={48} color='#ff7a45' />
@@ -81,8 +81,8 @@ export const Portfolio = (): React.JSX.Element => {
         </Card>
 
         {/* 2 - Yield Earned Card */}
-        <Card className='rounded-xl border-2 border-[#c2ffae]'>
-          <CardContent className='flex flex-row sm:flex-col items-center md:flex-row gap-8 sm:gap-5'>
+        <Card className='flex items-center justify-start rounded-xl border-2 border-[#c2ffae]'>
+          <CardContent className='h-full w-full flex flex-row sm:flex-col items-center md:flex-row gap-8 sm:gap-5'>
             {/* Icon */}
             <div className='shrink-0 size-16 sm:size-20 md:size-16 lg:size-20 bg-[#f5fef2] rounded-[5px] flex items-center justify-center'>
               <BanknoteArrowUp className='min-w-12 min-h-12' size={48} color='#187710' />
@@ -98,8 +98,8 @@ export const Portfolio = (): React.JSX.Element => {
         </Card>
 
         {/* 3 - Growth Card */}
-        <Card className='rounded-xl border-2 border-[#f699ff]/40'>
-          <CardContent className='flex flex-row sm:flex-col items-center md:flex-row gap-8 sm:gap-5'>
+        <Card className='flex items-center justify-start rounded-xl border-2 border-[#f699ff]/40'>
+          <CardContent className='h-full w-full flex flex-row sm:flex-col items-center md:flex-row gap-8 sm:gap-5'>
             {/* Icon */}
             <div className='shrink-0 size-16 sm:size-20 md:size-16 lg:size-20 bg-[#fdf2fe] rounded-[5px] flex items-center justify-center'>
               <TrendingUp className='min-w-12 min-h-12' size={48} color='#3c1077' />
@@ -115,7 +115,7 @@ export const Portfolio = (): React.JSX.Element => {
         </Card>
 
         {/* 5 - Savings Growth Chart */}
-        <Card className='m-0 p-0 sm:col-span-3 w-full max-h-[549px] rounded-xl shadow-[0px_1px_4.2px_#00000040]'>
+        <Card className='m-0 p-0 sm:col-span-3 w-full h-full rounded-xl shadow-[0px_1px_4.2px_#00000040]'>
           <CardContent className='p-6 md:p-10'>
             <h2 className='font-medium text-black text-2xl'>Savings Growth</h2>
             <div className='mt-5 h-100'>

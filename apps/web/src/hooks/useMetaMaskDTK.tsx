@@ -48,7 +48,7 @@ export function useMetaMaskDTK() {
         if (accountData) {
           console.log('✅ Found existing account for user:', address);
           setExistingAccount(accountData);
-          
+
           if (accountData.delegation) {
             console.log('✅ Found existing delegation for user:', address);
             setSignedDelegation(accountData.delegation);
@@ -156,7 +156,7 @@ export function useMetaMaskDTK() {
       };
 
       console.log('✅ Delegation created and signed!', newSignedDelegation);
-      
+
       // Clear any previous errors
       setAccountSaveError(null);
       setAccountSaved(false);

@@ -13,9 +13,12 @@ import { SavingsPreferences } from '@/screens/SavingsPreferences';
 import { YieldStrategy } from '@/screens/YieldStrategy';
 import { Portfolio } from '@/screens/Portfolio';
 import { EStep } from '@/enums/step.enums';
+import { ConnectButton } from '@/components/feature/connect-button';
 
 function Home() {
   const { step, next, prev, totalSteps, progress } = useSteps();
+
+  const isPortfolioStep = step === EStep.PORTFOLIO;
 
   // Render the appropriate screen based on the current step
   function renderStep() {
@@ -42,21 +45,21 @@ function Home() {
   return (
     <div className='max-w-[1440px] w-full'>
       <div
-        className={
-          'w-full md:mx-16 px-4 md:px-0 md:w-auto flex md:block flex-col items-center justify-center text-center md:text-left'
-        }
+        className={`mt-[16px] md:mt-[47px] px-2 sm:px-4 lg:px-16 w-full flex flex-row gap-5 items-start ${isPortfolioStep ? 'justify-between' : 'justify-center'}`}
       >
-        <Image
-          className='w-[calc(292px*0.75)] h-[calc(67px*0.75)] md:w-[292px] md:h-[67px] mt-[16px] md:mt-[47px] object-cover'
-          alt='Autohodl'
-          src='/logo.png'
-          width='292'
-          height='67'
-        />
-
-        <div className='hidden md:block md:pl-[16px] font-normal text-[#6b6b6b] text-xl md:text-2xl tracking-[0.24px] leading-[normal]'>
-          automatically save USDC by rounding up your purchases
+        <div>
+          <Image
+            className='w-[calc(292px*0.75)] h-[calc(67px*0.75)] md:w-[292px] md:h-[67px] object-cover'
+            alt='Autohodl'
+            src='/logo.png'
+            width='292'
+            height='67'
+          />
+          <div className='hidden md:block md:pl-[16px] font-normal text-[#6b6b6b] text-xl md:text-2xl tracking-[0.24px] leading-[normal]'>
+            automatically save USDC by rounding up your purchases
+          </div>
         </div>
+        {isPortfolioStep ? <ConnectButton className='w-30 md:w-40 min-w-30' /> : null}
       </div>
 
       <Separator className='mt-4 md:mt-8 w-full h-px bg-[#e6e6e6]' />

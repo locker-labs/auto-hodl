@@ -68,7 +68,7 @@ export const MetaMaskCard = ({ onNext, onBack }: Props): React.ReactNode => {
       </div>
 
       <CardContent className='py-0 px-[30px]'>
-        <h2 className='w-[370px] mx-auto mt-[14px] font-bold text-[#773410] text-[26px] text-center tracking-[0] leading-[normal]'>
+        <h2 className='mx-auto mt-[14px] font-bold text-[#773410] text-[26px] text-center tracking-[0] leading-[normal]'>
           Address to Trigger Savings
         </h2>
         <p className='w-fit mx-auto mt-2 font-medium text-[#5D5D5D] text-base tracking-[0] leading-[normal]'>

@@ -33,7 +33,7 @@ export const FundSavingsSource = ({ onNext }: FundSavingsSourceProps): React.Rea
     <Card className='rounded-xl border-2 border-solid border-[#fce2d8]'>
       <Image src={'/wallet.png'} alt={'wallet'} width={50} height={50} className={'mx-auto'} />
       <div className='w-full px-[30px]'>
-        <h2 className='w-[370px] mx-auto mt-[14px] font-bold text-[#773410] text-[26px] text-center tracking-[0] leading-[normal]'>
+        <h2 className='mx-auto mt-[14px] font-bold text-[#773410] text-[26px] text-center tracking-[0] leading-[normal]'>
           Fund Savings Source
         </h2>
         <p className='w-fit mx-auto mt-2 font-medium text-[#5D5D5D] text-base tracking-[0] leading-[normal]'>
