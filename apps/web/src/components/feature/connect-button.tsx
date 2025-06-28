@@ -6,7 +6,7 @@ import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { useCheckChain } from '@/hooks/useCheckChain';
 import { VIEM_CHAIN } from '@/config';
 
-export const ConnectButton = () => {
+export const ConnectButton = ({ className }: { className?: string }) => {
   const { isConnected, isConnecting } = useAccount();
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
@@ -29,7 +29,7 @@ export const ConnectButton = () => {
   }
 
   return (
-    <div>
+    <div className={className}>
       <button
         className='w-full h-12 bg-[#ff7a45] hover:bg-[#ff6a35] disabled:bg-[#ffb399] text-white rounded-xl font-bold text-base cursor-pointer'
         type='button'

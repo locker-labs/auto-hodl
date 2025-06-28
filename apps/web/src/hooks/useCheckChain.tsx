@@ -8,7 +8,6 @@ export function useCheckChain() {
   const { switchChain } = useSwitchChain();
 
   const [shouldSwitchChain, setShouldSwitchChain] = useState(false);
-  console.log(`⛓️ Connected chain id: ${chainId} Should switch chain: ${shouldSwitchChain}`);
 
   useEffect(() => {
     if (isConnected && chainId !== targetChainId) {

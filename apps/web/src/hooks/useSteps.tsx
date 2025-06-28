@@ -11,7 +11,15 @@ export default function useSteps() {
   const { shouldSwitchChain } = useCheckChain();
   const { checkingExistingAccount, existingAccount } = useMetaMaskDTK();
 
-  const [step, setStep] = useState(EStep.CONNECT_WALLET);
+  const [step, setStep] = useState(EStep.LOADING);
+  console.log({
+    step,
+    isConnected,
+    isConnecting,
+    checkingExistingAccount,
+    existingAccount,
+    shouldSwitchChain,
+  });
 
   const totalSteps = EStep.PORTFOLIO;
   const progress: number = step === EStep.LOADING ? EStep.LOADING : Math.round(((step - 1) / totalSteps) * 100);
@@ -20,7 +28,9 @@ export default function useSteps() {
   const prev = () => setStep((prevStep) => prevStep - 1);
 
   useEffect(() => {
-    if (!isConnecting && !checkingExistingAccount) {
+    if (checkingExistingAccount) {
+      setStep(EStep.LOADING);
+    } else if (!isConnecting && !checkingExistingAccount) {
       if (!isConnected || shouldSwitchChain) {
         setStep(EStep.CONNECT_WALLET);
       } else {
