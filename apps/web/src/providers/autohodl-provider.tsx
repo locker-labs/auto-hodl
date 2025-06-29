@@ -9,6 +9,7 @@ type AutoHodlContextType = {
   metaMaskCardAddress: string | null;
   setMetaMaskCardAddress: (address: string | null) => void;
   triggerAddress: string | null;
+  tokenSourceAddress: string | null;
   loading: boolean;
 };
 
@@ -29,6 +30,7 @@ type Props = {
 export const AutoHodlProvider: FC<Props> = ({ children }) => {
   const [metaMaskCardAddress, setMetaMaskCardAddress] = useState<string | null>(null);
   const [triggerAddress, setTriggerAddress] = useState<string | null>(null);
+  const [tokenSourceAddress, setTokenSourceAddress] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   
   const { address, isConnected } = useAccount();
@@ -38,6 +40,7 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
     async function fetchAccountData() {
       if (!address || !isConnected) {
         setTriggerAddress(null);
+        setTokenSourceAddress(null);
         return;
       }
 
@@ -47,7 +50,7 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
 
         const { data, error } = await supabaseClient
           .from('accounts_view')
-          .select('triggerAddress')
+          .select('triggerAddress, tokenSourceAddress')
           .eq('signerAddress', address)
           .single();
 
@@ -56,17 +59,21 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
             // No account found
             console.log('No account found for address:', address);
             setTriggerAddress(null);
+            setTokenSourceAddress(null);
           } else {
             console.error('Error fetching account data:', error);
             setTriggerAddress(null);
+            setTokenSourceAddress(null);
           }
         } else {
           console.log('Found account data:', data);
           setTriggerAddress(data.triggerAddress);
+          setTokenSourceAddress(data.tokenSourceAddress);
         }
       } catch (error) {
         console.error('Error fetching account data:', error);
         setTriggerAddress(null);
+        setTokenSourceAddress(null);
       } finally {
         setLoading(false);
       }
@@ -76,14 +83,15 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
   }, [address, isConnected]);
 
   if (process.env.NODE_ENV === 'development') {
-    console.log('AutoHodl context:', { metaMaskCardAddress, triggerAddress, loading });
+    console.log('AutoHodl context:', { metaMaskCardAddress, triggerAddress, tokenSourceAddress, loading });
   }
 
-  return (
+      return (
     <AutoHodlContext.Provider value={{ 
       metaMaskCardAddress, 
       setMetaMaskCardAddress, 
       triggerAddress, 
+      tokenSourceAddress,
       loading 
     }}>
       {children}

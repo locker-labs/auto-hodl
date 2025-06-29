@@ -7,10 +7,11 @@ import {
   SINGLE_DEFAULT_MODE,
 } from '@metamask/delegation-toolkit';
 import { delegateWalletClient } from '@/clients/delegateWalletClient';
+import { publicClient } from '@/clients/publicClient';
 import { IAutoHodlTx } from '../types/auto-hodl.types';
 import { VIEM_CHAIN } from '@/config';
 import { AAVE_POOL_ADDRESS, MM_CARD_ADDRESSES, TOKEN_DECIMAL_MULTIPLIER, USDC_ADDRESSES } from './constants';
-import { encodeApproveTokensCallData, encodeSupplyCallData } from './yield/aave';
+import { encodeApproveTokensCallData, encodeSupplyCallData, erc20Abi } from './yield/aave';
 import { parseUnits } from 'viem';
 
 /**
@@ -26,23 +27,12 @@ export async function redeemAaveDelegations(
   delegations: Delegation[],
   executions: ExecutionStruct[],
 ): Promise<`0x${string}`> {
-  // Following the DTK documentation pattern for redeeming with an EOA
-  // For multiple executions, we need arrays for delegations, modes, and executions
+  console.log('💸 Redeeming delegation...');
+
+  // For multiple delegations, we need to provide arrays for each delegation
   const delegationsArray = delegations.map((delegation) => [delegation]);
+  const modesArray = delegations.map((): ExecutionMode => SINGLE_DEFAULT_MODE);
   const executionsArray = executions.map((execution) => [execution]);
-
-  // SINGLE_DEFAULT_MODE from the working script
-  const mode: ExecutionMode = SINGLE_DEFAULT_MODE;
-  const modesArray = delegations.map(() => mode);
-
-  // TODO: Replace with proper DelegationFramework.encode.redeemDelegations()
-  // This is a placeholder that demonstrates the structure
-  console.log('Delegation redemption structure:', {
-    delegationsArray: delegationsArray.length,
-    modesArray: modesArray.length,
-    executionsArray: executionsArray.length,
-    delegationManager: getDeleGatorEnvironment(VIEM_CHAIN.id).DelegationManager,
-  });
 
   const redeemDelegationCalldata = DelegationFramework.encode.redeemDelegations({
     delegations: delegationsArray,
@@ -50,7 +40,6 @@ export async function redeemAaveDelegations(
     executions: executionsArray,
   });
 
-  // Placeholder transaction - in production this would use the proper DTK encoding
   const transactionHash = await delegateWalletClient.sendTransaction({
     to: getDeleGatorEnvironment(VIEM_CHAIN.id).DelegationManager,
     data: redeemDelegationCalldata,
@@ -119,6 +108,41 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
   const asset = token as `0x${string}`;
   const savingsAmount = calculateSavingsAmount(BigInt(amount), BigInt(roundUpAmount));
   const onBehalfOf = tokenSourceAddress as `0x${string}`; // Use savings address or fallback to spendTo
+
+  // Validate amounts
+  if (savingsAmount <= BigInt(0)) {
+    console.log('Skipping transfer - savings amount is zero or negative:', savingsAmount.toString());
+    return null;
+  }
+
+  // Check smart account token balance before processing
+  try {
+    const smartAccountBalance = (await publicClient.readContract({
+      address: asset,
+      abi: erc20Abi,
+      functionName: 'balanceOf',
+      args: [onBehalfOf],
+    })) as bigint;
+
+    console.log('Smart account balance check:', {
+      smartAccount: onBehalfOf,
+      tokenBalance: smartAccountBalance.toString(),
+      requiredAmount: savingsAmount.toString(),
+      hasEnoughBalance: smartAccountBalance >= savingsAmount,
+    });
+
+    if (smartAccountBalance < savingsAmount) {
+      console.log('Skipping transfer - smart account has insufficient token balance:', {
+        available: smartAccountBalance.toString(),
+        required: savingsAmount.toString(),
+        deficit: (savingsAmount - smartAccountBalance).toString(),
+      });
+      return null;
+    }
+  } catch (error) {
+    console.error('Failed to check smart account balance:', error);
+    return null;
+  }
 
   // Create executions for Aave pool operations (approve + supply)
   const encodedApproveCallData = encodeApproveTokensCallData(AAVE_POOL_ADDRESS, savingsAmount);

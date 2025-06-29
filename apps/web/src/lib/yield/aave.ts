@@ -13,7 +13,7 @@ export function encodeSupplyCallData(
   asset: `0x${string}`,
   amount: bigint,
   onBehalfOf: `0x${string}`,
-  referralCode: number = 0,
+  referralCode = 0,
 ): `0x${string}` {
   return encodeFunctionData({
     abi: aavePoolAbi,
@@ -66,7 +66,7 @@ export function encodeSupplyWithPermitCallData(
   });
 }
 
-// Minimal ERC20 ABI for approve
+// Minimal ERC20 ABI for approve and balanceOf
 export const erc20Abi = [
   {
     type: 'function',
@@ -77,6 +77,13 @@ export const erc20Abi = [
       { name: 'amount', type: 'uint256' },
     ],
     outputs: [{ name: '', type: 'bool' }],
+  },
+  {
+    type: 'function',
+    name: 'balanceOf',
+    stateMutability: 'view',
+    inputs: [{ name: 'account', type: 'address' }],
+    outputs: [{ name: '', type: 'uint256' }],
   },
 ] as const;
 

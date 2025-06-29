@@ -15,7 +15,7 @@ import { VIEM_CHAIN } from '@/config';
 
 export const Portfolio = (): React.JSX.Element => {
   const { txs: transactions, loading } = useTransactions();
-  const { triggerAddress } = useAutoHodl();
+  const { triggerAddress, tokenSourceAddress } = useAutoHodl();
 
   let totalSavings = 0;
 
@@ -225,6 +225,16 @@ export const Portfolio = (): React.JSX.Element => {
                     'your trigger address'
                   )} to any MetaMask Card address on {VIEM_CHAIN.name}:
                 </p>
+                <p className='text-gray-600 text-sm mb-3'>
+                  <strong>Token Source Address:</strong> {tokenSourceAddress ? (
+                    <span className='font-mono text-xs bg-blue-100 px-1 rounded'>
+                      {tokenSourceAddress}
+                    </span>
+                  ) : (
+                    'Loading...'
+                  )} (must contain USDC)
+                </p>
+
                 <div className='bg-gray-50 rounded-lg p-3 w-full'>
                   <p className='text-xs font-mono text-gray-700 mb-1'>US Card:</p>
                   <p className='text-xs font-mono break-all'>{MM_CARD_ADDRESSES[0]}</p>
@@ -284,6 +294,7 @@ export const Portfolio = (): React.JSX.Element => {
                   <p className='text-blue-800 font-semibold text-sm mb-1'>Note:</p>
                   <p className='text-blue-700 text-sm'>
                     Only USDC transactions to MetaMask Card addresses will trigger automatic round-up savings. 
+                    Your token source address must contain sufficient USDC for the round-up amounts.
                     Your delegation ensures all operations are secure and under your control.
                   </p>
                 </div>
