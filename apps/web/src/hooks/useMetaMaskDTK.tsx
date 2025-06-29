@@ -14,11 +14,16 @@ import { publicClient } from '@/clients/publicClient';
 import { createAccountWithSignature, getAccountBySignerAddress } from '@/lib/supabase/createAccount';
 import { useAutoHodl } from '@/providers/autohodl-provider';
 import { getAaveCaveats } from '@/lib/yield/caveats';
-
+import { pimlicoClient } from '@/clients/pimlicoClient';
+import { bundlerClient } from '@/clients/bundlerClient';
+import { zeroAddress, type Hex } from 'viem';
 
 export function useMetaMaskDTK() {
   const [creatingDelegator, setCreatingDelegator] = useState(false);
   const [delegator, setDelegator] = useState<MetaMaskSmartAccount<Implementation> | null>(null);
+  const [deployedDelegator, setDeployedDelegator] = useState(false);
+  const [deployingDelegator, setDeployingDelegator] = useState(false);
+  const [delegatorDeployError, setDelegatorDeployError] = useState<string | null>(null);
   const [creatingDelegation, setCreatingDelegation] = useState(false);
   const [signedDelegation, setSignedDelegation] = useState<Delegation | null>(null);
   const [checkingExistingAccount, setCheckingExistingAccount] = useState(false);
@@ -95,7 +100,6 @@ export function useMetaMaskDTK() {
             signatory: { account: connectedAccount },
           });
 
-
           // end creating delegator
           console.log('created delegator');
           setDelegator(delegatorSmartAccount);
@@ -107,6 +111,49 @@ export function useMetaMaskDTK() {
       console.error('Error creating Delegator account:', err);
     } finally {
       setCreatingDelegator(false);
+    }
+  }
+
+  async function deployDelegator(): Promise<void> {
+    if (!delegator) {
+      console.error('Delegator not set, skipping deploying delegator');
+      setDelegatorDeployError('Delegator smart account not created yet');
+      return;
+    }
+
+    // Reset deploy state
+    setDelegatorDeployError(null);
+    setDeployedDelegator(false);
+    setDeployingDelegator(true);
+
+    try {
+      console.log('Getting gas price for user operation...');
+      const { fast: fee } = await pimlicoClient.getUserOperationGasPrice();
+
+      const call = { to: zeroAddress as Hex, value: BigInt(0), data: '0x' as Hex };
+
+      console.log('🔒 Delegator Account:', delegator.address);
+      console.log('🧠 Delegator Smart Account:', delegator.address);
+      console.log('🚀 Deploying delegator smart account...');
+
+      const userOperationHash = await bundlerClient.sendUserOperation({
+        account: delegator,
+        calls: [call],
+        ...fee,
+      });
+
+      if (userOperationHash) {
+        setDeployedDelegator(true);
+        console.log('✅ Delegator deployed successfully:', delegator.address);
+      }
+
+      console.log('👨‍💻 User operation sent:', userOperationHash);
+    } catch (error) {
+      console.error('Error deploying delegator:', error);
+      setDelegatorDeployError(error instanceof Error ? error.message : 'Failed to deploy delegator');
+      return;
+    } finally {
+      setDeployingDelegator(false);
     }
   }
 
@@ -127,14 +174,13 @@ export function useMetaMaskDTK() {
       setCreatingDelegation(true);
       console.log('📜 Creating delegation...');
       // Update to savings roundUpTo value
-      const caveats = getAaveCaveats(delegator,BigInt(1000000));
+      const caveats = getAaveCaveats(delegator, BigInt(1000000));
       // Create delegation
       const delegation = createDelegationToolkit({
         to: DELEGATE_ADDRESS,
         from: delegator.address,
-        caveats, 
-      });      
-
+        caveats,
+      });
 
       console.log('✍️ Signing delegation...');
       console.log('About to call signDelegation - MetaMask popup should appear');
@@ -189,6 +235,10 @@ export function useMetaMaskDTK() {
   }
 
   return {
+    deployDelegator,
+    deployedDelegator,
+    deployingDelegator,
+    delegatorDeployError,
     creatingDelegator,
     creatingDelegation,
     checkingExistingAccount,
