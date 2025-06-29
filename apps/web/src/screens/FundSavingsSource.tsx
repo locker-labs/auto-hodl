@@ -35,7 +35,11 @@ export const FundSavingsSource = ({ onNext }: FundSavingsSourceProps): React.Rea
 
   const handleContinue = async () => {
     if (!deployedDelegator) {
-      await deployDelegator();
+      try {
+        await deployDelegator();
+      } catch {
+        return;
+      }
     }
     onNext();
   };
@@ -68,7 +72,7 @@ export const FundSavingsSource = ({ onNext }: FundSavingsSourceProps): React.Rea
             <AlertDescription className='text-red-800'>
               <p>Failed to deploy account. Please try again.</p>
               <div className='flex flex-col items-center justify-center'>
-                <pre className='mt-2 max-h-[200px] max-w-[60vw] sm:max-w-100 overflow-scroll'>
+                <pre className='mt-2 max-h-[200px] max-w-[60vw] sm:w-100 sm:max-w-100 overflow-scroll'>
                   {delegatorDeployError}
                 </pre>
               </div>
