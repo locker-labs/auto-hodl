@@ -4,6 +4,7 @@ import type { FC, ReactNode } from 'react';
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { supabaseClient } from '@/lib/supabase/supabaseClient';
+import { DEPLOY_SALT } from '@/config';
 
 type AutoHodlContextType = {
   metaMaskCardAddress: string | null;
@@ -11,6 +12,8 @@ type AutoHodlContextType = {
   triggerAddress: string | null;
   tokenSourceAddress: string | null;
   loading: boolean;
+  // Function to fetch account data for a specific deploySalt
+  fetchAccountByDeploySalt: (signerAddress: string, deploySalt: string) => Promise<{triggerAddress: string | null, tokenSourceAddress: string | null} | null>;
 };
 
 const AutoHodlContext = createContext<AutoHodlContextType | undefined>(undefined);
@@ -52,6 +55,7 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
           .from('accounts_view')
           .select('triggerAddress, tokenSourceAddress')
           .eq('signerAddress', address)
+          .eq('deploySalt', DEPLOY_SALT)
           .single();
 
         if (error) {
@@ -82,6 +86,36 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
     fetchAccountData();
   }, [address, isConnected]);
 
+  // Function to fetch account data for a specific deploySalt
+  const fetchAccountByDeploySalt = async (signerAddress: string, deploySalt: string) => {
+    try {
+      const { data, error } = await supabaseClient
+        .from('accounts_view')
+        .select('triggerAddress, tokenSourceAddress')
+        .eq('signerAddress', signerAddress)
+        .eq('deploySalt', deploySalt)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No account found
+          return null;
+        } else {
+          console.error('Error fetching account data:', error);
+          return null;
+        }
+      }
+
+      return {
+        triggerAddress: data.triggerAddress,
+        tokenSourceAddress: data.tokenSourceAddress,
+      };
+    } catch (error) {
+      console.error('Error fetching account data:', error);
+      return null;
+    }
+  };
+
   if (process.env.NODE_ENV === 'development') {
     console.log('AutoHodl context:', { metaMaskCardAddress, triggerAddress, tokenSourceAddress, loading });
   }
@@ -92,7 +126,8 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
       setMetaMaskCardAddress, 
       triggerAddress, 
       tokenSourceAddress,
-      loading 
+      loading,
+      fetchAccountByDeploySalt
     }}>
       {children}
     </AutoHodlContext.Provider>
