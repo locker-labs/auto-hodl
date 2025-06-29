@@ -118,7 +118,7 @@ export function useMetaMaskDTK() {
     if (!delegator) {
       console.error('Delegator not set, skipping deploying delegator');
       setDelegatorDeployError('Delegator smart account not created yet');
-      return;
+      throw new Error('Delegator smart account not created yet');
     }
 
     // Reset deploy state
@@ -151,7 +151,7 @@ export function useMetaMaskDTK() {
     } catch (error) {
       console.error('Error deploying delegator:', error);
       setDelegatorDeployError(error instanceof Error ? error.message : 'Failed to deploy delegator');
-      return;
+      throw error; // Re-throw to handle in calling function
     } finally {
       setDeployingDelegator(false);
     }
