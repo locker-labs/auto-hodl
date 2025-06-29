@@ -34,7 +34,7 @@ export const FundSavingsSource = ({ onNext }: FundSavingsSourceProps): React.Rea
       <Image src={'/wallet.png'} alt={'wallet'} width={50} height={50} className={'mx-auto'} />
       <div className='w-full px-[30px]'>
         <h2 className='mx-auto mt-[14px] font-bold text-[#773410] text-[26px] text-center tracking-[0] leading-[normal]'>
-          Fund Savings Source
+          Fund Your Savings Source
         </h2>
         <p className='w-fit mx-auto mt-2 font-medium text-[#5D5D5D] text-base tracking-[0] leading-[normal]'>
           USDC will be transferred from this account every time you spend with your MetaMask Card.
