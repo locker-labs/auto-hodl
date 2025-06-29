@@ -17,10 +17,10 @@ export type Database = {
     Functions: {
       graphql: {
         Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
           variables?: Json
+          extensions?: Json
+          query?: string
+          operationName?: string
         }
         Returns: Json
       }
@@ -144,16 +144,19 @@ export type Database = {
         Row: {
           createdAt: string | null
           signerAddress: string | null
+          tokenSourceAddress: string | null
           triggerAddress: string | null
         }
         Insert: {
           createdAt?: string | null
           signerAddress?: string | null
+          tokenSourceAddress?: string | null
           triggerAddress?: string | null
         }
         Update: {
           createdAt?: string | null
           signerAddress?: string | null
+          tokenSourceAddress?: string | null
           triggerAddress?: string | null
         }
         Relationships: []

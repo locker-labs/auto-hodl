@@ -9,9 +9,13 @@ import { getTransactionLink } from '@/lib/blockExplorer';
 import { useTransactions } from '@/hooks/useTransactions';
 import { formatUnits } from 'viem';
 import moment from 'moment';
+import { MM_CARD_ADDRESSES } from '@/lib/constants';
+import { useAutoHodl } from '@/providers/autohodl-provider';
+import { VIEM_CHAIN } from '@/config';
 
 export const Portfolio = (): React.JSX.Element => {
   const { txs: transactions, loading } = useTransactions();
+  const { triggerAddress, tokenSourceAddress } = useAutoHodl();
 
   let totalSavings = 0;
 
@@ -195,6 +199,107 @@ export const Portfolio = (): React.JSX.Element => {
                 })}
               </div>
             )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* How to use section */}
+      <div className='col-span-12 mt-8'>
+        <Card className='w-full rounded-xl shadow-[0px_1px_4.2px_#00000040]'>
+          <CardContent className='p-6 md:p-8'>
+            <h2 className='font-medium text-black text-2xl mb-6'>How to use Auto-HODL</h2>
+            
+            <div className='grid md:grid-cols-3 gap-6'>
+              {/* Step 1 */}
+              <div className='flex flex-col items-start'>
+                <div className='w-8 h-8 bg-[#ff7a45] rounded-full flex items-center justify-center text-white font-bold text-sm mb-3'>
+                  1
+                </div>
+                <h3 className='font-semibold text-lg mb-2'>Send USDC</h3>
+                <p className='text-gray-600 text-sm mb-3'>
+                  Send USDC from {triggerAddress ? (
+                    <span className='font-mono text-xs bg-gray-100 px-1 rounded'>
+                      {triggerAddress}
+                    </span>
+                  ) : (
+                    'your trigger address'
+                  )} to any MetaMask Card address on {VIEM_CHAIN.name}:
+                </p>
+                <p className='text-gray-600 text-sm mb-3'>
+                  <strong>Token Source Address:</strong> {tokenSourceAddress ? (
+                    <span className='font-mono text-xs bg-blue-100 px-1 rounded'>
+                      {tokenSourceAddress}
+                    </span>
+                  ) : (
+                    'Loading...'
+                  )} (must contain USDC)
+                </p>
+
+                <div className='bg-gray-50 rounded-lg p-3 w-full'>
+                  <p className='text-xs font-mono text-gray-700 mb-1'>US Card:</p>
+                  <p className='text-xs font-mono break-all'>{MM_CARD_ADDRESSES[0]}</p>
+                  <p className='text-xs font-mono text-gray-700 mb-1 mt-2'>International Card:</p>
+                  <p className='text-xs font-mono break-all'>{MM_CARD_ADDRESSES[1]}</p>
+                  <p className='text-xs font-mono text-gray-700 mb-1 mt-2'>Test Card:</p>
+                  <p className='text-xs font-mono break-all'>{MM_CARD_ADDRESSES[2]}</p>
+                </div>
+              </div>
+
+              {/* Step 2 */}
+              <div className='flex flex-col items-start'>
+                <div className='w-8 h-8 bg-[#187710] rounded-full flex items-center justify-center text-white font-bold text-sm mb-3'>
+                  2
+                </div>
+                <h3 className='font-semibold text-lg mb-2'>Auto Round-up</h3>
+                <p className='text-gray-600 text-sm mb-3'>
+                  Our system automatically detects your transaction and calculates the round-up amount to the nearest dollar.
+                </p>
+                <div className='bg-green-50 rounded-lg p-3 w-full'>
+                  <p className='text-sm text-green-800'>
+                    <strong>Example:</strong> Send $12.30 → Round up to $13.00
+                  </p>
+                  <p className='text-sm text-green-700 mt-1'>
+                    Savings amount: $0.70
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className='flex flex-col items-start'>
+                <div className='w-8 h-8 bg-[#3c1077] rounded-full flex items-center justify-center text-white font-bold text-sm mb-3'>
+                  3
+                </div>
+                <h3 className='font-semibold text-lg mb-2'>Aave Deposit</h3>
+                <p className='text-gray-600 text-sm mb-3'>
+                  Using your delegation, we automatically deposit the round-up amount into Aave to earn yield.
+                </p>
+                <div className='bg-purple-50 rounded-lg p-3 w-full'>
+                  <div className='flex items-center gap-2 mb-2'>
+                    <Shield size={16} className='text-purple-600' />
+                    <p className='text-sm font-semibold text-purple-800'>Secure & Automated</p>
+                  </div>
+                  <p className='text-sm text-purple-700'>
+                    Your delegation enables secure, automatic deposits without manual intervention.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className='mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200'>
+              <div className='flex items-start gap-3'>
+                <div className='w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5'>
+                  <span className='text-white text-xs font-bold'>!</span>
+                </div>
+                <div>
+                  <p className='text-blue-800 font-semibold text-sm mb-1'>Note:</p>
+                  <p className='text-blue-700 text-sm'>
+                    Only USDC transactions to MetaMask Card addresses will trigger automatic round-up savings. 
+                    Your token source address must contain sufficient USDC for the round-up amounts.
+                    Your delegation ensures all operations are secure and under your control.
+                  </p>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
