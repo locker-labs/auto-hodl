@@ -1,10 +1,17 @@
-import { type Delegation, type ExecutionStruct, getDeleGatorEnvironment, DelegationFramework, ExecutionMode, SINGLE_DEFAULT_MODE } from '@metamask/delegation-toolkit';
-import { encodeSupplyCallData, erc20Abi, encodeApproveTokensCallData } from './yield /aave';
+import {
+  type Delegation,
+  type ExecutionStruct,
+  getDeleGatorEnvironment,
+  DelegationFramework,
+  ExecutionMode,
+  SINGLE_DEFAULT_MODE,
+} from '@metamask/delegation-toolkit';
 import { delegateWalletClient } from '@/clients/delegateWalletClient';
-import { publicClient } from '@/clients/publicClient';
 import { IAutoHodlTx } from '../types/auto-hodl.types';
 import { VIEM_CHAIN } from '@/config';
 import { AAVE_POOL_ADDRESS, MM_CARD_ADDRESSES, TOKEN_DECIMAL_MULTIPLIER, USDC_ADDRESSES } from './constants';
+import { encodeApproveTokensCallData, encodeSupplyCallData } from './yield/aave';
+import { parseUnits } from 'viem';
 
 /**
  * Redeems Aave delegations using the DTK pattern from the documentation
@@ -15,7 +22,10 @@ import { AAVE_POOL_ADDRESS, MM_CARD_ADDRESSES, TOKEN_DECIMAL_MULTIPLIER, USDC_AD
  * 2. Signed delegations from the smart account owner
  * 3. Proper error handling and validation
  */
-export async function redeemAaveDelegations(delegations: Delegation[], executions: ExecutionStruct[]): Promise<`0x${string}`> {
+export async function redeemAaveDelegations(
+  delegations: Delegation[],
+  executions: ExecutionStruct[],
+): Promise<`0x${string}`> {
   // Following the DTK documentation pattern for redeeming with an EOA
   // For multiple executions, we need arrays for delegations, modes, and executions
   const delegationsArray = delegations.map((delegation) => [delegation]);
@@ -118,12 +128,12 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
   const executions: ExecutionStruct[] = [
     {
       target: asset, // Approve the token to Aave pool
-      value: BigInt(0),
+      value: parseUnits('0', 0),
       callData: encodedApproveCallData,
     },
     {
       target: AAVE_POOL_ADDRESS, // Supply to Aave pool
-      value: BigInt(0),
+      value: parseUnits('0', 0),
       callData: encodedSupplyCallData,
     },
   ];
@@ -148,33 +158,4 @@ export async function processTransfersForRoundUp(transfers: IAutoHodlTx[]) {
   for (const transfer of transfers) {
     await processTransferForRoundUp(transfer);
   }
-}
-
-/**
- * Sends both approve and supply transactions using delegateWalletClient (EOA)
- * @param transfer - The transfer object
- * @param spender - The address to approve (Aave pool address)
- * @param aavePoolAddress - The Aave pool contract address
- */
-export async function sendApproveAndSupplyWithDelegate(transfer: IAutoHodlTx, aavePoolAddress: `0x${string}`) {
-  const { spendToken: token, spendAmount: amount } = transfer;
-  // const { spendFrom: from, spendTo: to } = transfer; // Available if needed
-
-  // Approve transaction
-  const approveTxHash = await delegateWalletClient.writeContract({
-    address: token as `0x${string}`,
-    abi: erc20Abi,
-    functionName: 'approve',
-    args: [aavePoolAddress, BigInt(amount)],
-  });
-  // Optionally wait for confirmation here if needed
-  await publicClient.waitForTransactionReceipt({ hash: approveTxHash });
-
-  // Supply transaction - TODO: Implement actual supply logic
-  // const roundUpAmount = 100;
-  // const tokenBalance = 100;
-  // const asset = token as `0x${string}`;
-  // const savingsAmount = calculateSavingsAmount(BigInt(amount), BigInt(roundUpAmount), BigInt(tokenBalance));
-  // const onBehalfOf = recipient as `0x${string}`;
-  // const referralCode = 0;
 }

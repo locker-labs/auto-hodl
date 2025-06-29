@@ -13,7 +13,7 @@ import { VIEM_CHAIN, DELEGATE_ADDRESS, DEPLOY_SALT } from '@/config';
 import { publicClient } from '@/clients/publicClient';
 import { createAccountWithSignature, getAccountBySignerAddress } from '@/lib/supabase/createAccount';
 import { useAutoHodl } from '@/providers/autohodl-provider';
-import { getAaveCaveats } from '@/lib/yield /caveats';
+import { getAaveCaveats } from '@/lib/yield/caveats';
 
 
 export function useMetaMaskDTK() {
