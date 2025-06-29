@@ -17,6 +17,14 @@ export function SavingsInfoCards({
 
   const isLoading = savingsLoading || balanceLoading;
 
+  let savings = 0;
+  let savingsFormatted = '0';
+
+  if (!savingsLoading && totalSavings > 0) {
+    savings = totalSavings;
+    savingsFormatted = savings.toFixed(2);
+  }
+
   let yieldEarned = 0;
   let yieldEarnedFormatted = '0';
 
@@ -36,7 +44,7 @@ export function SavingsInfoCards({
   return (
     <div className='grid grid-cols-1 sm:col-span-3 sm:grid-cols-3 gap-5'>
       {/* Total Savings Card */}
-      <TotalSavingsCard loading={isLoading} amount={totalSavings.toFixed(2)} />
+      <TotalSavingsCard loading={isLoading} amount={savingsFormatted} />
 
       {/* Yield Earned Card */}
       <YieldEarnedCard loading={isLoading} yieldEarned={yieldEarnedFormatted} />
