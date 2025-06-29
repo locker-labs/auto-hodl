@@ -1,4 +1,4 @@
-import { BanknoteArrowUp, Cog, DollarSign, Shield, TrendingUp, MoveUpRight, Loader2 } from 'lucide-react';
+import { Cog, Shield, MoveUpRight, Loader2 } from 'lucide-react';
 import type React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,11 +12,11 @@ import moment from 'moment';
 import { MM_CARD_ADDRESSES } from '@/lib/constants';
 import { useAutoHodl } from '@/providers/autohodl-provider';
 import { VIEM_CHAIN } from '@/config';
+import { SavingsInfoCards } from '@/components/feature/SavingsInfoCards';
 
 export const Portfolio = (): React.JSX.Element => {
   const { txs: transactions, loading } = useTransactions();
   const { triggerAddress, tokenSourceAddress } = useAutoHodl();
-
   let totalSavings = 0;
 
   for (const tx of transactions) {
@@ -25,9 +25,6 @@ export const Portfolio = (): React.JSX.Element => {
   }
 
   const data = {
-    totalYield: '76',
-    totalSavings,
-    growth: '+13.69',
     apy: '4.8',
   };
 
@@ -47,56 +44,8 @@ export const Portfolio = (): React.JSX.Element => {
     <div className='w-full px-2 sm:px-5 py-5 grid grid-cols-12 gap-5'>
       {/* Left side */}
       <div className='col-span-12 lg:col-span-9 grid sm:grid-cols-3 gap-5'>
-        {/* 1 - Total Savings Card */}
-        <Card className='flex items-center justify-start rounded-xl border-2 border-[#fce2d8]'>
-          <CardContent className='h-full w-full flex flex-row sm:flex-col items-center md:flex-row gap-8 sm:gap-5'>
-            {/* Icon */}
-            <div className='shrink-0 size-16 sm:size-20 md:size-16 lg:size-20 bg-[#ffc3ab] rounded-[5px] flex items-center justify-center'>
-              <DollarSign className='min-w-12 min-h-12' size={48} color='#ff7a45' />
-            </div>
-
-            <div>
-              <p className='text-black text-base text-left sm:text-center md:text-left'>Total Savings</p>
-              <p className='font-bold text-[#ff7a45] text-2xl mt-1 text-left sm:text-center md:text-left'>
-                {loading ? <Loader2 className={'animate-spin size-8'} color={'#ff7a45'} /> : `${data.totalSavings}`}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 2 - Yield Earned Card */}
-        <Card className='flex items-center justify-start rounded-xl border-2 border-[#c2ffae]'>
-          <CardContent className='h-full w-full flex flex-row sm:flex-col items-center md:flex-row gap-8 sm:gap-5'>
-            {/* Icon */}
-            <div className='shrink-0 size-16 sm:size-20 md:size-16 lg:size-20 bg-[#f5fef2] rounded-[5px] flex items-center justify-center'>
-              <BanknoteArrowUp className='min-w-12 min-h-12' size={48} color='#187710' />
-            </div>
-
-            <div>
-              <p className='text-black text-base text-left sm:text-center md:text-left'>Yield Earned</p>
-              <p className='font-bold text-[#187710] text-2xl mt-1 text-left sm:text-center md:text-left'>
-                ${data.totalYield}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 3 - Growth Card */}
-        <Card className='flex items-center justify-start rounded-xl border-2 border-[#f699ff]/40'>
-          <CardContent className='h-full w-full flex flex-row sm:flex-col items-center md:flex-row gap-8 sm:gap-5'>
-            {/* Icon */}
-            <div className='shrink-0 size-16 sm:size-20 md:size-16 lg:size-20 bg-[#fdf2fe] rounded-[5px] flex items-center justify-center'>
-              <TrendingUp className='min-w-12 min-h-12' size={48} color='#3c1077' />
-            </div>
-
-            <div>
-              <p className='text-black text-base text-left sm:text-center md:text-left'>Growth</p>
-              <p className='font-bold text-[#3c1077] text-2xl mt-1 text-left sm:text-center md:text-left'>
-                {data.growth}%
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* 1 - 2 - 3 */}
+        <SavingsInfoCards loading={loading} totalSavings={totalSavings} />
 
         {/* 5 - Savings Growth Chart */}
         <Card className='m-0 p-0 sm:col-span-3 w-full h-full rounded-xl shadow-[0px_1px_4.2px_#00000040]'>
@@ -208,7 +157,7 @@ export const Portfolio = (): React.JSX.Element => {
         <Card className='w-full rounded-xl shadow-[0px_1px_4.2px_#00000040]'>
           <CardContent className='p-6 md:p-8'>
             <h2 className='font-medium text-black text-2xl mb-6'>How to use Auto-HODL</h2>
-            
+
             <div className='grid md:grid-cols-3 gap-6'>
               {/* Step 1 */}
               <div className='flex flex-col items-start'>
@@ -217,22 +166,22 @@ export const Portfolio = (): React.JSX.Element => {
                 </div>
                 <h3 className='font-semibold text-lg mb-2'>Send USDC</h3>
                 <p className='text-gray-600 text-sm mb-3'>
-                  Send USDC from {triggerAddress ? (
-                    <span className='font-mono text-xs bg-gray-100 px-1 rounded'>
-                      {triggerAddress}
-                    </span>
+                  Send USDC from{' '}
+                  {triggerAddress ? (
+                    <span className='font-mono text-xs bg-gray-100 px-1 rounded'>{triggerAddress}</span>
                   ) : (
                     'your trigger address'
-                  )} to any MetaMask Card address on {VIEM_CHAIN.name}:
+                  )}{' '}
+                  to any MetaMask Card address on {VIEM_CHAIN.name}:
                 </p>
                 <p className='text-gray-600 text-sm mb-3'>
-                  <strong>Token Source Address:</strong> {tokenSourceAddress ? (
-                    <span className='font-mono text-xs bg-blue-100 px-1 rounded'>
-                      {tokenSourceAddress}
-                    </span>
+                  <strong>Token Source Address:</strong>{' '}
+                  {tokenSourceAddress ? (
+                    <span className='font-mono text-xs bg-blue-100 px-1 rounded'>{tokenSourceAddress}</span>
                   ) : (
                     'Loading...'
-                  )} (must contain USDC)
+                  )}{' '}
+                  (must contain USDC)
                 </p>
 
                 <div className='bg-gray-50 rounded-lg p-3 w-full'>
@@ -252,15 +201,14 @@ export const Portfolio = (): React.JSX.Element => {
                 </div>
                 <h3 className='font-semibold text-lg mb-2'>Auto Round-up</h3>
                 <p className='text-gray-600 text-sm mb-3'>
-                  Our system automatically detects your transaction and calculates the round-up amount to the nearest dollar.
+                  Our system automatically detects your transaction and calculates the round-up amount to the nearest
+                  dollar.
                 </p>
                 <div className='bg-green-50 rounded-lg p-3 w-full'>
                   <p className='text-sm text-green-800'>
                     <strong>Example:</strong> Send $12.30 → Round up to $13.00
                   </p>
-                  <p className='text-sm text-green-700 mt-1'>
-                    Savings amount: $0.70
-                  </p>
+                  <p className='text-sm text-green-700 mt-1'>Savings amount: $0.70</p>
                 </div>
               </div>
 
@@ -293,9 +241,9 @@ export const Portfolio = (): React.JSX.Element => {
                 <div>
                   <p className='text-blue-800 font-semibold text-sm mb-1'>Note:</p>
                   <p className='text-blue-700 text-sm'>
-                    Only USDC transactions to MetaMask Card addresses will trigger automatic round-up savings. 
-                    Your token source address must contain sufficient USDC for the round-up amounts.
-                    Your delegation ensures all operations are secure and under your control.
+                    Only USDC transactions to MetaMask Card addresses will trigger automatic round-up savings. Your
+                    token source address must contain sufficient USDC for the round-up amounts. Your delegation ensures
+                    all operations are secure and under your control.
                   </p>
                 </div>
               </div>
