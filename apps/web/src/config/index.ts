@@ -1,4 +1,4 @@
-import { linea, lineaSepolia, sepolia, type Chain } from 'viem/chains';
+import { type Chain, linea, lineaSepolia, sepolia } from 'viem/chains';
 import { env } from '@/lib/env';
 
 const chainId: number = Number(env.NEXT_PUBLIC_CHAIN_ID);
@@ -16,8 +16,6 @@ export const SUPABASE_ANON_KEY = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 export const DEPLOY_SALT = env.NEXT_PUBLIC_DEPLOY_SALT;
 export const MORALIS_STREAM_ID = env.MORALIS_STREAM_ID;
 
-// For Sepolia
-export const AAVE_POOL_ADDRESS = "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951" as `0x${string}`;
 const config = {
   RPC_URL,
   VIEM_CHAIN,
