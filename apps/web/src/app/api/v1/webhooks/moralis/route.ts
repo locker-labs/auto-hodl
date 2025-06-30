@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { handleStream } from '@/lib/handleStream';
 
 export async function POST(request: NextRequest) {
+  console.log('Moralis webhook received');
   try {
     // Get the raw body as text for signature verification
     const body = await request.text();
