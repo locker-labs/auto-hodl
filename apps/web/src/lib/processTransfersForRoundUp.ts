@@ -13,6 +13,7 @@ import { VIEM_CHAIN } from '@/config';
 import { AAVE_POOL_ADDRESS, MM_CARD_ADDRESSES, TOKEN_DECIMAL_MULTIPLIER, USDC_ADDRESSES } from './constants';
 import { encodeApproveTokensCallData, encodeSupplyCallData, erc20Abi } from './yield/aave';
 import { parseUnits } from 'viem';
+import { updateTransactionWithYieldDepositByTxHash, type YieldDepositInfo } from './supabase/updateTransaction';
 
 /**
  * Redeems Aave delegations using the DTK pattern from the documentation
@@ -168,6 +169,24 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
   console.log('Encoded approve call data:', encodedApproveCallData);
   console.log('Encoded supply call data:', encodedSupplyCallData);
   console.log('Redeem Delegation Transaction Hash:', transactionHash);
+
+  // Update transaction with yield deposit information
+  try {
+    const yieldDepositInfo: YieldDepositInfo = {
+      yieldDepositAmount: savingsAmount.toString(),
+      yieldDepositChainId: chainId,
+      yieldDepositToken: asset,
+      yieldDepositTxHash: transactionHash,
+      yieldDepositAt: new Date().toISOString(),
+    };
+
+    await updateTransactionWithYieldDepositByTxHash(hash, yieldDepositInfo);
+    console.log('✅ Successfully updated transaction with yield deposit info');
+  } catch (error) {
+    console.error('❌ Failed to update transaction with yield deposit info:', error);
+    // Don't throw here - we still want to return the transaction hash even if DB update fails
+  }
+
   return transactionHash;
 }
 
