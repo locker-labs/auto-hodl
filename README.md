@@ -4,6 +4,65 @@
 
 ---
 
+## 🏗️ Hackathon Demo Modes
+
+During the [MetaMask Card hackathon](https://www.hackquest.io/hackathons/MetaMask-Card-Dev-Cook-Off) we shipped two working prototypes and sketched a third, future-ready design:
+
+### 1. Single-chain (hackathon)
+
+![Single-chain Mode](docs/01-mode-single-chain-hack.png)
+
+End-to-end flow on Sepolia. Every MetaMask Card purchase is rounded-up and the difference is supplied to the Aave pool on the same chain.
+
+### 2. Multi-chain (hackathon)
+
+![Multi-chain Mode](docs/03-mode-multi-chain-hack.png)
+
+At round-up time the backend finds the best Aave yield, bridges funds via **LiFi/CCTP**, and supplies on the destination chain.
+
+### 3. Single-chain (future)
+
+![Future Single-chain](docs/02-mode-single-chain-future.png)
+
+Planned production upgrade:
+
+* Use **native smart accounts** instead of explicit DTK deployment.
+* Request delegated permissions with **ERC-7715**.
+* Use the underlying EOA (connected to the card) as the savings source.
+
+---
+
+## 🚀 Features
+
+* 💳 **MetaMask Card Integration** – track on-chain card transactions.
+* 💰 **Round-up Savings** – every purchase rounds up to the nearest dollar and saves the difference.
+* 🔐 **Non-custodial** – savings are stored on-chain using smart accounts.
+* 🧾 **Dashboard** – view savings history and growth.
+* 🌐 **Cross-chain** – find the best yield across multiple chains.
+
+---
+
+## 🛠️ Tech Stack
+
+### Core Technologies
+* **USDC** – all savings denominated in USDC
+* **MetaMask SDK** – wallet connection and user authentication
+* **MetaMask DTK** – smart accounts and delegated permissions
+* **Aave** – yield generation on deposited savings
+* **Circle CCTP v2** – cross-chain USDC transfers
+* **LiFi** – cross-chain bridging infrastructure
+
+### Development Stack
+| Layer     | Tech                                  |
+| --------- | ------------------------------------- |
+| Frontend  | Next.js, Tailwind CSS, Wagmi          |
+| Backend   | Next.js, Supabase, Webhooks          |
+| Contracts | Solidity, Foundry                     |
+| Infra     | Vercel, Supabase, Moralis             |
+| Monorepo  | Turborepo, bun                        |
+
+---
+
 ## 📦 Monorepo Structure
 
 This project is organized as a **monorepo** to cleanly separate concerns across services and packages:
@@ -15,35 +74,14 @@ This project is organized as a **monorepo** to cleanly separate concerns across 
 │   └── web/           # Frontend + Backend (Next.js)
 │
 ├── packages/
-│   |── contracts/     # Smart contracts (Solidity, Foundry)
-│   └── scripts/       # Scripts for moralis, etc
+│   ├── contracts/     # Smart contracts (Solidity, Foundry)
+│   └── scripts/       # Automation scripts (Moralis, etc.)
 │
 ├── .github/           # GitHub workflows (CI/CD)
-├── package.json       # Monorepo root configuration (via turborepo or bun)
+├── docs/              # Documentation and diagrams
+├── package.json       # Monorepo root configuration
 └── README.md
 ```
-
----
-
-## 🚀 Features
-
-* 💳 **MetaMask Card Integration** – track on-chain card transactions.
-* 💰 **Round-up Savings** – every purchase rounds up to the nearest dollar and saves the difference.
-* 🔐 **Account Vault** – savings are stored on-chain, non-custodially.
-* 🧾 **Dashboard** – view savings history and growth.
-* ⚡ **Modular Codebase** – frontend, backend, and smart contracts all modular and reusable.
-
----
-
-## 🛠️ Tech Stack
-
-| Layer     | Tech                                  |
-| --------- | ------------------------------------- |
-| Frontend  | Next.js, Tailwind CSS, Wagmi          |
-| Backend   | Next.js, PostgreSQL, Prisma, Webhooks |
-| Contracts | Solidity, Foundry                     |
-| Infra     | Vercel, Railway, Alchemy              |
-| Monorepo  | Turborepo, bun                        |
 
 ---
 
@@ -92,6 +130,7 @@ Clean all packages and apps:
 ```bash
 bun run clean
 ```
+
 ---
 
 ## 🔐 Smart Contracts
@@ -113,10 +152,11 @@ forge script script/Deploy.s.sol --rpc-url $RPC_URL --broadcast
 
 ## 📈 Future Improvements
 
-* Add recurring savings & goals
-* Integrate ZK for private savings history
-* Offer USDC and ETH vault options
-* Notifications & reminders
+* **Native Smart Accounts** – use built-in MetaMask smart accounts instead of explicit DTK deployment
+* **ERC-7715 Permissions** – request delegated permissions directly from smart accounts
+* **EOA as Savings Source** – use the underlying EOA (connected to MetaMask Card) as the token source
+* **Recurring Savings & Goals** – automated deposits and savings targets
+* **ZK Privacy** – private savings history and transaction details
 
 ---
 
