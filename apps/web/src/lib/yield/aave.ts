@@ -1,7 +1,6 @@
 import { aavePoolAbi } from './aavePoolAbi';
 import { encodeFunctionData } from 'viem';
 
-
 /**
  * Encodes call data for supplying assets to Aave pool
  * @param asset - The address of the asset to supply
@@ -14,12 +13,12 @@ export function encodeSupplyCallData(
   asset: `0x${string}`,
   amount: bigint,
   onBehalfOf: `0x${string}`,
-  referralCode: number = 0
+  referralCode = 0,
 ): `0x${string}` {
   return encodeFunctionData({
     abi: aavePoolAbi,
     functionName: 'supply',
-    args: [asset, amount, onBehalfOf, referralCode]
+    args: [asset, amount, onBehalfOf, referralCode],
   });
 }
 
@@ -30,15 +29,11 @@ export function encodeSupplyCallData(
  * @param to - The address to receive the withdrawn assets
  * @returns Encoded function data for the withdraw call
  */
-export function encodeWithdrawCallData(
-  asset: `0x${string}`,
-  amount: bigint,
-  to: `0x${string}`
-): `0x${string}` {
+export function encodeWithdrawCallData(asset: `0x${string}`, amount: bigint, to: `0x${string}`): `0x${string}` {
   return encodeFunctionData({
     abi: aavePoolAbi,
     functionName: 'withdraw',
-    args: [asset, amount, to]
+    args: [asset, amount, to],
   });
 }
 
@@ -62,18 +57,16 @@ export function encodeSupplyWithPermitCallData(
   deadline: bigint,
   permitV: number,
   permitR: `0x${string}`,
-  permitS: `0x${string}`
+  permitS: `0x${string}`,
 ): `0x${string}` {
   return encodeFunctionData({
     abi: aavePoolAbi,
     functionName: 'supplyWithPermit',
-    args: [asset, amount, onBehalfOf, referralCode, deadline, permitV, permitR, permitS]
+    args: [asset, amount, onBehalfOf, referralCode, deadline, permitV, permitR, permitS],
   });
 }
 
-
-
-// Minimal ERC20 ABI for approve
+// Minimal ERC20 ABI for approve and balanceOf
 export const erc20Abi = [
   {
     type: 'function',
@@ -83,9 +76,14 @@ export const erc20Abi = [
       { name: 'spender', type: 'address' },
       { name: 'amount', type: 'uint256' },
     ],
-    outputs: [
-      { name: '', type: 'bool' },
-    ],
+    outputs: [{ name: '', type: 'bool' }],
+  },
+  {
+    type: 'function',
+    name: 'balanceOf',
+    stateMutability: 'view',
+    inputs: [{ name: 'account', type: 'address' }],
+    outputs: [{ name: '', type: 'uint256' }],
   },
 ] as const;
 
@@ -96,10 +94,7 @@ export const erc20Abi = [
  * @param amount - The amount to approve (in wei)
  * @returns Encoded function data for the approve call
  */
-export function encodeApproveTokensCallData(
-  spender: `0x${string}`,
-  amount: bigint
-): `0x${string}` {
+export function encodeApproveTokensCallData(spender: `0x${string}`, amount: bigint): `0x${string}` {
   return encodeFunctionData({
     abi: erc20Abi,
     functionName: 'approve',

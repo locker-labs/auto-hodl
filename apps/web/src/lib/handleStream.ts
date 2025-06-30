@@ -94,7 +94,7 @@ export async function handleStream(body: string, signature: string, webhookSecre
     transferCount: payload.erc20Transfers.length,
   });
 
-  // Only process confirmed transactions
+  // Only process unconfirmed transactions for faster processing in hackathon
   if (payload.confirmed) {
     console.log('Skipping confirmed transaction for faster processing.');
     return NextResponse.json({ message: 'Confirmed transactions are ignored.' });
@@ -132,7 +132,7 @@ export async function handleStream(body: string, signature: string, webhookSecre
     // Process transfers for round-up (delegations fetched from account data)
     await processTransfersForRoundUp(txsWithAccountId);
   } catch (error) {
-    console.error('Error saving to database:', error);
+    console.error('Error processing transfer for round up savings:', error);
     return NextResponse.json({ error: 'Database error' }, { status: 500 });
   }
 

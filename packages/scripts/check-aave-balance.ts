@@ -23,7 +23,8 @@ if (!RPC_URL || !PRIVATE_KEY_DELEGATOR || !PRIVATE_KEY_DELEGATE) {
 
 // Addresses from your successful runs
 const AAVE_TOKEN = '0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a';
-const AAVE_VAULT = '0x56771cEF0cb422e125564CcCC98BB05fdc718E77';
+const AAVE_POOL = '0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951';
+// Note: aAAVE token address needs to be found - this is what you receive when supplying to the pool
 
 const main = async () => {
   console.log('🔍 Checking Aave balances for smart account...\n');
@@ -49,7 +50,7 @@ const main = async () => {
   console.log(`   Smart Account: ${smartAccount.address}`);
   console.log(`   Owner (EOA): ${delegatorEoa.address}`);
   console.log(`   AAVE Token: ${AAVE_TOKEN}`);
-  console.log(`   Aave Vault: ${AAVE_VAULT}\n`);
+  console.log(`   Aave Pool: ${AAVE_POOL}\n`);
 
   try {
     // 1. Check AAVE token balance
@@ -62,65 +63,91 @@ const main = async () => {
 
     console.log(`💰 AAVE Token Balance: ${formatUnits(aaveBalance, 18)} AAVE`);
 
-    // 2. Check AAVE token allowance to vault
+    // 2. Check AAVE token allowance to pool
     const allowance = await publicClient.readContract({
       address: AAVE_TOKEN as Address,
       abi: erc20Abi,
       functionName: 'allowance',
-      args: [smartAccount.address, AAVE_VAULT as Address],
+      args: [smartAccount.address, AAVE_POOL as Address],
     });
 
-    console.log(`✅ AAVE Allowance to Vault: ${formatUnits(allowance, 18)} AAVE`);
+    console.log(`✅ AAVE Allowance to Pool: ${formatUnits(allowance, 18)} AAVE`);
 
-    // 3. Check vault share balance (stataAAVE)
-    const vaultBalance = await publicClient.readContract({
-      address: AAVE_VAULT as Address,
-      abi: erc20Abi,
-      functionName: 'balanceOf',
-      args: [smartAccount.address],
-    });
+    // 3. Check if we can get aAAVE token address from the pool
+    console.log(`🔍 Checking pool supply...`);
 
-    console.log(`🏦 Vault Shares (stataAAVE): ${formatUnits(vaultBalance, 18)} shares`);
+    // For now, let's try to get reserve data to find the aToken address
+    const poolAbi = [
+      {
+        name: 'getReserveData',
+        type: 'function',
+        stateMutability: 'view',
+        inputs: [{ name: 'asset', type: 'address' }],
+        outputs: [
+          {
+            name: '',
+            type: 'tuple',
+            components: [
+              { name: 'configuration', type: 'uint256' },
+              { name: 'liquidityIndex', type: 'uint128' },
+              { name: 'currentLiquidityRate', type: 'uint128' },
+              { name: 'variableBorrowIndex', type: 'uint128' },
+              { name: 'currentVariableBorrowRate', type: 'uint128' },
+              { name: 'currentStableBorrowRate', type: 'uint128' },
+              { name: 'lastUpdateTimestamp', type: 'uint40' },
+              { name: 'id', type: 'uint16' },
+              { name: 'aTokenAddress', type: 'address' },
+              { name: 'stableDebtTokenAddress', type: 'address' },
+              { name: 'variableDebtTokenAddress', type: 'address' },
+              { name: 'interestRateStrategyAddress', type: 'address' },
+              { name: 'accruedToTreasury', type: 'uint128' },
+              { name: 'unbacked', type: 'uint128' },
+              { name: 'isolationModeTotalDebt', type: 'uint128' },
+            ],
+          },
+        ],
+      },
+    ] as const;
 
-    // 4. If we have vault shares, check the underlying value
-    if (vaultBalance > 0n) {
-      const extendedVaultAbi = [
-        {
-          name: 'convertToAssets',
-          type: 'function',
-          stateMutability: 'view',
-          inputs: [{ name: 'shares', type: 'uint256' }],
-          outputs: [{ name: '', type: 'uint256' }],
-        },
-      ] as const;
+    let aTokenBalance = 0n;
+    try {
+      const reserveData = await publicClient.readContract({
+        address: AAVE_POOL as Address,
+        abi: poolAbi,
+        functionName: 'getReserveData',
+        args: [AAVE_TOKEN as Address],
+      });
 
-      try {
-        const underlyingAssets = await publicClient.readContract({
-          address: AAVE_VAULT as Address,
-          abi: extendedVaultAbi,
-          functionName: 'convertToAssets',
-          args: [vaultBalance],
-        });
+      const aTokenAddress = reserveData.aTokenAddress;
+      console.log(`📍 aAAVE Token Address: ${aTokenAddress}`);
 
-        console.log(`💎 Underlying AAVE Value: ${formatUnits(underlyingAssets, 18)} AAVE`);
-      } catch (error) {
-        console.log(`⚠️ Could not fetch underlying value: ${error}`);
-      }
+      // Check aAAVE balance
+      aTokenBalance = await publicClient.readContract({
+        address: aTokenAddress,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [smartAccount.address],
+      });
+
+      console.log(`🏦 aAAVE Balance: ${formatUnits(aTokenBalance, 18)} aAAVE`);
+    } catch (error) {
+      console.log(`⚠️ Could not fetch aToken data: ${error}`);
     }
 
-    // 5. Check transaction history (recent blocks)
+    // 4. Analysis
     console.log(`\n📊 Analysis:`);
 
     if (allowance > 0n) {
-      console.log(`✅ Delegation worked! Smart account has approved ${formatUnits(allowance, 18)} AAVE to the vault`);
+      console.log(`✅ Delegation worked! Smart account has approved ${formatUnits(allowance, 18)} AAVE to the pool`);
     } else {
       console.log(`❌ No allowance found - delegation may have failed or been reverted`);
     }
 
-    if (vaultBalance > 0n) {
-      console.log(`✅ Smart account has deposited AAVE and received ${formatUnits(vaultBalance, 18)} vault shares`);
+    if (aTokenBalance > 0n) {
+      console.log(`✅ Smart account has supplied AAVE and received ${formatUnits(aTokenBalance, 18)} aAAVE tokens`);
+      console.log(`💡 This means the pool supply was successful!`);
     } else {
-      console.log(`ℹ️ No vault shares found - only approval was done (as expected from the demo)`);
+      console.log(`ℹ️ No aAAVE tokens found - either only approval was done or supply failed`);
     }
 
     if (aaveBalance > 0n) {

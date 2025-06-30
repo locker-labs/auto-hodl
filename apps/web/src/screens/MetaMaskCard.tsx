@@ -69,7 +69,7 @@ export const MetaMaskCard = ({ onNext, onBack }: Props): React.ReactNode => {
 
       <CardContent className='py-0 px-[30px]'>
         <h2 className='mx-auto mt-[14px] font-bold text-[#773410] text-[26px] text-center tracking-[0] leading-[normal]'>
-          Address to Trigger Savings
+          Set Address That Triggers Savings
         </h2>
         <p className='w-fit mx-auto mt-2 font-medium text-[#5D5D5D] text-base tracking-[0] leading-[normal]'>
           Every time this address sends USDC to MetaMask Card contract, the amount will be rounded up and savings will
