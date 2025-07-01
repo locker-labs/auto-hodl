@@ -1,6 +1,7 @@
 import { supabaseClient } from '@/lib/supabase/supabaseClient';
 import { createAccountMessage } from '@/lib/createAccountMessage';
 import { DEPLOY_SALT } from '@/config';
+import type { EChainMode } from '@/enums/chainMode.enums';
 
 export async function getAccountBySignerAddress(signerAddress: string) {
   console.log('Checking for existing account with signerAddress:', signerAddress);
@@ -29,6 +30,8 @@ export async function createAccountWithSignature(account: {
   triggerAddress: string;
   delegation: any;
   savingsAddress?: string;
+  chainId: string;
+  chainMode: EChainMode;
 }) {
   console.log('Creating account with signature verification:', account);
 

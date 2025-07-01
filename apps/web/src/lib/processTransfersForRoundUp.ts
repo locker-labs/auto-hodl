@@ -41,7 +41,7 @@ export async function redeemAaveDelegations(
     executions: executionsArray,
   });
   const fees = await pimlicoClient.getUserOperationGasPrice();
-  
+
   const transactionHash = await delegateWalletClient.sendTransaction({
     to: getDeleGatorEnvironment(VIEM_CHAIN.id).DelegationManager,
     data: redeemDelegationCalldata,

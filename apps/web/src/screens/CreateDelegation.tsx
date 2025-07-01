@@ -12,15 +12,15 @@ export interface Props {
 }
 
 export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => {
-  const { 
-    setupDelegator, 
-    delegator, 
-    creatingDelegator, 
-    createDelegation, 
-    creatingDelegation, 
+  const {
+    setupDelegator,
+    delegator,
+    creatingDelegator,
+    createDelegation,
+    creatingDelegation,
     signedDelegation,
     accountSaved,
-    accountSaveError
+    accountSaveError,
   } = useMetaMaskDTK();
 
   // Setup delegator when component mounts
