@@ -32,6 +32,6 @@ export const getAaveCaveats = (delegator:MetaMaskSmartAccount,savingsAmount:bigi
             "stateMutability":"nonpayable"
         }
     ])
-    // .addCaveat("erc20BalanceChange",USDC_ADDRESSES[2] as `0x${string}`,AAVE_POOL_ADDRESS,savingsAmount, BalanceChangeType.Decrease)
+    .addCaveat("erc20BalanceChange",USDC_ADDRESSES[2] as `0x${string}`,delegator.address,savingsAmount, BalanceChangeType.Decrease)
     return caveats;
 }
