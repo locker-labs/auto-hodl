@@ -13,7 +13,10 @@ type AutoHodlContextType = {
   tokenSourceAddress: string | null;
   loading: boolean;
   // Function to fetch account data for a specific deploySalt
-  fetchAccountByDeploySalt: (signerAddress: string, deploySalt: string) => Promise<{triggerAddress: string | null, tokenSourceAddress: string | null} | null>;
+  fetchAccountByDeploySalt: (
+    signerAddress: string,
+    deploySalt: string,
+  ) => Promise<{ triggerAddress: string | null; tokenSourceAddress: string | null } | null>;
 };
 
 const AutoHodlContext = createContext<AutoHodlContextType | undefined>(undefined);
@@ -35,7 +38,7 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
   const [triggerAddress, setTriggerAddress] = useState<string | null>(null);
   const [tokenSourceAddress, setTokenSourceAddress] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  
+
   const { address, isConnected } = useAccount();
 
   // Fetch account data when wallet connects
@@ -120,15 +123,17 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
     console.log('AutoHodl context:', { metaMaskCardAddress, triggerAddress, tokenSourceAddress, loading });
   }
 
-      return (
-    <AutoHodlContext.Provider value={{ 
-      metaMaskCardAddress, 
-      setMetaMaskCardAddress, 
-      triggerAddress, 
-      tokenSourceAddress,
-      loading,
-      fetchAccountByDeploySalt
-    }}>
+  return (
+    <AutoHodlContext.Provider
+      value={{
+        metaMaskCardAddress,
+        setMetaMaskCardAddress,
+        triggerAddress,
+        tokenSourceAddress,
+        loading,
+        fetchAccountByDeploySalt,
+      }}
+    >
       {children}
     </AutoHodlContext.Provider>
   );

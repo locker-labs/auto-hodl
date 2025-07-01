@@ -16,6 +16,7 @@
       "!.git/**",
       "!**/node_modules/**",
       "!apps/**/.next/**",
+      "!apps/web/src/types/database.types.ts",
       "!packages/contracts/lib/**"
     ],
     "indentStyle": "space",
@@ -32,7 +33,9 @@
       "!/.vscode/**",
       "!/.git/**",
       "!**/node_modules/**",
-      "!/apps/**/.next/**"
+      "!/apps/**/.next/**",
+      "!apps/web/src/types/database.types.ts",
+      "!packages/contracts/lib/**"
     ],
     "rules": {
       "recommended": true,
