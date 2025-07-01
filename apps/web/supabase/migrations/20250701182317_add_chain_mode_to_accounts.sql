@@ -1,3 +1,3 @@
-alter table "public"."accounts" add column "chainMode" text not null default 'single-chain'::text;
+alter table if exists "public"."accounts" add column if not exists "chainMode" text not null default 'single-chain'::text;
 
 
