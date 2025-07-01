@@ -20,4 +20,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 `supabase migration new MIGRATION_NAME`
 
 ## Generate types
-`supabase gen types typescript --local > src/types/database.types.ts`
+```bash
+supabase gen types typescript --local > src/types/database.types.ts
+# or
+supabase gen types typescript --linked > src/types/database.types.ts
+```

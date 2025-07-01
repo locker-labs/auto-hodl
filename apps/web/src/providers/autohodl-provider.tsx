@@ -52,6 +52,7 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
       if (!address || !isConnected) {
         setTriggerAddress(null);
         setTokenSourceAddress(null);
+        setChainMode(null);
         return;
       }
 
@@ -61,7 +62,7 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
 
         const { data, error } = await supabaseClient
           .from('accounts_view')
-          .select('triggerAddress, tokenSourceAddress')
+          .select('triggerAddress, tokenSourceAddress, chainMode')
           .eq('signerAddress', address)
           .eq('deploySalt', DEPLOY_SALT)
           .single();
@@ -81,6 +82,7 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
           console.log('Found account data:', data);
           setTriggerAddress(data.triggerAddress);
           setTokenSourceAddress(data.tokenSourceAddress);
+          setChainMode(data.chainMode);
         }
       } catch (error) {
         console.error('Error fetching account data:', error);
@@ -157,7 +159,7 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
         fetchAccountByDeploySalt,
       }}
     >
-        {children}
+      {children}
     </AutoHodlContext.Provider>
   );
 };
