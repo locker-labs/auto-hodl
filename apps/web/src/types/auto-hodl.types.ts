@@ -12,6 +12,7 @@ export interface IAutoHodlAccount extends Tables<'accounts'> {
   signerAddress: string;
   tokenSourceAddress: string;
   triggerAddress: string;
+  chainMode: string;
 }
 
 export interface IAutoHodlTx extends Omit<TablesInsert<'txs'>, 'accountId'> {

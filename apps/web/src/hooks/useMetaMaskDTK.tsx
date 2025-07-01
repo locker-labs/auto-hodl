@@ -34,7 +34,7 @@ export function useMetaMaskDTK() {
   const { address, isConnected, chainId } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { signTypedDataAsync } = useSignTypedData();
-  const { metaMaskCardAddress } = useAutoHodl();
+  const { metaMaskCardAddress, chainMode } = useAutoHodl();
   console.log('delegator', delegator);
 
   // Check for existing account when wallet connects
@@ -183,6 +183,10 @@ export function useMetaMaskDTK() {
         throw new Error('MetaMask Card address not provided');
       }
 
+      if (!chainMode) {
+        throw new Error('Chain mode not selected');
+      }
+
       setCreatingDelegation(true);
       console.log('📜 Creating delegation...');
       // Update to savings roundUpTo value
@@ -227,6 +231,8 @@ export function useMetaMaskDTK() {
           tokenSourceAddress: delegator.address,
           triggerAddress: metaMaskCardAddress,
           delegation: newSignedDelegation,
+          chainId: String(VIEM_CHAIN.id),
+          chainMode,
         });
         console.log('✅ Account saved to database via secure API');
         setAccountSaved(true);

@@ -6,6 +6,7 @@ import { toMetaMaskSmartAccount, Implementation } from '@metamask/delegation-too
 import { publicClient } from '@/clients/publicClient';
 import { DEPLOY_SALT, MORALIS_STREAM_ID } from '@/config';
 import { addAddressToMoralisStream } from '@/lib/moralis';
+import { EChainMode } from '@/enums/chainMode.enums';
 
 interface CreateAccountRequest {
   signerAddress: string;
@@ -15,16 +16,36 @@ interface CreateAccountRequest {
   savingsAddress?: string;
   signature: string;
   timestamp: number;
+  chainId: string;
+  chainMode: EChainMode;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: CreateAccountRequest = await request.json();
-    const { signerAddress, tokenSourceAddress, triggerAddress, delegation, savingsAddress, signature, timestamp } =
-      body;
+    const {
+      signerAddress,
+      tokenSourceAddress,
+      triggerAddress,
+      delegation,
+      savingsAddress,
+      signature,
+      timestamp,
+      chainId,
+      chainMode,
+    } = body;
 
     // Validate required fields
-    if (!signerAddress || !tokenSourceAddress || !triggerAddress || !delegation || !signature || !timestamp) {
+    if (
+      !signerAddress ||
+      !tokenSourceAddress ||
+      !triggerAddress ||
+      !delegation ||
+      !signature ||
+      !timestamp ||
+      !chainId ||
+      !chainMode
+    ) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -75,6 +96,8 @@ export async function POST(request: NextRequest) {
       savingsAddress,
       deploySalt: DEPLOY_SALT,
       timestamp,
+      chainId,
+      chainMode,
     });
 
     // Verify the signature
@@ -101,6 +124,8 @@ export async function POST(request: NextRequest) {
             delegation,
             savingsAddress,
             deploySalt: DEPLOY_SALT,
+            chainId,
+            chainMode,
           },
         ],
         {

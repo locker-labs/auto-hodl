@@ -10,7 +10,7 @@ import { FundSavingsSource } from '@/screens/FundSavingsSource';
 import LoadingScreen from '@/screens/LoadingScreen';
 import { MetaMaskCard } from '@/screens/MetaMaskCard';
 import { SavingsPreferences } from '@/screens/SavingsPreferences';
-import { YieldStrategy } from '@/screens/YieldStrategy';
+import { ChainMode } from '@/screens/ChainMode';
 import { Portfolio } from '@/screens/Portfolio';
 import { EStep } from '@/enums/step.enums';
 import { ConnectButton } from '@/components/feature/connect-button';
@@ -31,8 +31,8 @@ function Home() {
         return <MetaMaskCard onNext={next} onBack={prev} />;
       case EStep.SAVING_PREFERENCES:
         return <SavingsPreferences onNext={next} onBack={prev} />;
-      case EStep.YIELD_STRATEGY:
-        return <YieldStrategy onNext={next} onBack={prev} />;
+      case EStep.CHAIN_MODE:
+        return <ChainMode onNext={next} onBack={prev} />;
       case EStep.CREATE_DELEGATION:
         return <CreateDelegation onNext={next} onBack={prev} />;
       case EStep.PORTFOLIO:

@@ -5,12 +5,16 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { supabaseClient } from '@/lib/supabase/supabaseClient';
 import { DEPLOY_SALT } from '@/config';
+import { EChainMode } from '@/enums/chainMode.enums';
 
 type AutoHodlContextType = {
   metaMaskCardAddress: string | null;
   setMetaMaskCardAddress: (address: string | null) => void;
   triggerAddress: string | null;
   tokenSourceAddress: string | null;
+  chainMode: EChainMode | null;
+  setChainMode: (chainMode: EChainMode | null) => void;
+  saveChainMode: (chainMode: EChainMode) => Promise<void>;
   loading: boolean;
   // Function to fetch account data for a specific deploySalt
   fetchAccountByDeploySalt: (
@@ -37,6 +41,7 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
   const [metaMaskCardAddress, setMetaMaskCardAddress] = useState<string | null>(null);
   const [triggerAddress, setTriggerAddress] = useState<string | null>(null);
   const [tokenSourceAddress, setTokenSourceAddress] = useState<string | null>(null);
+  const [chainMode, setChainMode] = useState<EChainMode | null>(null);
   const [loading, setLoading] = useState(false);
 
   const { address, isConnected } = useAccount();
@@ -119,6 +124,21 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
     }
   };
 
+  const saveChainMode = async (chainMode: EChainMode) => {
+    if (!chainMode) {
+      console.error('No chainMode selected');
+      throw new Error('No chainMode selected');
+    }
+
+    try {
+      // TODO: Here you would make an API call to backend to update chain mode (and chain id?)
+
+      console.log('Tx mode saved in db');
+    } catch (error) {
+      console.error('Failed to save tx mode in db:', error);
+    }
+  };
+
   if (process.env.NODE_ENV === 'development') {
     console.log('AutoHodl context:', { metaMaskCardAddress, triggerAddress, tokenSourceAddress, loading });
   }
@@ -130,11 +150,14 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
         setMetaMaskCardAddress,
         triggerAddress,
         tokenSourceAddress,
+        chainMode,
+        setChainMode,
+        saveChainMode,
         loading,
         fetchAccountByDeploySalt,
       }}
     >
-      {children}
+        {children}
     </AutoHodlContext.Provider>
   );
 };
