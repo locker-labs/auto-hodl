@@ -14,7 +14,7 @@ import { AAVE_POOL_ADDRESS, MM_CARD_ADDRESSES, TOKEN_DECIMAL_MULTIPLIER, USDC_AD
 import { encodeApproveTokensCallData, encodeSupplyCallData, erc20Abi } from './yield/aave';
 import { parseUnits } from 'viem';
 import { updateTransactionWithYieldDepositByTxHash, type YieldDepositInfo } from './supabase/updateTransaction';
-
+import { pimlicoClient } from '@/clients/pimlicoClient';
 /**
  * Redeems Aave delegations using the DTK pattern from the documentation
  * Based on: https://docs.metamask.io/delegation-toolkit/how-to/redeem-delegation/
@@ -40,13 +40,15 @@ export async function redeemAaveDelegations(
     modes: modesArray,
     executions: executionsArray,
   });
-
+  const fees = await pimlicoClient.getUserOperationGasPrice();
+  
   const transactionHash = await delegateWalletClient.sendTransaction({
     to: getDeleGatorEnvironment(VIEM_CHAIN.id).DelegationManager,
     data: redeemDelegationCalldata,
     chain: VIEM_CHAIN,
+    ...fees,
   });
-
+  console.log('Redeem Delegation Transaction Hash:', transactionHash);
   return transactionHash;
 }
 
