@@ -10,4 +10,4 @@ const delegateWalletClient = createWalletClient({
   transport: http(RPC_URL),
 });
 
-export { delegateWalletClient };
+export { delegateWalletClient, delegateEoa };

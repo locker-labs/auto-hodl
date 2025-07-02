@@ -4,6 +4,7 @@ import type React from 'react';
 import { ConnectButton } from '@/components/feature/connect-button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
+import { VIEM_CHAIN } from '@/config';
 
 export const ConnectWallet = (): React.ReactNode => {
   return (
@@ -28,6 +29,12 @@ export const ConnectWallet = (): React.ReactNode => {
         <ConnectButton />
         <p className={'mt-3 text-sm text-[#6B6B6B]'}>
           For demo purposes, you do not need to have a MetaMask Card to use this app.
+        </p>
+        <p className={'mt-3 text-sm text-[#6B6B6B]'}>
+          Linea does not currently support DTK/Gator. We are using {VIEM_CHAIN.name} for demo purposes.
+        </p>
+        <p className={'mt-3 text-sm text-[#6B6B6B]'}>
+          We listen for deposit to the MM Card contract address from the trigger account you'll specify. This simulates usage of MM Card.
         </p>
       </CardContent>
     </Card>

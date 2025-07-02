@@ -102,7 +102,13 @@ export const FundSavingsSource = ({ onNext }: FundSavingsSourceProps): React.Rea
           )}
         </Button>
         <p className={'mt-3 text-sm text-[#6B6B6B]'}>
-          This account will hold USDC that gets transferred to Aave for savings.
+          For demo purposes, you do not need to have a MetaMask Card to use this app.
+        </p>
+        <p className={'mt-3 text-sm text-[#6B6B6B]'}>
+          Linea does not currently support DTK/Gator. We are using {VIEM_CHAIN.name} for demo purposes.
+        </p>
+        <p className={'mt-3 text-sm text-[#6B6B6B]'}>
+          We listen for deposit to the MM Card contract address from the trigger account you'll specify. This simulates usage of MM Card.
         </p>
       </CardContent>
     </Card>

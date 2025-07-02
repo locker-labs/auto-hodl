@@ -14,7 +14,7 @@ import { AAVE_POOL_ADDRESS, MM_CARD_ADDRESSES, TOKEN_DECIMAL_MULTIPLIER, USDC_AD
 import { encodeApproveTokensCallData, encodeSupplyCallData, erc20Abi } from './yield/aave';
 import { parseUnits } from 'viem';
 import { updateTransactionWithYieldDepositByTxHash, type YieldDepositInfo } from './supabase/updateTransaction';
-
+import { pimlicoClient } from '@/clients/pimlicoClient';
 /**
  * Redeems Aave delegations using the DTK pattern from the documentation
  * Based on: https://docs.metamask.io/delegation-toolkit/how-to/redeem-delegation/
@@ -40,13 +40,15 @@ export async function redeemAaveDelegations(
     modes: modesArray,
     executions: executionsArray,
   });
+  const fees = await pimlicoClient.getUserOperationGasPrice();
 
   const transactionHash = await delegateWalletClient.sendTransaction({
     to: getDeleGatorEnvironment(VIEM_CHAIN.id).DelegationManager,
     data: redeemDelegationCalldata,
     chain: VIEM_CHAIN,
+    ...fees,
   });
-
+  console.log('Redeem Delegation Transaction Hash:', transactionHash);
   return transactionHash;
 }
 
@@ -70,6 +72,14 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
     amount,
     chainId,
     accountId,
+  });
+
+  console.log('Account data for processing:', {
+    accountId,
+    roundUpToDollar: account?.roundUpToDollar,
+    roundUpToDollarType: typeof account?.roundUpToDollar,
+    tokenSourceAddress: account?.tokenSourceAddress,
+    hasAccount: !!account,
   });
 
   // Skip processing if no account is associated with this transaction
@@ -104,9 +114,42 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
   const tokenSourceAddress = account.tokenSourceAddress;
   // const roundUpMode = account.roundUpMode; // Available if needed for future logic
 
+  // Validate roundUpToDollar before using it
+  if (!roundUpToDollar || Number.isNaN(roundUpToDollar) || roundUpToDollar <= 0) {
+    console.error('Invalid roundUpToDollar value for account:', {
+      accountId,
+      roundUpToDollar,
+      type: typeof roundUpToDollar,
+    });
+    return null;
+  }
+
   // Calculate savings amount for round-up using account settings
   const roundUpAmount = roundUpToDollar * TOKEN_DECIMAL_MULTIPLIER;
   const asset = token as `0x${string}`;
+
+  // Validate TOKEN_DECIMAL_MULTIPLIER before using it
+  if (!TOKEN_DECIMAL_MULTIPLIER || Number.isNaN(TOKEN_DECIMAL_MULTIPLIER)) {
+    console.error('Invalid TOKEN_DECIMAL_MULTIPLIER for token:', {
+      token,
+      TOKEN_DECIMAL_MULTIPLIER,
+      chainId,
+    });
+    return null;
+  }
+
+  // Debug the values before BigInt conversion
+  console.log('Values before BigInt conversion:', {
+    amount,
+    amountType: typeof amount,
+    roundUpToDollar,
+    TOKEN_DECIMAL_MULTIPLIER,
+    roundUpAmount,
+    roundUpAmountType: typeof roundUpAmount,
+    isAmountNaN: Number.isNaN(Number(amount)),
+    isRoundUpAmountNaN: Number.isNaN(roundUpAmount),
+  });
+
   const savingsAmount = calculateSavingsAmount(BigInt(amount), BigInt(roundUpAmount));
   const onBehalfOf = tokenSourceAddress as `0x${string}`; // Use savings address or fallback to spendTo
 

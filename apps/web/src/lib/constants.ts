@@ -23,7 +23,12 @@ export const USDC_ADDRESSES = [
 
   // AAVE on Sepolia
   '0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a',
+
+  // Arbitrum
+  '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
 ];
+
+export const USDC_ADDRESS = USDC_ADDRESSES[3] as `0x${string}`;
 
 // Aave Addresses
 // https://aave.com/docs/resources/addresses
@@ -37,6 +42,7 @@ const AavePoolAddressMap: Record<number, `0x${string}`> = {
   59144: '0xc47b8C00b0f69a36fa203Ffeac0334874574a8Ac', // Linea
   // Not available on linea sepolia
   11155111: '0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951', // Sepolia
+  42161: '0x794a61358D6845594F94dc1DB02A252b5b4814aD', // USDC on Arbitrum
 };
 
 // https://aave.com/docs/developers/smart-contracts/pool-addresses-provider
@@ -56,15 +62,21 @@ const AaveUiPoolDataProviderMap: Record<number, `0x${string}`> = {
 };
 
 const TokenAddressMap: Record<number, `0x${string}`> = {
+  1: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC Ethereum Mainnet
   59144: '0x176211869cA2b568f2A7D4EE941E073a821EE1ff', // USDC Linea
   59141: '0xFEce4462D57bD51A6A552365A011b95f0E16d9B7', // USDC Linea Sepolia
   11155111: '0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a', // AAVE Sepolia
+  8453: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
+  42161: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // USDC on Arbitrum
 };
 
 const TokenDecimalMap: Record<`0x${string}`, number> = {
   '0x176211869cA2b568f2A7D4EE941E073a821EE1ff': 6, // USDC Linea
   '0xFEce4462D57bD51A6A552365A011b95f0E16d9B7': 6, // USDC Linea Sepolia
   '0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a': 18, // AAVE Sepolia
+  '0xaf88d065e77c8cC2239327C5EDb3A432268e5831': 6, // USDC Arbitrum
+  '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913': 6, // USDC Base
+  '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48': 6, // USDC Ethereum Mainnet
 };
 
 export const AAVE_POOL_ADDRESS = AavePoolAddressMap[chainId];
@@ -78,3 +90,5 @@ export const TOKEN_ADDRESS = TokenAddressMap[chainId];
 export const TOKEN_DECIMALS = TokenDecimalMap[TOKEN_ADDRESS];
 
 export const TOKEN_DECIMAL_MULTIPLIER = 10 ** TOKEN_DECIMALS;
+
+export { TokenAddressMap };

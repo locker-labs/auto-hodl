@@ -17,6 +17,8 @@ import { getAaveCaveats } from '@/lib/yield/caveats';
 import { pimlicoClient } from '@/clients/pimlicoClient';
 import { bundlerClient } from '@/clients/bundlerClient';
 import { zeroAddress, type Hex } from 'viem';
+import { SmartAccount } from 'viem/account-abstraction';
+import { EChainMode } from '@/enums/chainMode.enums';
 
 export function useMetaMaskDTK() {
   const [creatingDelegator, setCreatingDelegator] = useState(false);
@@ -34,7 +36,8 @@ export function useMetaMaskDTK() {
   const { address, isConnected, chainId } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { signTypedDataAsync } = useSignTypedData();
-  const { metaMaskCardAddress } = useAutoHodl();
+  const { metaMaskCardAddress, chainMode } = useAutoHodl();
+  const isMultiChainMode = chainMode === EChainMode.MULTI_CHAIN;
   console.log('delegator', delegator);
 
   // Check for existing account when wallet connects
@@ -66,9 +69,17 @@ export function useMetaMaskDTK() {
         setCheckingExistingAccount(false);
       }
     }
-
+    async function checkDelegatorDeployment() {
+      if (!address || !isConnected || !delegator) {
+        return;
+      }
+      const isDeployed = await delegator.isDeployed();
+      console.log('Delegator is deployed:', isDeployed);
+      setDeployedDelegator(isDeployed);
+    }
+    checkDelegatorDeployment();
     checkExistingAccount();
-  }, [address, isConnected, chainId]);
+  }, [address, isConnected, chainId, delegator]);
 
   async function setupDelegator(): Promise<void> {
     try {
@@ -130,7 +141,11 @@ export function useMetaMaskDTK() {
       console.log('Getting gas price for user operation...');
       const { fast: fee } = await pimlicoClient.getUserOperationGasPrice();
 
-      const call = { to: zeroAddress as Hex, value: BigInt(0), data: '0x' as Hex };
+      const call = {
+        to: zeroAddress as Hex,
+        value: BigInt(0),
+        data: '0x' as Hex,
+      };
 
       console.log('🔒 Delegator Account:', delegator.address);
       console.log('🧠 Delegator Smart Account:', delegator.address);
@@ -157,7 +172,7 @@ export function useMetaMaskDTK() {
     }
   }
 
-  async function createDelegation(): Promise<void> {
+  async function createDelegation(circleAddress: string | undefined): Promise<void> {
     try {
       if (!delegator) {
         throw new Error('Delegator smart account not created yet');
@@ -171,15 +186,24 @@ export function useMetaMaskDTK() {
         throw new Error('MetaMask Card address not provided');
       }
 
+      if (!chainMode) {
+        throw new Error('Chain mode not selected');
+      }
+
+      if (isMultiChainMode && !circleAddress) {
+        throw new Error('Circle Smart Account not available in multi-chain mode');
+      }
+
       setCreatingDelegation(true);
       console.log('📜 Creating delegation...');
       // Update to savings roundUpTo value
-      const caveats = getAaveCaveats(delegator, BigInt(1000000));
+      // const caveats = getAaveCaveats(delegator, BigInt(1000000));
       // Create delegation
       const delegation = createDelegationToolkit({
         to: DELEGATE_ADDRESS,
         from: delegator.address,
-        caveats,
+        // TODO: Reenable caveats after testing
+        caveats: [],
       });
 
       console.log('✍️ Signing delegation...');
@@ -215,6 +239,9 @@ export function useMetaMaskDTK() {
           tokenSourceAddress: delegator.address,
           triggerAddress: metaMaskCardAddress,
           delegation: newSignedDelegation,
+          chainId: String(VIEM_CHAIN.id),
+          chainMode,
+          circleAddress,
         });
         console.log('✅ Account saved to database via secure API');
         setAccountSaved(true);

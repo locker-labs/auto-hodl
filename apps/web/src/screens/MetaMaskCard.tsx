@@ -73,7 +73,7 @@ export const MetaMaskCard = ({ onNext, onBack }: Props): React.ReactNode => {
         </h2>
         <p className='w-fit mx-auto mt-2 font-medium text-[#5D5D5D] text-base tracking-[0] leading-[normal]'>
           Every time this address sends USDC to MetaMask Card contract, the amount will be rounded up and savings will
-          be taken from the connected wallet from the previous step.
+          be taken from the Gator wallet we generated for you in the previous step.
         </p>
         <Alert className='flex items-center gap-[30px] bg-[#fff1ed63] border-[#ffa2a2] mb-6 mt-[30px]'>
           <InfoIcon className='size-5 min-w-5 min-h-5' color={'#ff6f35'} />
