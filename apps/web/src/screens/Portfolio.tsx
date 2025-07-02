@@ -1,7 +1,6 @@
-import { Cog, Shield, MoveUpRight, Loader2 } from 'lucide-react';
+import { Shield, MoveUpRight, Loader2 } from 'lucide-react';
 import type React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import SavingsChart from '@/components/feature/SavingsChart';
 import Link from 'next/link';
@@ -13,6 +12,7 @@ import { MM_CARD_ADDRESSES } from '@/lib/constants';
 import { useAutoHodl } from '@/providers/autohodl-provider';
 import { VIEM_CHAIN } from '@/config';
 import { SavingsInfoCards } from '@/components/feature/SavingsInfoCards';
+import { UpdateChainModeModal } from '@/components/feature/UpdateChainModeModal';
 
 export const Portfolio = (): React.JSX.Element => {
   const { txs: transactions, loading } = useTransactions();
@@ -64,7 +64,7 @@ export const Portfolio = (): React.JSX.Element => {
         <Card className='w-full h-fit rounded-xl shadow-[0px_1px_4.2px_#00000040]'>
           <CardContent className='px-5'>
             <div className='w-full flex justify-between items-start gap-5'>
-              <p className='font-normal text-black text-base'>Current Strategy</p>
+              <p className='font-normal text-black text-base'>Currently earning</p>
               <Badge className='bg-emerald-100 text-[#187710] font-normal rounded-xl'>Low Risk</Badge>
             </div>
 
@@ -78,15 +78,7 @@ export const Portfolio = (): React.JSX.Element => {
               </div>
             </div>
 
-            <Button className='mt-5 group w-full h-12 bg-[#ffc8b2] hover:bg-[#cc927f] rounded-xl hover:shadow-[0px_2px_1.1px_#00000040] text-black font-medium cursor-not-allowed'>
-              {/* Icon */}
-              <Cog
-                className='group-hover:rotate-45 transition-transform duration-300 min-w-5 min-h-5'
-                size={20}
-                color='black'
-              />
-              change settings
-            </Button>
+            <UpdateChainModeModal />
           </CardContent>
         </Card>
 

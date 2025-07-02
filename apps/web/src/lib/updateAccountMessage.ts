@@ -1,7 +1,7 @@
 // Helper function to create consistent message for account creation signature
 import type { EChainMode } from '@/enums/chainMode.enums';
 
-export function createAccountMessage(account: {
+export function updateAccountMessage(account: {
   signerAddress: string;
   tokenSourceAddress: string;
   triggerAddress: string;

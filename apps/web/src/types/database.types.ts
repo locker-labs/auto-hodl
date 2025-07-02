@@ -19,8 +19,8 @@ export type Database = {
         Args: {
           operationName?: string
           query?: string
-          extensions?: Json
           variables?: Json
+          extensions?: Json
         }
         Returns: Json
       }
@@ -37,6 +37,8 @@ export type Database = {
       accounts: {
         Row: {
           chainId: string | null
+          chainMode: string
+          circleAddress: string | null
           createdAt: string
           delegation: Json
           deploySalt: string
@@ -50,6 +52,8 @@ export type Database = {
         }
         Insert: {
           chainId?: string | null
+          chainMode?: string
+          circleAddress?: string | null
           createdAt?: string
           delegation: Json
           deploySalt: string
@@ -63,6 +67,8 @@ export type Database = {
         }
         Update: {
           chainId?: string | null
+          chainMode?: string
+          circleAddress?: string | null
           createdAt?: string
           delegation?: Json
           deploySalt?: string
@@ -142,6 +148,8 @@ export type Database = {
     Views: {
       accounts_view: {
         Row: {
+          chainId: string | null
+          chainMode: string | null
           createdAt: string | null
           deploySalt: string | null
           signerAddress: string | null
@@ -149,6 +157,8 @@ export type Database = {
           triggerAddress: string | null
         }
         Insert: {
+          chainId?: string | null
+          chainMode?: string | null
           createdAt?: string | null
           deploySalt?: string | null
           signerAddress?: string | null
@@ -156,6 +166,8 @@ export type Database = {
           triggerAddress?: string | null
         }
         Update: {
+          chainId?: string | null
+          chainMode?: string | null
           createdAt?: string | null
           deploySalt?: string | null
           signerAddress?: string | null
@@ -290,4 +302,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
