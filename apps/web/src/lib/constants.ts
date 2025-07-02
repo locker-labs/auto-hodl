@@ -74,6 +74,9 @@ const TokenDecimalMap: Record<`0x${string}`, number> = {
   '0x176211869cA2b568f2A7D4EE941E073a821EE1ff': 6, // USDC Linea
   '0xFEce4462D57bD51A6A552365A011b95f0E16d9B7': 6, // USDC Linea Sepolia
   '0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a': 18, // AAVE Sepolia
+  '0xaf88d065e77c8cC2239327C5EDb3A432268e5831': 6, // USDC Arbitrum
+  '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913': 6, // USDC Base
+  '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48': 6, // USDC Ethereum Mainnet
 };
 
 export const AAVE_POOL_ADDRESS = AavePoolAddressMap[chainId];

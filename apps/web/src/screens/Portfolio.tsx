@@ -8,19 +8,20 @@ import { getTransactionLink } from '@/lib/blockExplorer';
 import { useTransactions } from '@/hooks/useTransactions';
 import { formatUnits } from 'viem';
 import moment from 'moment';
-import { MM_CARD_ADDRESSES } from '@/lib/constants';
+import { MM_CARD_ADDRESSES, TOKEN_DECIMALS } from '@/lib/constants';
 import { useAutoHodl } from '@/providers/autohodl-provider';
 import { VIEM_CHAIN } from '@/config';
 import { SavingsInfoCards } from '@/components/feature/SavingsInfoCards';
 import { UpdateChainModeModal } from '@/components/feature/UpdateChainModeModal';
+import { EChainMode } from '@/enums/chainMode.enums';
 
 export const Portfolio = (): React.JSX.Element => {
   const { txs: transactions, loading } = useTransactions();
-  const { triggerAddress, tokenSourceAddress } = useAutoHodl();
+  const { triggerAddress, tokenSourceAddress, circleAddress, chainMode } = useAutoHodl();
   let totalSavings = 0;
 
   for (const tx of transactions) {
-    const amount = Number(formatUnits(BigInt(tx.yieldDepositAmount ?? 0), 18));
+    const amount = Number(formatUnits(BigInt(tx.yieldDepositAmount ?? 0), TOKEN_DECIMALS));
     totalSavings += amount;
   }
 
@@ -65,7 +66,13 @@ export const Portfolio = (): React.JSX.Element => {
           <CardContent className='px-5'>
             <div className='w-full flex justify-between items-start gap-5'>
               <p className='font-normal text-black text-base'>Currently earning</p>
-              <Badge className='bg-emerald-100 text-[#187710] font-normal rounded-xl'>Low Risk</Badge>
+              {chainMode === EChainMode.SINGLE_CHAIN ? (
+                <Badge className='bg-purple-100 text-[#3c1077] font-normal rounded-xl'>Single-Chain</Badge>
+              ) : chainMode === EChainMode.MULTI_CHAIN ? (
+                <Badge className='bg-blue-100 text-[#1e40af] font-normal rounded-xl'>Multi-Chain</Badge>
+              ) : (
+                <Badge className='bg-gray-100 text-[#6b6b6b] font-normal rounded-xl'>Not Set</Badge>
+              )}
             </div>
 
             <div className='mt-5 flex justify-start items-center gap-5'>
@@ -127,10 +134,10 @@ export const Portfolio = (): React.JSX.Element => {
 
                           <div className='text-right'>
                             <p className='font-normal text-black text-base text-center'>
-                              {formatUnits(BigInt(transaction.yieldDepositAmount ?? 0), 18)}
+                              saved ${formatUnits(BigInt(transaction.yieldDepositAmount ?? 0), TOKEN_DECIMALS)}
                             </p>
                             <p className='font-normal text-[#6b6b6b] text-xs text-center'>
-                              from ${formatUnits(BigInt(transaction.spendAmount), 18)}
+                              from ${formatUnits(BigInt(transaction.spendAmount), TOKEN_DECIMALS)}
                             </p>
                           </div>
                         </div>
@@ -209,17 +216,55 @@ export const Portfolio = (): React.JSX.Element => {
                 <div className='w-8 h-8 bg-[#3c1077] rounded-full flex items-center justify-center text-white font-bold text-sm mb-3'>
                   3
                 </div>
-                <h3 className='font-semibold text-lg mb-2'>Aave Deposit</h3>
+                <h3 className='font-semibold text-lg mb-2'>Yield Strategy</h3>
                 <p className='text-gray-600 text-sm mb-3'>
-                  Using your delegation, we automatically deposit the round-up amount into Aave to earn yield.
+                  Using your delegation, we automatically process the round-up amount based on your chain mode:
                 </p>
+                
+                {chainMode === EChainMode.SINGLE_CHAIN ? (
+                  <div className='bg-purple-50 rounded-lg p-3 w-full mb-3'>
+                    <div className='flex items-center gap-2 mb-2'>
+                      <Shield size={16} className='text-purple-600' />
+                      <p className='text-sm font-semibold text-purple-800'>Single-Chain Mode</p>
+                    </div>
+                    <p className='text-sm text-purple-700'>
+                      Funds are directly deposited into Aave on {VIEM_CHAIN.name} to earn yield immediately.
+                    </p>
+                  </div>
+                ) : chainMode === EChainMode.MULTI_CHAIN ? (
+                  <div className='bg-blue-50 rounded-lg p-3 w-full mb-3'>
+                    <div className='flex items-center gap-2 mb-2'>
+                      <Shield size={16} className='text-blue-600' />
+                      <p className='text-sm font-semibold text-blue-800'>Multi-Chain Mode</p>
+                    </div>
+                    <p className='text-sm text-blue-700 mb-2'>
+                      Funds are bridged using LiFi/CCTP v2 and sent to your Circle address on Base for optimal yield.
+                    </p>
+                    {circleAddress && (
+                      <p className='text-xs font-mono text-blue-600 bg-blue-100 px-2 py-1 rounded break-all'>
+                        Circle Address on Base: {circleAddress}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div className='bg-gray-50 rounded-lg p-3 w-full mb-3'>
+                    <div className='flex items-center gap-2 mb-2'>
+                      <Shield size={16} className='text-gray-600' />
+                      <p className='text-sm font-semibold text-gray-800'>Chain Mode Not Set</p>
+                    </div>
+                    <p className='text-sm text-gray-700'>
+                      Configure your chain mode to see how funds will be processed.
+                    </p>
+                  </div>
+                )}
+
                 <div className='bg-purple-50 rounded-lg p-3 w-full'>
                   <div className='flex items-center gap-2 mb-2'>
                     <Shield size={16} className='text-purple-600' />
                     <p className='text-sm font-semibold text-purple-800'>Secure & Automated</p>
                   </div>
                   <p className='text-sm text-purple-700'>
-                    Your delegation enables secure, automatic deposits without manual intervention.
+                    Your delegation enables secure, automatic processing without manual intervention.
                   </p>
                 </div>
               </div>
