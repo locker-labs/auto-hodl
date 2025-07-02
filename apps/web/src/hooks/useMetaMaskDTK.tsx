@@ -17,6 +17,8 @@ import { getAaveCaveats } from '@/lib/yield/caveats';
 import { pimlicoClient } from '@/clients/pimlicoClient';
 import { bundlerClient } from '@/clients/bundlerClient';
 import { zeroAddress, type Hex } from 'viem';
+import { SmartAccount } from 'viem/account-abstraction';
+import { EChainMode } from '@/enums/chainMode.enums';
 
 export function useMetaMaskDTK() {
   const [creatingDelegator, setCreatingDelegator] = useState(false);
@@ -35,6 +37,7 @@ export function useMetaMaskDTK() {
   const { signMessageAsync } = useSignMessage();
   const { signTypedDataAsync } = useSignTypedData();
   const { metaMaskCardAddress, chainMode } = useAutoHodl();
+  const isMultiChainMode = chainMode === EChainMode.MULTI_CHAIN;
   console.log('delegator', delegator);
 
   // Check for existing account when wallet connects
@@ -169,7 +172,7 @@ export function useMetaMaskDTK() {
     }
   }
 
-  async function createDelegation(): Promise<void> {
+  async function createDelegation(circleAddress: string | undefined): Promise<void> {
     try {
       if (!delegator) {
         throw new Error('Delegator smart account not created yet');
@@ -185,6 +188,10 @@ export function useMetaMaskDTK() {
 
       if (!chainMode) {
         throw new Error('Chain mode not selected');
+      }
+
+      if (isMultiChainMode && !circleAddress) {
+        throw new Error('Circle Smart Account not available in multi-chain mode');
       }
 
       setCreatingDelegation(true);
@@ -233,6 +240,7 @@ export function useMetaMaskDTK() {
           delegation: newSignedDelegation,
           chainId: String(VIEM_CHAIN.id),
           chainMode,
+          circleAddress,
         });
         console.log('✅ Account saved to database via secure API');
         setAccountSaved(true);

@@ -66,7 +66,7 @@ export function UpdateChainModeModal() {
       <form>
         <DialogTrigger asChild>
           {/* bg-[#ffc8b2] hover:bg-[#cc927f] */}
-          <Button className='mt-5 w-full group rounded-xl hover:shadow-[0px_2px_1.1px_#00000040]'>
+          <Button className='mt-5 w-full group rounded-xl hover:shadow-[0px_2px_1.1px_#00000040] h-12 font-bold text-base cursor-pointer bg-[#ff7a45] hover:bg-[#ff6a35] disabled:bg-[#ffb399] text-white'>
             {/* Icon */}
             <Cog
               className='group-hover:rotate-45 transition-transform duration-300 min-w-5 min-h-5'

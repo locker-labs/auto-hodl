@@ -12,6 +12,7 @@ interface CreateAccountRequest {
   signerAddress: string;
   tokenSourceAddress: string;
   triggerAddress: string;
+  circleAddress?: string;
   delegation: any;
   savingsAddress?: string;
   signature: string;
@@ -29,6 +30,7 @@ export async function POST(request: NextRequest) {
       triggerAddress,
       delegation,
       savingsAddress,
+      circleAddress, // optional
       signature,
       timestamp,
       chainId,
@@ -123,6 +125,7 @@ export async function POST(request: NextRequest) {
             triggerAddress,
             delegation,
             savingsAddress,
+            circleAddress: circleAddress || null, // Optional field
             deploySalt: DEPLOY_SALT,
             chainId,
             chainMode,

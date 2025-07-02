@@ -3,11 +3,14 @@
 import type { ReactNode } from 'react';
 import { AutoHodlProvider } from './autohodl-provider';
 import { WalletProvider } from './wallet-provider';
+import { CircleSmartAccountProvider } from './circle-smart-account-provider';
 
 export const AppProviders = ({ children }: { children: ReactNode }) => {
   return (
     <WalletProvider>
-      <AutoHodlProvider>{children}</AutoHodlProvider>
+      <CircleSmartAccountProvider>
+        <AutoHodlProvider>{children}</AutoHodlProvider>
+      </CircleSmartAccountProvider>
     </WalletProvider>
   );
 };
