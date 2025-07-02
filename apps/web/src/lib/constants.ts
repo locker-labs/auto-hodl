@@ -38,30 +38,35 @@ export const USDC_ADDRESS = USDC_ADDRESSES[3] as `0x${string}`;
 
 // https://aave.com/docs/developers/smart-contracts/pool
 
-const AavePoolAddressMap: Record<number, `0x${string}`> = {
+export const AavePoolAddressMap: Record<number, `0x${string}`> = {
   59144: '0xc47b8C00b0f69a36fa203Ffeac0334874574a8Ac', // Linea
   // Not available on linea sepolia
   11155111: '0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951', // Sepolia
-  42161: '0x794a61358D6845594F94dc1DB02A252b5b4814aD', // USDC on Arbitrum
+  42161: '0x794a61358D6845594F94dc1DB02A252b5b4814aD', // Arbitrum
+  8453: '0xA238Dd80C259a72e81d7e4664a9801593F98d1c5', // Base
 };
 
 // https://aave.com/docs/developers/smart-contracts/pool-addresses-provider
 
-const AavePoolAddressesProviderMap: Record<number, `0x${string}`> = {
+export const AavePoolAddressesProviderMap: Record<number, `0x${string}`> = {
   59144: '0x89502c3731F69DDC95B65753708A07F8Cd0373F4', // Linea
   // Not available on linea sepolia
   11155111: '0x012bAC54348C0E635dCAc9D5FB99f06F24136C9A', // Sepolia
+  42161: '0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb', // Arbitrum
+  8453: '0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D', // Base
 };
 
 // https://aave.com/docs/developers/smart-contracts/view-contracts#uipooldataprovider
 
-const AaveUiPoolDataProviderMap: Record<number, `0x${string}`> = {
+export const AaveUiPoolDataProviderMap: Record<number, `0x${string}`> = {
   59144: '0xf751969521E20A972A0776CDB0497Fad0F773F1F', // Linea
   // Not available on linea sepolia
   11155111: '0x69529987FA4A075D0C00B0128fa848dc9ebbE9CE', // Sepolia
+  42161: '0x5c5228aC8BC1528482514aF3e27E692495148717', // Arbitrum
+  8453: '0x68100bD5345eA474D93577127C11F39FF8463e93', // Base
 };
 
-const TokenAddressMap: Record<number, `0x${string}`> = {
+export const TokenAddressMap: Record<number, `0x${string}`> = {
   1: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC Ethereum Mainnet
   59144: '0x176211869cA2b568f2A7D4EE941E073a821EE1ff', // USDC Linea
   59141: '0xFEce4462D57bD51A6A552365A011b95f0E16d9B7', // USDC Linea Sepolia
@@ -70,7 +75,7 @@ const TokenAddressMap: Record<number, `0x${string}`> = {
   42161: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // USDC on Arbitrum
 };
 
-const TokenDecimalMap: Record<`0x${string}`, number> = {
+export const TokenDecimalMap: Record<`0x${string}`, number> = {
   '0x176211869cA2b568f2A7D4EE941E073a821EE1ff': 6, // USDC Linea
   '0xFEce4462D57bD51A6A552365A011b95f0E16d9B7': 6, // USDC Linea Sepolia
   '0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a': 18, // AAVE Sepolia
@@ -90,5 +95,3 @@ export const TOKEN_ADDRESS = TokenAddressMap[chainId];
 export const TOKEN_DECIMALS = TokenDecimalMap[TOKEN_ADDRESS];
 
 export const TOKEN_DECIMAL_MULTIPLIER = 10 ** TOKEN_DECIMALS;
-
-export { TokenAddressMap };

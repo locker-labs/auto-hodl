@@ -1,7 +1,13 @@
 import { BanknoteArrowUp, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
-export const YieldEarnedCard = ({ loading: isLoading, yieldEarned }: { loading: boolean; yieldEarned: string }) => {
+export const AmountDepositedCard = ({
+  loading: isLoading,
+  amountDeposited,
+}: {
+  loading: boolean;
+  amountDeposited: string;
+}) => {
   return (
     <Card className='flex items-center justify-start rounded-xl border-2 border-[#c2ffae]'>
       <CardContent className='h-full w-full flex flex-row sm:flex-col items-center md:flex-row gap-8 sm:gap-5'>
@@ -11,9 +17,9 @@ export const YieldEarnedCard = ({ loading: isLoading, yieldEarned }: { loading: 
         </div>
         {/* Text Content */}
         <div>
-          <p className='text-black text-base text-left sm:text-center md:text-left'>Yield Earned</p>
+          <p className='text-black text-base text-left sm:text-center md:text-left'>Amount Deposited</p>
           <p className='font-bold text-[#187710] text-2xl mt-1 text-left sm:text-center md:text-left'>
-            {isLoading ? <Loader2 className={'animate-spin size-8'} color={'#187710'} /> : `$${yieldEarned}`}
+            {isLoading ? <Loader2 className={'animate-spin size-8'} color={'#187710'} /> : `$${amountDeposited}`}
           </p>
         </div>
       </CardContent>

@@ -1,7 +1,13 @@
-import { GrowthCard } from '@/components/ui/cards/GrowthCard';
-import { TotalSavingsCard } from '@/components/ui/cards/TotalSavingsCard';
-import { YieldEarnedCard } from '@/components/ui/cards/YieldEarnedCard';
+import { EarnedYield } from '@/components/ui/cards/GrowthCard';
+import { MultiChainBalanceCard } from '../ui/cards/MultiChainBalanceCard';
+import { AmountDepositedCard } from '@/components/ui/cards/YieldEarnedCard';
 import { useAaveATokenBalance } from '@/hooks/useAaveATokenBalance';
+import { useAutoHodl } from '@/providers/autohodl-provider';
+import { useReadContract } from 'wagmi';
+import { erc20Abi, formatUnits } from 'viem';
+import { useCircleAddressAaveATokenBalance } from '@/hooks/useCircleAddressAaveATokenBalance';
+import { base } from 'viem/chains';
+import { TokenAddressMap, TokenDecimalMap } from '@/lib/constants';
 
 export function SavingsInfoCards({
   loading: savingsLoading,
@@ -10,47 +16,66 @@ export function SavingsInfoCards({
   loading: boolean;
   totalSavings: number;
 }): React.JSX.Element {
+  const { circleAddress } = useAutoHodl();
+
+  console.log('circleAddress', circleAddress);
+
+  // circle address balance on Base Mainnet
+  const { data } = useReadContract({
+    chainId: base.id,
+    abi: erc20Abi,
+    address: TokenAddressMap[base.id],
+    functionName: 'balanceOf',
+    args: [circleAddress as `0x${string}`],
+    query: {
+      enabled: !!circleAddress,
+    },
+  });
+
+  const circleAddressUSDCBalance = data ? formatUnits(data, TokenDecimalMap[TokenAddressMap[base.id]]) : '0';
+
   const {
-    data: { balance, balanceFormatted },
-    isLoading: balanceLoading,
+    data: { balanceFormatted: tokenSourceBalance },
+    isLoading: tokenSourceBalanceLoading,
   } = useAaveATokenBalance();
 
-  const isLoading = savingsLoading || balanceLoading;
+  const {
+    data: { balanceFormatted: circleBalance },
+    isLoading: circleBalanceLoading,
+  } = useCircleAddressAaveATokenBalance();
 
-  let savings = 0;
-  let savingsFormatted = '0';
+  const isLoading = savingsLoading || tokenSourceBalanceLoading || circleBalanceLoading;
 
-  if (!savingsLoading && totalSavings > 0) {
-    savings = totalSavings;
-    savingsFormatted = savings.toFixed(2);
-  }
+  let totalBalance = 0;
+  let totalBalanceFormatted = '0';
+  let earnedYield = 0;
+  let earnedYieldFormatted = '0';
 
-  let yieldEarned = 0;
-  let yieldEarnedFormatted = '0';
-
-  if (!savingsLoading && !balanceLoading && !!balance) {
-    yieldEarned = balanceFormatted - totalSavings;
-    yieldEarnedFormatted = yieldEarned.toFixed(2);
-  }
-
-  let growthPercent = 0;
-  let growthPercentFormatted = '0';
-
-  if (!savingsLoading && !balanceLoading && totalSavings > 0) {
-    growthPercent = (yieldEarned / totalSavings) * 100;
-    growthPercentFormatted = growthPercent.toFixed(2);
+  if (!isLoading) {
+    if (tokenSourceBalance) {
+      totalBalance += tokenSourceBalance;
+      totalBalanceFormatted = totalBalance.toFixed(2);
+    }
+    if (circleBalance) {
+      totalBalance += circleBalance;
+      totalBalanceFormatted = totalBalance.toFixed(2);
+    }
+    earnedYield = totalBalance - totalSavings;
+    if (earnedYield > 0) {
+      earnedYieldFormatted = earnedYield.toFixed(2);
+    }
   }
 
   return (
     <div className='grid grid-cols-1 sm:col-span-3 sm:grid-cols-3 gap-5'>
-      {/* Total Savings Card */}
-      <TotalSavingsCard loading={isLoading} amount={savingsFormatted} />
+      {/* MultiChain Balance Card */}
+      <MultiChainBalanceCard loading={isLoading} amount={circleAddressUSDCBalance} />
 
-      {/* Yield Earned Card */}
-      <YieldEarnedCard loading={isLoading} yieldEarned={yieldEarnedFormatted} />
+      {/* Amount Deposited Card */}
+      <AmountDepositedCard loading={isLoading} amountDeposited={totalBalanceFormatted} />
 
-      {/* Growth Card */}
-      <GrowthCard loading={isLoading} growthPercent={growthPercentFormatted} />
+      {/* Earned Yield Card */}
+      <EarnedYield loading={isLoading} earnedYield={earnedYieldFormatted} />
     </div>
   );
 }

@@ -2,13 +2,13 @@ import { useAccount, useReadContract } from 'wagmi';
 import { formatUnits } from 'viem';
 import { abi } from '@/abis/AaveUiPoolDataProvider';
 import {
-  AAVE_POOL_ADDRESSES_PROVIDER,
-  AAVE_UI_POOL_DATA_PROVIDER,
-  TOKEN_ADDRESS,
-  TOKEN_DECIMALS,
+  AavePoolAddressesProviderMap,
+  AaveUiPoolDataProviderMap,
+  TokenAddressMap,
+  TokenDecimalMap,
 } from '@/lib/constants';
 import { useAutoHodl } from '@/providers/autohodl-provider';
-import { VIEM_CHAIN } from '@/config';
+import { base } from 'viem/chains';
 
 type TUserReserveDataObject = {
   underlyingAsset: string;
@@ -22,10 +22,10 @@ export interface IUserReserveData {
   1: number;
 }
 
-// uses env configured chain id
-export const useAaveATokenBalance = () => {
+// For demo purposes, uses hardcoded base chain id
+export const useCircleAddressAaveATokenBalance = () => {
   const { isConnected, address: userAddress } = useAccount();
-  const { tokenSourceAddress } = useAutoHodl();
+  const { circleAddress } = useAutoHodl();
 
   const {
     data: raw,
@@ -36,16 +36,16 @@ export const useAaveATokenBalance = () => {
     isLoadingError,
   } = useReadContract({
     abi,
-    address: AAVE_UI_POOL_DATA_PROVIDER,
+    address: AaveUiPoolDataProviderMap[base.id],
     functionName: 'getUserReservesData',
-    args: [AAVE_POOL_ADDRESSES_PROVIDER, tokenSourceAddress],
-    chainId: VIEM_CHAIN.id,
+    args: [AavePoolAddressesProviderMap[base.id], circleAddress],
+    chainId: base.id,
     query: {
-      enabled: isConnected && !!tokenSourceAddress && !!userAddress,
-      refetchOnWindowFocus: false, // Disable refetching on window focus
-      refetchOnReconnect: true, // Enable refetching on reconnect
-      refetchInterval: 5000, // refetching at 5 second intervals
-      staleTime: 0, // Disable stale data
+      enabled: isConnected && !!circleAddress && !!userAddress,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      refetchInterval: 5000,
+      staleTime: 0,
     },
   });
 
@@ -54,13 +54,18 @@ export const useAaveATokenBalance = () => {
   if (raw) {
     const data = raw as IUserReserveData;
 
-    const tokenData = data[0].filter((reserve: TUserReserveDataObject) => reserve.underlyingAsset === TOKEN_ADDRESS);
+    const tokenData = data[0].filter(
+      (reserve: TUserReserveDataObject) => reserve.underlyingAsset === TokenAddressMap[base.id],
+    );
 
     const balance = tokenData[0].scaledATokenBalance;
 
-    console.log('\nUser `aToken` Balance in Pool:', balance);
+    console.log('\nUser Circle wallet `aToken` Balance on Base in Pool:', balance);
 
-    balanceData = { balance, balanceFormatted: Number(formatUnits(balance, TOKEN_DECIMALS)) };
+    balanceData = {
+      balance,
+      balanceFormatted: Number(formatUnits(balance, TokenDecimalMap[TokenAddressMap[base.id]])),
+    };
   }
 
   return { data: balanceData, isFetched, isFetching, isError, isLoading, isLoadingError };
