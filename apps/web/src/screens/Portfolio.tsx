@@ -164,7 +164,7 @@ export const Portfolio = (): React.JSX.Element => {
                   ) : (
                     'your trigger address'
                   )}{' '}
-                  to any MetaMask Card address on {VIEM_CHAIN.name}:
+                  to any simulated MetaMask Card address on {VIEM_CHAIN.name}:
                 </p>
                 <p className='text-gray-600 text-sm mb-3'>
                   <strong>Token Source Address:</strong>{' '}
