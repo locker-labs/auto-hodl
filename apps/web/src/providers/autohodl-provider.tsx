@@ -67,6 +67,8 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
           .eq('deploySalt', DEPLOY_SALT)
           .single();
 
+        console.log('data', data);
+        console.log('error', error);
         if (error) {
           if (error.code === 'PGRST116') {
             // No account found

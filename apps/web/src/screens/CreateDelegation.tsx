@@ -41,12 +41,12 @@ export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => 
 
   // Setup Circle Smart Account when component mounts, only for multichain mode
   useEffect(() => {
-    if (isMultiChainMode && !circleAccount && !circleAccountLoading && !circleError && walletClient) {
+    if (!circleAccount && !circleAccountLoading && !circleError && walletClient) {
       console.log('Creating Circle Smart Account on mount');
       handleCreateSmartAccount();
       console.log('Created Circle Smart Account');
     }
-  }, [isMultiChainMode, walletClient, circleAccount, circleAccountLoading, circleError, handleCreateSmartAccount]);
+  }, [walletClient, circleAccount, circleAccountLoading, circleError, handleCreateSmartAccount]);
 
   // MetaMask delegator setup
   // Setup delegator when component mounts
@@ -75,14 +75,13 @@ export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => 
         // Delegation already exists, proceed to next step
         onNext();
       } else {
-        if (isMultiChainMode) {
-          if (!circleAccount) {
-            console.error('Circle account is not available, cannot create delegation');
-            return;
-          }
+        if (!circleAccount) {
+          console.error('Circle account is not available, cannot create delegation');
+          return;
         }
 
         console.log('Starting delegation creation...');
+        console.log('circleAccount', circleAccount);
         // Create the delegation (this will update signedDelegation state)
         // TODO: Ideally circleAccount.address should not be passed as parameter, and we should refactor this to make more sense
         await createDelegation(circleAccount.address);

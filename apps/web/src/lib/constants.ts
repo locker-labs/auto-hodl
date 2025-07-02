@@ -23,7 +23,12 @@ export const USDC_ADDRESSES = [
 
   // AAVE on Sepolia
   '0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a',
+
+  // Arbitrum
+  '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
 ];
+
+export const USDC_ADDRESS = USDC_ADDRESSES[3] as `0x${string}`;
 
 // Aave Addresses
 // https://aave.com/docs/resources/addresses
@@ -37,6 +42,7 @@ const AavePoolAddressMap: Record<number, `0x${string}`> = {
   59144: '0xc47b8C00b0f69a36fa203Ffeac0334874574a8Ac', // Linea
   // Not available on linea sepolia
   11155111: '0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951', // Sepolia
+  42161: '0x794a61358D6845594F94dc1DB02A252b5b4814aD', // USDC on Arbitrum
 };
 
 // https://aave.com/docs/developers/smart-contracts/pool-addresses-provider
