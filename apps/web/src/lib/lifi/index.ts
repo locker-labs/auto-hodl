@@ -1,17 +1,10 @@
-import {
-  getRoutes,
-  getQuote,
-  RouteExtended,
-  RoutesRequest,
-  QuoteRequest,
-  getStepTransaction,
-} from "@lifi/sdk";
+import type { QuoteRequest, RouteExtended, RoutesRequest } from "@lifi/sdk";
+import { getQuote, getRoutes, getStepTransaction, getStatus } from "@lifi/sdk";
+import type { Delegation, ExecutionStruct } from "@metamask/delegation-toolkit";
 import { VIEM_CHAIN } from "@/config";
-import { TokenAddressMap } from "../constants";
-import { Delegation, ExecutionStruct } from "@metamask/delegation-toolkit";
-import { redeemAaveDelegations } from "../processTransfersForRoundUp";
-import { encodeApproveTokensCallData } from "../yield/aave";
-import { getStatus } from "@lifi/sdk/";
+import { TokenAddressMap } from "@/lib/constants";
+import { redeemAaveDelegations } from "@/lib/processTransfersForRoundUp";
+import { encodeApproveTokensCallData } from "@/lib/yield/aave";
 
 /**
  * Fetches routes for a given chain and amount using the LiFi SDK.
