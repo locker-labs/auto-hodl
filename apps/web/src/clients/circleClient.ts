@@ -7,15 +7,17 @@ import { arbitrumSepolia, baseSepolia, sepolia } from 'viem/chains';
 const chain = VIEM_CHAIN;
 
 let chainName: string;
-if (chain.id === arbitrumSepolia.id) {
-  chainName = 'arbitrumSepolia';
-} else if (chain.id === baseSepolia.id) {
-  chainName = 'baseSepolia';
-} else if (chain.id === sepolia.id) {
-  chainName = 'sepolia';
-} else {
-  throw new Error(`Unsupported chain: ${chain.id}`);
-}
+// if (chain.id === arbitrumSepolia.id) {
+//   chainName = 'arbitrumSepolia';
+// } else if (chain.id === baseSepolia.id) {
+//   chainName = 'baseSepolia';
+// } else if (chain.id === sepolia.id) {
+//   chainName = 'sepolia';
+// } else {
+//   throw new Error(`Unsupported chain: ${chain.id}`);
+// }
+// For demo purposes, recipient will always be Arbitrum.
+chainName = 'base';
 
 // Create modular transport
 export function createCircleTransport() {

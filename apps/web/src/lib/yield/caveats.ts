@@ -1,12 +1,12 @@
 import { BalanceChangeType, createCaveatBuilder, type MetaMaskSmartAccount } from '@metamask/delegation-toolkit';
-import { AAVE_POOL_ADDRESS, USDC_ADDRESSES } from '../constants';
+import { AAVE_POOL_ADDRESS, USDC_ADDRESS } from '../constants';
 
 export const getAaveCaveats = (delegator: MetaMaskSmartAccount, savingsAmount: bigint) => {
   const caveatBuilder = createCaveatBuilder(delegator.environment);
 
   const caveats = caveatBuilder
     // Hardcoded to sepolia
-    .addCaveat('allowedTargets', [AAVE_POOL_ADDRESS, USDC_ADDRESSES[2] as `0x${string}`])
+    .addCaveat('allowedTargets', [AAVE_POOL_ADDRESS, USDC_ADDRESS as `0x${string}`])
     .addCaveat('allowedMethods', [
       {
         type: 'function',
@@ -33,7 +33,7 @@ export const getAaveCaveats = (delegator: MetaMaskSmartAccount, savingsAmount: b
     ])
     .addCaveat(
       'erc20BalanceChange',
-      USDC_ADDRESSES[2] as `0x${string}`,
+      USDC_ADDRESS as `0x${string}`,
       delegator.address,
       savingsAmount,
       BalanceChangeType.Decrease,

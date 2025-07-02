@@ -21,7 +21,7 @@ export const ChainMode = ({ onNext, onBack }: Props): React.JSX.Element => {
     {
       id: EChainMode.SINGLE_CHAIN,
       title: `Single Chain (${chainName})`,
-      description: `Send transactions on ${chainName}, savings on ${chainName}`,
+      description: `Simulate MM Card on ${chainName}, savings on ${chainName}`,
       color: 'text-[#2d2d2d]',
       bgColor: 'hover:bg-[#ff7a45]/15 active:bg-[#ff7a45]/20',
       borderColor: '',
@@ -30,7 +30,7 @@ export const ChainMode = ({ onNext, onBack }: Props): React.JSX.Element => {
     {
       id: EChainMode.MULTI_CHAIN,
       title: 'Multi Chain',
-      description: `Send transactions on ${chainName}, savings on any other chain`,
+      description: `Simulate MM Card on ${chainName}, savings on chain with best yield`,
       color: 'text-[#2d2d2d]',
       bgColor: 'hover:bg-[#ff7a45]/15 active:bg-[#ff7a45]/20',
       borderColor: '',

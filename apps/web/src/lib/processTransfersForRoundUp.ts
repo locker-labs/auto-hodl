@@ -74,6 +74,14 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
     accountId,
   });
 
+  console.log('Account data for processing:', {
+    accountId,
+    roundUpToDollar: account?.roundUpToDollar,
+    roundUpToDollarType: typeof account?.roundUpToDollar,
+    tokenSourceAddress: account?.tokenSourceAddress,
+    hasAccount: !!account,
+  });
+
   // Skip processing if no account is associated with this transaction
   if (!accountId || !account) {
     console.log('Skipping transfer - no associated account found');
@@ -106,9 +114,42 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
   const tokenSourceAddress = account.tokenSourceAddress;
   // const roundUpMode = account.roundUpMode; // Available if needed for future logic
 
+  // Validate roundUpToDollar before using it
+  if (!roundUpToDollar || Number.isNaN(roundUpToDollar) || roundUpToDollar <= 0) {
+    console.error('Invalid roundUpToDollar value for account:', {
+      accountId,
+      roundUpToDollar,
+      type: typeof roundUpToDollar,
+    });
+    return null;
+  }
+
   // Calculate savings amount for round-up using account settings
   const roundUpAmount = roundUpToDollar * TOKEN_DECIMAL_MULTIPLIER;
   const asset = token as `0x${string}`;
+
+  // Validate TOKEN_DECIMAL_MULTIPLIER before using it
+  if (!TOKEN_DECIMAL_MULTIPLIER || Number.isNaN(TOKEN_DECIMAL_MULTIPLIER)) {
+    console.error('Invalid TOKEN_DECIMAL_MULTIPLIER for token:', {
+      token,
+      TOKEN_DECIMAL_MULTIPLIER,
+      chainId,
+    });
+    return null;
+  }
+
+  // Debug the values before BigInt conversion
+  console.log('Values before BigInt conversion:', {
+    amount,
+    amountType: typeof amount,
+    roundUpToDollar,
+    TOKEN_DECIMAL_MULTIPLIER,
+    roundUpAmount,
+    roundUpAmountType: typeof roundUpAmount,
+    isAmountNaN: Number.isNaN(Number(amount)),
+    isRoundUpAmountNaN: Number.isNaN(roundUpAmount),
+  });
+
   const savingsAmount = calculateSavingsAmount(BigInt(amount), BigInt(roundUpAmount));
   const onBehalfOf = tokenSourceAddress as `0x${string}`; // Use savings address or fallback to spendTo
 

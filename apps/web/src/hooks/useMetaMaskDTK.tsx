@@ -197,12 +197,13 @@ export function useMetaMaskDTK() {
       setCreatingDelegation(true);
       console.log('📜 Creating delegation...');
       // Update to savings roundUpTo value
-      const caveats = getAaveCaveats(delegator, BigInt(1000000));
+      // const caveats = getAaveCaveats(delegator, BigInt(1000000));
       // Create delegation
       const delegation = createDelegationToolkit({
         to: DELEGATE_ADDRESS,
         from: delegator.address,
-        caveats,
+        // TODO: Reenable caveats after testing
+        caveats: [],
       });
 
       console.log('✍️ Signing delegation...');

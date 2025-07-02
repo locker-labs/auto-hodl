@@ -1,14 +1,30 @@
 import dotenv from 'dotenv';
 import { createPublicClient, http, type Address } from 'viem';
-import { base, linea, optimism, arbitrum, polygon } from 'viem/chains';
+import { base, linea, optimism, arbitrum, polygon, mainnet } from 'viem/chains';
 import path from 'path';
-import { AaveV3Base, AaveV3Linea, AaveV3Optimism, AaveV3Arbitrum, AaveV3Polygon } from '@bgd-labs/aave-address-book';
+import {
+  AaveV3Base,
+  AaveV3Linea,
+  AaveV3Optimism,
+  AaveV3Arbitrum,
+  AaveV3Polygon,
+  AaveV3Ethereum,
+} from '@bgd-labs/aave-address-book';
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '.env.delegate') });
 
 // Chain configurations with USDC addresses and Aave contract addresses from BGD Labs address book
 const CHAIN_CONFIGS = {
+  ethereum: {
+    chain: mainnet,
+    chainId: 1,
+    usdcAddress: AaveV3Ethereum.ASSETS.USDC.UNDERLYING,
+    aavePoolAddress: AaveV3Ethereum.POOL,
+    aavePoolAddressesProvider: AaveV3Ethereum.POOL_ADDRESSES_PROVIDER,
+    aaveUiPoolDataProvider: AaveV3Ethereum.UI_POOL_DATA_PROVIDER,
+    rpcUrl: 'https://eth.llamarpc.com',
+  },
   base: {
     chain: base,
     chainId: 8453,

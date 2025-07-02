@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { createPublicClient, createWalletClient, http, type Address } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
-import { base, linea } from 'viem/chains';
+import { base, linea, arbitrum } from 'viem/chains';
 import path from 'path';
 
 import { getRoutes, getStepTransaction, getStatus, type RoutesRequest } from '@lifi/sdk';
@@ -17,6 +17,12 @@ const CHAIN_CONFIGS = {
     chainId: 59144,
     usdcAddress: '0x176211869cA2b568f2A7D4EE941E073a821EE1ff', // USDC on Linea
     rpcUrl: 'https://rpc.linea.build',
+  },
+  arbitrum: {
+    chain: arbitrum,
+    chainId: 42161,
+    usdcAddress: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // USDC on Arbitrum
+    rpcUrl: 'https://arb1.arbitrum.io/rpc',
   },
   base: {
     chain: base,
@@ -37,16 +43,18 @@ function validateEnvironment() {
   return { PRIVATE_KEY };
 }
 
-// Get cheapest route from Linea to Base, preferring CCTP/Mayan if available
+// Get cheapest route from Arbitrum to Base, preferring CCTP/Mayan if available
 async function getCCTPRoute(amount: string, fromAddress: string): Promise<any> {
-  console.log('\n🌉 Finding route from Linea to Base (preferring CCTP/Mayan)...');
+  console.log('\n🌉 Finding route from Arbitrum to Base (preferring CCTP/Mayan)...');
   console.log(`   Amount: ${amount} USDC`);
 
+  const sourceChain = CHAIN_CONFIGS.arbitrum;
+  const destinationChain = CHAIN_CONFIGS.linea;
   const routesRequest: RoutesRequest = {
-    fromChainId: CHAIN_CONFIGS.linea.chainId,
-    toChainId: CHAIN_CONFIGS.base.chainId,
-    fromTokenAddress: CHAIN_CONFIGS.linea.usdcAddress,
-    toTokenAddress: CHAIN_CONFIGS.base.usdcAddress,
+    fromChainId: sourceChain.chainId,
+    toChainId: destinationChain.chainId,
+    fromTokenAddress: sourceChain.usdcAddress,
+    toTokenAddress: destinationChain.usdcAddress,
     fromAmount: amount,
     fromAddress: fromAddress,
     options: {
@@ -60,7 +68,7 @@ async function getCCTPRoute(amount: string, fromAddress: string): Promise<any> {
     const routesResponse = await getRoutes(routesRequest);
 
     if (!routesResponse.routes || routesResponse.routes.length === 0) {
-      throw new Error('No routes found from Linea to Base');
+      throw new Error('No routes found from Arbitrum to Base');
     }
 
     // Log all available bridges to see what's available
@@ -201,7 +209,7 @@ async function executeRouteSteps(route: any, walletClient: any, publicClient: an
 
 // Main execution function
 async function main(fromAmountUSDC = 1) {
-  console.log('🚀 Starting Linea to Base CCTP Bridge...');
+  console.log('🚀 Starting Arbitrum to Base CCTP Bridge...');
 
   try {
     // Step 1: Validate environment
@@ -213,19 +221,19 @@ async function main(fromAmountUSDC = 1) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const walletClient = createWalletClient({
       account,
-      chain: linea,
-      transport: http(CHAIN_CONFIGS.linea.rpcUrl),
+      chain: arbitrum,
+      transport: http(CHAIN_CONFIGS.arbitrum.rpcUrl),
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const publicClient = createPublicClient({
-      chain: linea,
-      transport: http(CHAIN_CONFIGS.linea.rpcUrl),
+      chain: arbitrum,
+      transport: http(CHAIN_CONFIGS.arbitrum.rpcUrl),
     });
 
     console.log(`👤 User address: ${account.address}`);
 
-    // Step 3: Get route from Linea to Base
+    // Step 3: Get route from Arbitrum to Base
     const transferAmount = (fromAmountUSDC * 1_000_000).toString(); // Convert USDC to 6 decimals
     console.log(`💰 Transfer amount: ${fromAmountUSDC} USDC (${transferAmount} raw)`);
     const route = await getCCTPRoute(transferAmount, account.address);
@@ -234,7 +242,7 @@ async function main(fromAmountUSDC = 1) {
     // await executeRouteSteps(route, walletClient, publicClient);
 
     console.log('\n🎯 Bridge Summary:');
-    console.log(`   From: Linea (${CHAIN_CONFIGS.linea.chainId})`);
+    console.log(`   From: Arbitrum (${CHAIN_CONFIGS.arbitrum.chainId})`);
     console.log(`   To: Base (${CHAIN_CONFIGS.base.chainId})`);
     console.log(`   Amount: ${fromAmountUSDC} USDC`);
     console.log(`   Bridge: ${route.steps[0]?.tool || 'Unknown'}`);

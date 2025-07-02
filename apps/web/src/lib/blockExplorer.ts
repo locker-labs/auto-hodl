@@ -6,6 +6,7 @@ const chainIdToBlockExplorer: Record<number, string> = {
   8453: 'https://basescan.org',
   84532: 'https://sepolia.basescan.org',
   11155111: 'https://sepolia.etherscan.io',
+  42161: 'https://arbiscan.io',
 };
 
 export const getTransactionLink = (txHash: string): string => {
