@@ -38,6 +38,7 @@ export type Database = {
         Row: {
           chainId: string | null
           chainMode: string
+          circleAddress: string | null
           createdAt: string
           delegation: Json
           deploySalt: string
@@ -52,6 +53,7 @@ export type Database = {
         Insert: {
           chainId?: string | null
           chainMode?: string
+          circleAddress?: string | null
           createdAt?: string
           delegation: Json
           deploySalt: string
@@ -66,6 +68,7 @@ export type Database = {
         Update: {
           chainId?: string | null
           chainMode?: string
+          circleAddress?: string | null
           createdAt?: string
           delegation?: Json
           deploySalt?: string

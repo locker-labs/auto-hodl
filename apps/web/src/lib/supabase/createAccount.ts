@@ -32,6 +32,7 @@ export async function createAccountWithSignature(account: {
   savingsAddress?: string;
   chainId: string;
   chainMode: EChainMode;
+  circleAddress?: string;
 }) {
   console.log('Creating account with signature verification:', account);
 

@@ -5,6 +5,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useMetaMaskDTK } from '@/hooks/useMetaMaskDTK';
 import { useEffect } from 'react';
+import { useCircleSmartAccount } from '@/providers/circle-smart-account-provider';
+import { useWalletClient } from 'wagmi';
+import { useAutoHodl } from '@/providers/autohodl-provider';
+import { EChainMode } from '@/enums/chainMode.enums';
 
 export interface Props {
   onNext: () => void;
@@ -12,6 +16,8 @@ export interface Props {
 }
 
 export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => {
+  const { data: walletClient } = useWalletClient();
+
   const {
     setupDelegator,
     delegator,
@@ -23,6 +29,26 @@ export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => 
     accountSaveError,
   } = useMetaMaskDTK();
 
+  const { chainMode } = useAutoHodl();
+  const isMultiChainMode = chainMode === EChainMode.MULTI_CHAIN;
+
+  const {
+    account: circleAccount,
+    error: circleError,
+    handleCreateSmartAccount,
+    loading: circleAccountLoading,
+  } = useCircleSmartAccount();
+
+  // Setup Circle Smart Account when component mounts, only for multichain mode
+  useEffect(() => {
+    if (isMultiChainMode && !circleAccount && !circleAccountLoading && !circleError && walletClient) {
+      console.log('Creating Circle Smart Account on mount');
+      handleCreateSmartAccount();
+      console.log('Created Circle Smart Account');
+    }
+  }, [isMultiChainMode, walletClient, circleAccount, circleAccountLoading, circleError, handleCreateSmartAccount]);
+
+  // MetaMask delegator setup
   // Setup delegator when component mounts
   useEffect(() => {
     if (setupDelegator && !delegator && !creatingDelegator) {
@@ -49,9 +75,17 @@ export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => 
         // Delegation already exists, proceed to next step
         onNext();
       } else {
+        if (isMultiChainMode) {
+          if (!circleAccount) {
+            console.error('Circle account is not available, cannot create delegation');
+            return;
+          }
+        }
+
         console.log('Starting delegation creation...');
         // Create the delegation (this will update signedDelegation state)
-        await createDelegation();
+        // TODO: Ideally circleAccount.address should not be passed as parameter, and we should refactor this to make more sense
+        await createDelegation(circleAccount.address);
         console.log('createDelegation() completed - should have signature now');
       }
     } catch (error) {
@@ -87,12 +121,29 @@ export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => 
               </AlertDescription>
             </Alert>
           )}
+          {isMultiChainMode && circleError && (
+            <Alert className='border-red-200 bg-red-50 mb-6'>
+              <AlertCircle className='h-4 w-4' color={'#9b2c2c'} />
+              <AlertDescription className='text-red-800'>
+                <p>Failed to create circle smart account. Please try again.</p>
+                <div className='flex flex-col items-center justify-center'>
+                  <pre className='mt-2 max-h-[200px] max-w-[60vw] sm:w-100 sm:max-w-100 overflow-scroll'>
+                    {circleError}
+                  </pre>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
           <Button
             onClick={handleContinue}
-            disabled={!delegator || creatingDelegation}
+            disabled={
+              !delegator ||
+              creatingDelegation ||
+              (isMultiChainMode && (!circleAccount || circleAccountLoading || !!circleError))
+            }
             className='w-full h-12 bg-[#ff7a45] hover:bg-[#ff6a35] disabled:bg-[#ffb399] disabled:cursor-not-allowed text-white rounded-xl font-bold text-base cursor-pointer'
           >
-            {creatingDelegation ? (
+            {creatingDelegation || circleAccountLoading ? (
               <div className={'flex items-center justify-center gap-2'}>
                 <Loader2 className={'animate-spin size-5'} color={'white'} />
                 <span>Creating Account</span>
