@@ -97,7 +97,7 @@ export function SavingsInfoCards({
   return (
     <div className='grid grid-cols-1 sm:col-span-3 sm:grid-cols-3 gap-5'>
       {/* MultiChain Balance Card */}
-      <MultiChainBalanceCard loading={!isFetched} amount={circleAddressUSDCBalance} />
+      <MultiChainBalanceCard loading={!usdcBalanceFetched} amount={circleAddressUSDCBalance} />
 
       {/* Amount Deposited Card */}
       <AmountDepositedCard loading={!isFetched} amountDeposited={totalBalanceFormatted} />
