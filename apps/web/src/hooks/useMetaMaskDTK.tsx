@@ -13,11 +13,10 @@ import { VIEM_CHAIN, DELEGATE_ADDRESS, DEPLOY_SALT } from '@/config';
 import { publicClient } from '@/clients/publicClient';
 import { createAccountWithSignature, getAccountBySignerAddress } from '@/lib/supabase/createAccount';
 import { useAutoHodl } from '@/providers/autohodl-provider';
-import { getAaveCaveats } from '@/lib/yield/caveats';
-import { pimlicoClient } from '@/clients/pimlicoClient';
-import { bundlerClient } from '@/clients/bundlerClient';
-import { zeroAddress, type Hex } from 'viem';
-import { SmartAccount } from 'viem/account-abstraction';
+import { getCaveats } from "@/lib/utils";
+import { pimlicoClient } from "@/clients/pimlicoClient";
+import { bundlerClient } from "@/clients/bundlerClient";
+import { zeroAddress, type Hex } from "viem";
 import { EChainMode } from '@/enums/chainMode.enums';
 
 export function useMetaMaskDTK() {
@@ -197,13 +196,12 @@ export function useMetaMaskDTK() {
       setCreatingDelegation(true);
       console.log('📜 Creating delegation...');
       // Update to savings roundUpTo value
-      // const caveats = getAaveCaveats(delegator, BigInt(1000000));
+      const caveats = getCaveats(delegator, BigInt(1000000), chainMode);
       // Create delegation
       const delegation = createDelegationToolkit({
         to: DELEGATE_ADDRESS,
         from: delegator.address,
-        // TODO: Reenable caveats after testing
-        caveats: [],
+        caveats,
       });
 
       console.log('✍️ Signing delegation...');
