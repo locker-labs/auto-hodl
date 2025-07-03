@@ -12,7 +12,7 @@ export function YieldCard({ loading, amount }: { loading: boolean; amount: numbe
         </div>
         {/* Text Content */}
         <div>
-          <p className='text-black text-base text-left sm:text-center md:text-left'>Earned yield</p>
+          <p className='text-black text-base text-left sm:text-center md:text-left'>Earned Yield</p>
           <p className='font-bold text-[#3c1077] text-2xl mt-1 text-left sm:text-center md:text-left'>
             {loading ? <Loader2 className={'animate-spin size-8'} color={'#3c1077'} /> : `$${formattedAmount}`}
           </p>
