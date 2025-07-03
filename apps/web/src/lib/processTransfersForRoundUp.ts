@@ -15,6 +15,7 @@ import { encodeApproveTokensCallData, encodeSupplyCallData, erc20Abi } from './y
 import { parseUnits } from 'viem';
 import { updateTransactionWithYieldDepositByTxHash, type YieldDepositInfo } from './supabase/updateTransaction';
 import { pimlicoClient } from '@/clients/pimlicoClient';
+import { bridgeAndRedeem } from './lifi';
 /**
  * Redeems Aave delegations using the DTK pattern from the documentation
  * Based on: https://docs.metamask.io/delegation-toolkit/how-to/redeem-delegation/
@@ -187,31 +188,38 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
     console.error('Failed to check smart account balance:', error);
     return null;
   }
+  let transactionHash: `0x${string}` | null = null;
+  if (account.chainMode === "single-chain") {
+    // Create executions for Aave pool operations (approve + supply)
+    const encodedApproveCallData = encodeApproveTokensCallData(AAVE_POOL_ADDRESS, savingsAmount);
+    const encodedSupplyCallData = encodeSupplyCallData(asset, savingsAmount, onBehalfOf);
 
-  // Create executions for Aave pool operations (approve + supply)
-  const encodedApproveCallData = encodeApproveTokensCallData(AAVE_POOL_ADDRESS, savingsAmount);
-  const encodedSupplyCallData = encodeSupplyCallData(asset, savingsAmount, onBehalfOf);
+    // Create execution structs following the DTK pattern
+    const executions: ExecutionStruct[] = [
+      {
+        target: asset, // Approve the token to Aave pool
+        value: parseUnits('0', 0),
+        callData: encodedApproveCallData,
+      },
+      {
+        target: AAVE_POOL_ADDRESS, // Supply to Aave pool
+        value: parseUnits('0', 0),
+        callData: encodedSupplyCallData,
+      },
+    ];
 
-  // Create execution structs following the DTK pattern
-  const executions: ExecutionStruct[] = [
-    {
-      target: asset, // Approve the token to Aave pool
-      value: parseUnits('0', 0),
-      callData: encodedApproveCallData,
-    },
-    {
-      target: AAVE_POOL_ADDRESS, // Supply to Aave pool
-      value: parseUnits('0', 0),
-      callData: encodedSupplyCallData,
-    },
-  ];
+    // Redeem delegation using the proper DTK pattern with the fetched delegation
+    transactionHash = await redeemAaveDelegations([delegation, delegation], executions);
 
-  // Redeem delegation using the proper DTK pattern with the fetched delegation
-  const transactionHash = await redeemAaveDelegations([delegation, delegation], executions);
-
-  console.log('Encoded approve call data:', encodedApproveCallData);
-  console.log('Encoded supply call data:', encodedSupplyCallData);
+  } else if (account.chainMode === "multi-chain") {
+    transactionHash = await bridgeAndRedeem(delegation,chainId,amount, onBehalfOf);
+  }
   console.log('Redeem Delegation Transaction Hash:', transactionHash);
+  // Check if transactionHash is valid
+  if (!transactionHash) {
+    console.error('Failed to redeem delegation - no transaction hash returned');
+    return null;
+  }
 
   // Update transaction with yield deposit information
   try {

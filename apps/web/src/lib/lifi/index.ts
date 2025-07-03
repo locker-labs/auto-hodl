@@ -47,7 +47,7 @@ export async function requestQuote(
     toToken: TokenAddressMap[chainId],
     fromAmount: amount,
     fromAddress: senderAddress,
-    allowBridges: ["celercircle"], // Only allow CCTP V2
+    allowBridges: ["mayanMCTP"], 
   };
   const quote = await getQuote(quoteRequest);
   return quote;
@@ -71,9 +71,9 @@ export async function bridgeAndRedeem(
   chainId: number,
   amount: string,
   senderAddress: `0x${string}`
-) {
+) : Promise<`0x${string}`> {
   const routes = await requestRoute(senderAddress, chainId, amount);
-
+  // We expect one step.
   for (const step of routes[0].steps) {
     const data = await getStepTransaction(step);
     const approvalCallData = encodeApproveTokensCallData(
@@ -95,25 +95,28 @@ export async function bridgeAndRedeem(
       [delegation, delegation],
       [approvalExecution, bridgeExecution]
     );
-    let status;
-    do {
-      const result = await getStatus({
-        txHash: transactionHash,
-        fromChain: step.action.fromChainId,
-        toChain: step.action.toChainId,
-        bridge: step.tool,
-      });
-      status = result.status;
+    return transactionHash;
+    
+    // let status;
+    // do {
+    //   const result = await getStatus({
+    //     txHash: transactionHash,
+    //     fromChain: step.action.fromChainId,
+    //     toChain: step.action.toChainId,
+    //     bridge: step.tool,
+    //   });
+    //   status = result.status;
 
-      console.log(`Transaction status for ${transactionHash}:`, status);
+    //   console.log(`Transaction status for ${transactionHash}:`, status);
 
-      // Wait for a short period before checking the status again
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-    } while (status !== "DONE" && status !== "FAILED");
+    //   // Wait for a short period before checking the status again
+    //   await new Promise((resolve) => setTimeout(resolve, 5000));
+    // } while (status !== "DONE" && status !== "FAILED");
 
-    if (status === "FAILED") {
-      console.error(`Transaction ${transactionHash} failed`);
-      return;
-    }
+    // if (status === "FAILED") {
+    //   console.error(`Transaction ${transactionHash} failed`);
+    //   return;
+    // }
   }
+  throw new Error("No steps found or transaction could not be completed.");
 }
