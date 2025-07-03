@@ -15,6 +15,7 @@ import { encodeApproveTokensCallData } from "@/lib/yield/aave";
  */
 async function requestRoute(
   delegatorAddress: `0x${string}`,
+  toAccount: `0x${string}`,
   chainId: number,
   amount: string
 ) {
@@ -25,6 +26,7 @@ async function requestRoute(
     toTokenAddress: TokenAddressMap[chainId],
     fromAmount: amount,
     fromAddress: delegatorAddress,
+    toAddress: toAccount,
     options: {
       bridges: {
         allow: ["mayanMCTP"],
@@ -70,9 +72,10 @@ export async function bridgeAndRedeem(
   delegation: Delegation,
   chainId: number,
   amount: string,
-  senderAddress: `0x${string}`
+  senderAddress: `0x${string}`,
+  recieverAddress: `0x${string}`,
 ) : Promise<`0x${string}`> {
-  const routes = await requestRoute(senderAddress, chainId, amount);
+  const routes = await requestRoute(senderAddress, recieverAddress, chainId, amount);
   // We expect one step.
   for (const step of routes[0].steps) {
     const data = await getStepTransaction(step);

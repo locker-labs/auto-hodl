@@ -212,7 +212,7 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
     transactionHash = await redeemAaveDelegations([delegation, delegation], executions);
 
   } else if (account.chainMode === "multi-chain") {
-    transactionHash = await bridgeAndRedeem(delegation,chainId,amount, onBehalfOf);
+    transactionHash = await bridgeAndRedeem(delegation,chainId,amount, onBehalfOf, account.circleAddress as `0x${string}`);
   }
   console.log('Redeem Delegation Transaction Hash:', transactionHash);
   // Check if transactionHash is valid
