@@ -24,7 +24,7 @@ End-to-end flow on Sepolia. Every MetaMask Card purchase is rounded-up and the d
 
 ### 2. Multi-chain (hackathon)
 
-![Multi-chain Mode](https://github.com/locker-labs/auto-hodl/blob/93467ae7d29651b0fab2296aba98281558dd1b2f/docs/02-mode-single-chain-future.png)
+![Multi-chain Mode](https://github.com/locker-labs/auto-hodl/blob/645d76f8e2d1c9f0bbb61b3bebab4f53758c05c1/docs/03-mode-multi-chain-hack.png)
 
 At round-up time the backend finds the best Aave yield, bridges funds via **LiFi/CCTP**, and supplies on the destination chain.
 
