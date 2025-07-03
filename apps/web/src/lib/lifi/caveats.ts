@@ -7,7 +7,7 @@ export const getLifiCaveats = (delegator: MetaMaskSmartAccount, savingsAmount: b
   const caveats = caveatBuilder
     // Hardcoded to sepolia
       .addCaveat('allowedTargets', [LIFI_DIAMOND_ADDRESS, USDC_ADDRESS as `0x${string}`])
-      .addCaveat('allowedMethods', ["startBridgeTokensViaRelay(tuple,tuple)","approve(address,uint256)"])
+    //   .addCaveat('allowedMethods', ["startBridgeTokensViaRelay(tuple,tuple)","approve(address,uint256)"])
     .addCaveat(
       'erc20BalanceChange',
       USDC_ADDRESS as `0x${string}`,
