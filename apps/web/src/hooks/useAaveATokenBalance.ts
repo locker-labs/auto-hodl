@@ -42,12 +42,14 @@ export const useAaveATokenBalance = () => {
     chainId: VIEM_CHAIN.id,
     query: {
       enabled: isConnected && !!tokenSourceAddress && !!userAddress,
-      refetchOnWindowFocus: false, // Disable refetching on window focus
-      refetchOnReconnect: true, // Enable refetching on reconnect
-      refetchInterval: 5000, // refetching at 5 second intervals
-      staleTime: 0, // Disable stale data
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      refetchInterval: 5000,
+      staleTime: 0,
     },
   });
+
+  console.log('useAaveATokenBalance', { isFetched, isFetching, isLoading });
 
   let balanceData = { balance: BigInt(0), balanceFormatted: 0 };
 
@@ -58,7 +60,7 @@ export const useAaveATokenBalance = () => {
 
     const balance = tokenData[0].scaledATokenBalance;
 
-    console.log('\nUser `aToken` Balance in Pool:', balance);
+    console.log('\nToken Source `aToken` Balance in Pool:', balance);
 
     balanceData = { balance, balanceFormatted: Number(formatUnits(balance, TOKEN_DECIMALS)) };
   }
