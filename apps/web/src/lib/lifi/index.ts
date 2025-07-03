@@ -1,10 +1,10 @@
-import type { QuoteRequest, RouteExtended, RoutesRequest } from "@lifi/sdk";
-import { getQuote, getRoutes, getStepTransaction, getStatus } from "@lifi/sdk";
-import type { Delegation, ExecutionStruct } from "@metamask/delegation-toolkit";
-import { VIEM_CHAIN } from "@/config";
-import { TokenAddressMap } from "@/lib/constants";
-import { redeemAaveDelegations } from "@/lib/processTransfersForRoundUp";
-import { encodeApproveTokensCallData } from "@/lib/yield/aave";
+import type { QuoteRequest, RouteExtended, RoutesRequest } from '@lifi/sdk';
+import { getQuote, getRoutes, getStepTransaction, getStatus } from '@lifi/sdk';
+import type { Delegation, ExecutionStruct } from '@metamask/delegation-toolkit';
+import { VIEM_CHAIN } from '@/config';
+import { TokenAddressMap } from '@/lib/constants';
+import { redeemAaveDelegations } from '@/lib/processTransfersForRoundUp';
+import { encodeApproveTokensCallData } from '@/lib/yield/aave';
 
 /**
  * Fetches routes for a given chain and amount using the LiFi SDK.
@@ -17,7 +17,7 @@ async function requestRoute(
   delegatorAddress: `0x${string}`,
   toAccount: `0x${string}`,
   chainId: number,
-  amount: string
+  amount: string,
 ) {
   const routesRequest: RoutesRequest = {
     fromChainId: VIEM_CHAIN.id,
@@ -29,7 +29,7 @@ async function requestRoute(
     toAddress: toAccount,
     options: {
       bridges: {
-        allow: ["mayanMCTP"],
+        allow: ['mayanMCTP'],
       },
     },
   };
@@ -37,11 +37,7 @@ async function requestRoute(
   return result.routes;
 }
 
-export async function requestQuote(
-  chainId: number,
-  amount: string,
-  senderAddress: `0x${string}`
-) {
+export async function requestQuote(chainId: number, amount: string, senderAddress: `0x${string}`) {
   const quoteRequest: QuoteRequest = {
     fromChain: VIEM_CHAIN.id,
     toChain: chainId,
@@ -49,7 +45,7 @@ export async function requestQuote(
     toToken: TokenAddressMap[chainId],
     fromAmount: amount,
     fromAddress: senderAddress,
-    allowBridges: ["mayanMCTP"], 
+    allowBridges: ['mayanMCTP'],
   };
   const quote = await getQuote(quoteRequest);
   return quote;
@@ -59,10 +55,7 @@ export const getTransactionLinks = (route: RouteExtended) => {
   route.steps.forEach((step, index) => {
     step.execution?.process.forEach((process) => {
       if (process.txHash) {
-        console.log(
-          `Transaction Hash for Step ${index + 1}, Process ${process.type}:`,
-          process.txHash
-        );
+        console.log(`Transaction Hash for Step ${index + 1}, Process ${process.type}:`, process.txHash);
       }
     });
   });
@@ -74,15 +67,12 @@ export async function bridgeAndRedeem(
   amount: string,
   senderAddress: `0x${string}`,
   recieverAddress: `0x${string}`,
-) : Promise<`0x${string}`> {
+): Promise<`0x${string}`> {
   const routes = await requestRoute(senderAddress, recieverAddress, chainId, amount);
   // We expect one step.
   for (const step of routes[0].steps) {
     const data = await getStepTransaction(step);
-    const approvalCallData = encodeApproveTokensCallData(
-      data.transactionRequest?.to as `0x${string}`,
-      BigInt(amount)
-    );
+    const approvalCallData = encodeApproveTokensCallData(data.transactionRequest?.to as `0x${string}`, BigInt(amount));
     const approvalExecution: ExecutionStruct = {
       target: TokenAddressMap[VIEM_CHAIN.id],
       value: BigInt(0),
@@ -94,12 +84,9 @@ export async function bridgeAndRedeem(
       callData: data.transactionRequest?.data as `0x${string}`,
     };
 
-    const transactionHash = await redeemAaveDelegations(
-      [delegation, delegation],
-      [approvalExecution, bridgeExecution]
-    );
+    const transactionHash = await redeemAaveDelegations([delegation, delegation], [approvalExecution, bridgeExecution]);
     return transactionHash;
-    
+
     // let status;
     // do {
     //   const result = await getStatus({
@@ -121,5 +108,5 @@ export async function bridgeAndRedeem(
     //   return;
     // }
   }
-  throw new Error("No steps found or transaction could not be completed.");
+  throw new Error('No steps found or transaction could not be completed.');
 }
