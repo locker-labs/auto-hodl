@@ -49,6 +49,8 @@ export const useCircleAddressAaveATokenBalance = () => {
     },
   });
 
+  console.log('useCircleAddressAaveATokenBalance', { isFetched, isFetching, isLoading });
+
   let balanceData = { balance: BigInt(0), balanceFormatted: 0 };
 
   if (raw) {
@@ -60,7 +62,7 @@ export const useCircleAddressAaveATokenBalance = () => {
 
     const balance = tokenData[0].scaledATokenBalance;
 
-    console.log('\nUser Circle wallet `aToken` Balance on Base in Pool:', balance);
+    console.log('\Circle wallet `aToken` Balance on Base in Pool:', balance);
 
     balanceData = {
       balance,

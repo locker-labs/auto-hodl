@@ -6,8 +6,10 @@ import { useAutoHodl } from '@/providers/autohodl-provider';
 import { useReadContract } from 'wagmi';
 import { erc20Abi, formatUnits } from 'viem';
 import { useCircleAddressAaveATokenBalance } from '@/hooks/useCircleAddressAaveATokenBalance';
-import { base } from 'viem/chains';
+import { base as chain } from 'viem/chains';
 import { TokenAddressMap, TokenDecimalMap } from '@/lib/constants';
+
+const chainId = chain.id;
 
 export function SavingsInfoCards({
   loading: savingsLoading,
@@ -21,30 +23,56 @@ export function SavingsInfoCards({
   console.log('circleAddress', circleAddress);
 
   // circle address balance on Base Mainnet
-  const { data } = useReadContract({
-    chainId: base.id,
+  const {
+    data,
+    isFetched: usdcBalanceFetched,
+    isFetching: usdcBalanceFetching,
+  } = useReadContract({
+    chainId,
     abi: erc20Abi,
-    address: TokenAddressMap[base.id],
+    address: TokenAddressMap[chainId],
     functionName: 'balanceOf',
     args: [circleAddress as `0x${string}`],
     query: {
       enabled: !!circleAddress,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      refetchInterval: 5000,
+      staleTime: 0,
     },
   });
 
-  const circleAddressUSDCBalance = data ? formatUnits(data, TokenDecimalMap[TokenAddressMap[base.id]]) : '0';
+  const circleAddressUSDCBalance = data ? formatUnits(data, TokenDecimalMap[TokenAddressMap[chainId]]) : '0';
+
+  console.log('useCircleUsdcBalance', {
+    isFetched: usdcBalanceFetched,
+    isFetching: usdcBalanceFetching,
+    data,
+    'TokenAddressMap[chainId]': TokenAddressMap[chainId],
+    'TokenDecimalMap[TokenAddressMap[chainId]]': TokenDecimalMap[TokenAddressMap[chainId]],
+  });
 
   const {
     data: { balanceFormatted: tokenSourceBalance },
     isLoading: tokenSourceBalanceLoading,
+    isFetched: tokenSourceBalanceFetched,
   } = useAaveATokenBalance();
 
   const {
     data: { balanceFormatted: circleBalance },
     isLoading: circleBalanceLoading,
+    isFetched: circleBalanceFetched,
   } = useCircleAddressAaveATokenBalance();
 
   const isLoading = savingsLoading || tokenSourceBalanceLoading || circleBalanceLoading;
+
+  const isFetched = usdcBalanceFetched && tokenSourceBalanceFetched && circleBalanceFetched;
+
+  console.log({
+    savingsLoading,
+    tokenSourceBalanceLoading,
+    circleBalanceLoading,
+  });
 
   let totalBalance = 0;
   let totalBalanceFormatted = '0';
@@ -69,13 +97,13 @@ export function SavingsInfoCards({
   return (
     <div className='grid grid-cols-1 sm:col-span-3 sm:grid-cols-3 gap-5'>
       {/* MultiChain Balance Card */}
-      <MultiChainBalanceCard loading={isLoading} amount={circleAddressUSDCBalance} />
+      <MultiChainBalanceCard loading={!isFetched} amount={circleAddressUSDCBalance} />
 
       {/* Amount Deposited Card */}
-      <AmountDepositedCard loading={isLoading} amountDeposited={totalBalanceFormatted} />
+      <AmountDepositedCard loading={!isFetched} amountDeposited={totalBalanceFormatted} />
 
       {/* Earned Yield Card */}
-      <EarnedYield loading={isLoading} earnedYield={earnedYieldFormatted} />
+      <EarnedYield loading={!isFetched} earnedYield={earnedYieldFormatted} />
     </div>
   );
 }
