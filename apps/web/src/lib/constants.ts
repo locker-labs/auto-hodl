@@ -95,3 +95,5 @@ export const TOKEN_ADDRESS = TokenAddressMap[chainId];
 export const TOKEN_DECIMALS = TokenDecimalMap[TOKEN_ADDRESS];
 
 export const TOKEN_DECIMAL_MULTIPLIER = 10 ** TOKEN_DECIMALS;
+
+export const LIFI_DIAMOND_ADDRESS = '0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE' as `0x${string}`;
