@@ -30,7 +30,7 @@ export function SavingsInfoCards({
 
   return (
     <div className='grid grid-cols-1 sm:col-span-3 sm:grid-cols-3 gap-5'>
-      <SingleChainBalanceCard loading={!tokenSourceBalanceFetched} amount={yieldBalance} />
+      <SingleChainBalanceCard loading={!tokenSourceBalanceFetched} amount={tokenSourceBalance} />
       <MultiChainBalanceCard loading={!circleUsdcBalanceFetched} amount={circleUsdcBalance} />
       <YieldCard loading={!tokenSourceBalanceFetched && !savingsLoading} amount={yieldBalance} />
     </div>
