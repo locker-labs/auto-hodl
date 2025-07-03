@@ -6,7 +6,7 @@ if (Number.isNaN(chainId)) {
   throw new Error('env NEXT_PUBLIC_CHAIN_ID is not a number');
 }
 
-const chains: Chain[] = [arbitrum, base, linea, baseSepolia, sepolia];
+export const chains: Chain[] = [arbitrum, base, linea, baseSepolia, sepolia];
 const foundChain: Chain | undefined = chains.find((chain) => chain.id === chainId);
 
 if (!foundChain) {
