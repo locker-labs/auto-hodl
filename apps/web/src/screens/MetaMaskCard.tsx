@@ -79,7 +79,7 @@ export const MetaMaskCard = ({ onNext, onBack }: Props): React.ReactNode => {
           <InfoIcon className='size-5 min-w-5 min-h-5' color={'#ff6f35'} />
 
           <AlertDescription className='font-medium text-[#773410] text-base tracking-[0] leading-[normal]'>
-            Unless you have a MetaMask Card, this should be the same address that was connected in step 1.
+            In most cases, this should be the same address that was connected in step 1.
           </AlertDescription>
         </Alert>
 
@@ -115,7 +115,7 @@ export const MetaMaskCard = ({ onNext, onBack }: Props): React.ReactNode => {
               )}
               <div className='bg-[#f8f9fa] p-3 rounded-lg'>
                 <p className='text-[#6b6b6b] text-sm font-normal leading-relaxed'>
-                  <strong>Note:</strong> If you have a MetaMask Card, use the address linked to your card.
+                  <strong>Note:</strong> In production, the trigger address and source of funds would be the same. They would both be addresses linked to your Card.
                 </p>
               </div>
             </div>
