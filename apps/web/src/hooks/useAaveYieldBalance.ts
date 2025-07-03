@@ -8,7 +8,9 @@ import {
   TOKEN_DECIMALS,
 } from '@/lib/constants';
 import { useAutoHodl } from '@/providers/autohodl-provider';
-import { VIEM_CHAIN } from '@/config';
+import { VIEM_CHAIN as chain } from '@/config';
+
+const chainId = chain.id;
 
 type TUserReserveDataObject = {
   underlyingAsset: string;
@@ -23,7 +25,7 @@ export interface IUserReserveData {
 }
 
 // uses env configured chain id
-export const useAaveATokenBalance = () => {
+export const useAaveYieldBalance = () => {
   const { isConnected, address: userAddress } = useAccount();
   const { tokenSourceAddress } = useAutoHodl();
 
@@ -39,7 +41,7 @@ export const useAaveATokenBalance = () => {
     address: AAVE_UI_POOL_DATA_PROVIDER,
     functionName: 'getUserReservesData',
     args: [AAVE_POOL_ADDRESSES_PROVIDER, tokenSourceAddress],
-    chainId: VIEM_CHAIN.id,
+    chainId,
     query: {
       enabled: isConnected && !!tokenSourceAddress && !!userAddress,
       refetchOnWindowFocus: false,
@@ -49,7 +51,7 @@ export const useAaveATokenBalance = () => {
     },
   });
 
-  console.log('useAaveATokenBalance', { isFetched, isFetching, isLoading });
+  console.log('useAaveATokenBalance', { isFetched, isFetching });
 
   let balanceData = { balance: BigInt(0), balanceFormatted: 0 };
 
@@ -65,5 +67,13 @@ export const useAaveATokenBalance = () => {
     balanceData = { balance, balanceFormatted: Number(formatUnits(balance, TOKEN_DECIMALS)) };
   }
 
-  return { data: balanceData, isFetched, isFetching, isError, isLoading, isLoadingError };
+  return {
+    balance: balanceData.balance,
+    balanceFormatted: balanceData.balanceFormatted,
+    isFetched,
+    isFetching,
+    isError,
+    isLoading,
+    isLoadingError,
+  };
 };

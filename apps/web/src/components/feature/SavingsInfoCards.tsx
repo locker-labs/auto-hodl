@@ -1,15 +1,8 @@
-import { EarnedYield } from '@/components/ui/cards/GrowthCard';
-import { MultiChainBalanceCard } from '../ui/cards/MultiChainBalanceCard';
-import { AmountDepositedCard } from '@/components/ui/cards/YieldEarnedCard';
-import { useAaveATokenBalance } from '@/hooks/useAaveATokenBalance';
-import { useAutoHodl } from '@/providers/autohodl-provider';
-import { useReadContract } from 'wagmi';
-import { erc20Abi, formatUnits } from 'viem';
-import { useCircleAddressAaveATokenBalance } from '@/hooks/useCircleAddressAaveATokenBalance';
-import { base as chain } from 'viem/chains';
-import { TokenAddressMap, TokenDecimalMap } from '@/lib/constants';
-
-const chainId = chain.id;
+import { YieldCard } from '@/components/ui/cards/YieldCard';
+import { SingleChainBalanceCard } from '@/components/ui/cards/SingleChainBalanceCard';
+import { MultiChainBalanceCard } from '@/components/ui/cards/MultiChainBalanceCard';
+import { useAaveYieldBalance } from '@/hooks/useAaveYieldBalance';
+import { useCircleTokenBalance } from '@/hooks/useCircleTokenBalance';
 
 export function SavingsInfoCards({
   loading: savingsLoading,
@@ -18,92 +11,28 @@ export function SavingsInfoCards({
   loading: boolean;
   totalSavings: number;
 }): React.JSX.Element {
-  const { circleAddress } = useAutoHodl();
+  // Circle address balance on Base Mainnet
+  const { isFetched: circleUsdcBalanceFetched, balanceNumber: circleUsdcBalance } = useCircleTokenBalance();
 
-  console.log('circleAddress', circleAddress);
-
-  // circle address balance on Base Mainnet
+  // Token source balance from Aave Yield on source chain (connected wallet)
   const {
-    data,
-    isFetched: usdcBalanceFetched,
-    isFetching: usdcBalanceFetching,
-  } = useReadContract({
-    chainId,
-    abi: erc20Abi,
-    address: TokenAddressMap[chainId],
-    functionName: 'balanceOf',
-    args: [circleAddress as `0x${string}`],
-    query: {
-      enabled: !!circleAddress,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: true,
-      refetchInterval: 5000,
-      staleTime: 0,
-    },
-  });
-
-  const circleAddressUSDCBalance = data ? formatUnits(data, TokenDecimalMap[TokenAddressMap[chainId]]) : '0';
-
-  console.log('useCircleUsdcBalance', {
-    isFetched: usdcBalanceFetched,
-    isFetching: usdcBalanceFetching,
-    data,
-    'TokenAddressMap[chainId]': TokenAddressMap[chainId],
-    'TokenDecimalMap[TokenAddressMap[chainId]]': TokenDecimalMap[TokenAddressMap[chainId]],
-  });
-
-  const {
-    data: { balanceFormatted: tokenSourceBalance },
+    balanceFormatted: tokenSourceBalance,
     isLoading: tokenSourceBalanceLoading,
     isFetched: tokenSourceBalanceFetched,
-  } = useAaveATokenBalance();
+  } = useAaveYieldBalance();
 
-  const {
-    data: { balanceFormatted: circleBalance },
-    isLoading: circleBalanceLoading,
-    isFetched: circleBalanceFetched,
-  } = useCircleAddressAaveATokenBalance();
-
-  const isLoading = savingsLoading || tokenSourceBalanceLoading || circleBalanceLoading;
-
-  const isFetched = usdcBalanceFetched && tokenSourceBalanceFetched && circleBalanceFetched;
-
-  console.log({
-    savingsLoading,
-    tokenSourceBalanceLoading,
-    circleBalanceLoading,
-  });
-
-  let totalBalance = 0;
-  let totalBalanceFormatted = '0';
-  let earnedYield = 0;
-  let earnedYieldFormatted = '0';
-
-  if (!isLoading) {
-    if (tokenSourceBalance) {
-      totalBalance += tokenSourceBalance;
-      totalBalanceFormatted = totalBalance.toFixed(2);
-    }
-    if (circleBalance) {
-      totalBalance += circleBalance;
-      totalBalanceFormatted = totalBalance.toFixed(2);
-    }
-    earnedYield = totalBalance - totalSavings;
-    if (earnedYield > 0) {
-      earnedYieldFormatted = earnedYield.toFixed(2);
-    }
+  // Calculate yield balance (Single chain for now)
+  let yieldBalance = 0;
+  if (!savingsLoading && !tokenSourceBalanceLoading && tokenSourceBalance > 0) {
+    yieldBalance += tokenSourceBalance;
+    yieldBalance -= totalSavings;
   }
 
   return (
     <div className='grid grid-cols-1 sm:col-span-3 sm:grid-cols-3 gap-5'>
-      {/* MultiChain Balance Card */}
-      <MultiChainBalanceCard loading={!usdcBalanceFetched} amount={circleAddressUSDCBalance} />
-
-      {/* Amount Deposited Card */}
-      <AmountDepositedCard loading={!isFetched} amountDeposited={totalBalanceFormatted} />
-
-      {/* Earned Yield Card */}
-      <EarnedYield loading={!isFetched} earnedYield={earnedYieldFormatted} />
+      <SingleChainBalanceCard loading={!tokenSourceBalanceFetched} amount={yieldBalance} />
+      <MultiChainBalanceCard loading={!circleUsdcBalanceFetched} amount={circleUsdcBalance} />
+      <YieldCard loading={!tokenSourceBalanceFetched && !savingsLoading} amount={yieldBalance} />
     </div>
   );
 }
