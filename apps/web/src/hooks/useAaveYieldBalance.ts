@@ -1,6 +1,6 @@
 import { useAccount, useReadContract } from 'wagmi';
 import { formatUnits } from 'viem';
-import { abi } from '@/abis/AaveUiPoolDataProvider';
+import { arbitrum_getUserReservesData_ABI as abi } from '@/abis/AaveUiPoolDataProvider';
 import {
   AAVE_POOL_ADDRESSES_PROVIDER,
   AAVE_UI_POOL_DATA_PROVIDER,
@@ -31,6 +31,7 @@ export const useAaveYieldBalance = () => {
 
   const {
     data: raw,
+    error,
     isFetched,
     isFetching,
     isError,
@@ -51,7 +52,7 @@ export const useAaveYieldBalance = () => {
     },
   });
 
-  console.log('useAaveATokenBalance', { isFetched, isFetching });
+  console.log('useAaveATokenBalance', { isFetched, isFetching, error });
 
   let balanceData = { balance: BigInt(0), balanceFormatted: 0 };
 
