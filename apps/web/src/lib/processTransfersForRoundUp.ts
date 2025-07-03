@@ -217,7 +217,8 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
     transactionHash = await bridgeAndRedeem(
       delegation,
       destinationChainId,
-      amount,
+      // Always bridge $1 to ensure there is a route
+      '1000000',
       onBehalfOf,
       account.circleAddress as `0x${string}`,
     );
