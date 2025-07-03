@@ -1,23 +1,12 @@
 import { toModularTransport } from '@circle-fin/modular-wallets-core';
 import { createPublicClient } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
-import { VIEM_CHAIN, CIRCLE_CLIENT_URL, CIRCLE_CLIENT_KEY } from '@/config';
-import { arbitrumSepolia, baseSepolia, sepolia } from 'viem/chains';
+import { CIRCLE_CLIENT_URL, CIRCLE_CLIENT_KEY } from '@/config';
+import { base } from 'viem/chains';
 
-const chain = VIEM_CHAIN;
-
-let chainName: string;
-// if (chain.id === arbitrumSepolia.id) {
-//   chainName = 'arbitrumSepolia';
-// } else if (chain.id === baseSepolia.id) {
-//   chainName = 'baseSepolia';
-// } else if (chain.id === sepolia.id) {
-//   chainName = 'sepolia';
-// } else {
-//   throw new Error(`Unsupported chain: ${chain.id}`);
-// }
-// For demo purposes, recipient will always be Arbitrum.
-chainName = 'base';
+const chain = base;
+const chainName = 'base';
+// For demo purposes, recipient will always be Base.
 
 // Create modular transport
 export function createCircleTransport() {
