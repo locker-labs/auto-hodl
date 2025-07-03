@@ -39,12 +39,11 @@ export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => 
     loading: circleAccountLoading,
   } = useCircleSmartAccount();
 
-  // Setup Circle Smart Account when component mounts, only for multichain mode
+  // Setup Circle Smart Account when component mounts
   useEffect(() => {
     if (!circleAccount && !circleAccountLoading && !circleError && walletClient) {
-      console.log('Creating Circle Smart Account on mount');
+      console.log('Invoking handleCreateSmartAccount');
       handleCreateSmartAccount();
-      console.log('Created Circle Smart Account');
     }
   }, [walletClient, circleAccount, circleAccountLoading, circleError, handleCreateSmartAccount]);
 
