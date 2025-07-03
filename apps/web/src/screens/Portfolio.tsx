@@ -51,33 +51,36 @@ export const Portfolio = (): React.JSX.Element => {
                     1
                   </div>
                   <h3 className='font-semibold text-lg mb-2'>Send USDC</h3>
-                  <p className='text-gray-600 text-sm mb-3'>
-                    Send USDC from{' '}
-                    {triggerAddress ? (
-                      <span className='font-mono text-xs bg-gray-100 px-1 rounded'>{triggerAddress}</span>
-                    ) : (
-                      'your trigger address'
-                    )}{' '}
-                    to any simulated MetaMask Card address on {VIEM_CHAIN.name}:
-                  </p>
-                  <p className='text-gray-600 text-sm mb-3'>
-                    <strong>Token Source Address:</strong>{' '}
-                    {tokenSourceAddress ? (
-                      <span className='font-mono text-xs bg-blue-100 px-1 rounded break-all'>{tokenSourceAddress}</span>
-                    ) : (
-                      'Loading...'
-                    )}{' '}
-                    (must contain USDC)
-                  </p>
+                  
+                  {!tokenSourceAddress || !triggerAddress ? (
+                    <div className='bg-yellow-50 rounded-lg p-3 w-full border border-yellow-200'>
+                      <p className='text-yellow-800 text-sm font-medium'>
+                        Refresh page for additional details
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <p className='text-gray-600 text-sm mb-3'>
+                        Send USDC from{' '}
+                        <span className='font-mono text-xs bg-gray-100 px-1 rounded'>{triggerAddress}</span>
+                        {' '}to any simulated MetaMask Card address on {VIEM_CHAIN.name}:
+                      </p>
+                      <p className='text-gray-600 text-sm mb-3'>
+                        <strong>Token Source Address:</strong>{' '}
+                        <span className='font-mono text-xs bg-blue-100 px-1 rounded break-all'>{tokenSourceAddress}</span>
+                        {' '}(must contain USDC)
+                      </p>
 
-                  <div className='bg-gray-50 rounded-lg p-3 w-full'>
-                    <p className='text-xs font-mono text-gray-700 mb-1'>US Card:</p>
-                    <p className='text-xs font-mono break-all'>{MM_CARD_ADDRESSES[0]}</p>
-                    <p className='text-xs font-mono text-gray-700 mb-1 mt-2'>International Card:</p>
-                    <p className='text-xs font-mono break-all'>{MM_CARD_ADDRESSES[1]}</p>
-                    <p className='text-xs font-mono text-gray-700 mb-1 mt-2'>Test Card:</p>
-                    <p className='text-xs font-mono break-all'>{MM_CARD_ADDRESSES[2]}</p>
-                  </div>
+                      <div className='bg-gray-50 rounded-lg p-3 w-full'>
+                        <p className='text-xs font-mono text-gray-700 mb-1'>US Card:</p>
+                        <p className='text-xs font-mono break-all'>{MM_CARD_ADDRESSES[0]}</p>
+                        <p className='text-xs font-mono text-gray-700 mb-1 mt-2'>International Card:</p>
+                        <p className='text-xs font-mono break-all'>{MM_CARD_ADDRESSES[1]}</p>
+                        <p className='text-xs font-mono text-gray-700 mb-1 mt-2'>Test Card:</p>
+                        <p className='text-xs font-mono break-all'>{MM_CARD_ADDRESSES[2]}</p>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Step 2 */}

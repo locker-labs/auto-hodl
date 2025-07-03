@@ -84,6 +84,7 @@ export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => 
         // Create the delegation (this will update signedDelegation state)
         // TODO: Ideally circleAccount.address should not be passed as parameter, and we should refactor this to make more sense
         await createDelegation(circleAccount.address);
+        
         console.log('createDelegation() completed - should have signature now');
       }
     } catch (error) {

@@ -52,10 +52,7 @@ export const AutoHodlProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     async function fetchAccountData() {
       if (!address || !isConnected) {
-        setTriggerAddress(null);
-        setTokenSourceAddress(null);
-        setCircleAddress(null);
-        setChainMode(null);
+
         return;
       }
 
