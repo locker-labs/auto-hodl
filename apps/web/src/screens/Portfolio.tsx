@@ -235,7 +235,7 @@ export const Portfolio = (): React.JSX.Element => {
                   const hash = transaction.yieldDepositTxHash ?? transaction.spendTxHash;
 
                   return (
-                    <Link key={transaction.id} href={getTransactionLink(hash)} target='_blank' className='no-underline'>
+                    <Link key={transaction.id} href={getTransactionLink(transaction)} target='_blank' className='no-underline'>
                       <div className='flex flex-col gap-5 mb-3 bg-[#f8f8f8] rounded-[5px] cursor-pointer hover:bg-[#f0f0f0] transition-colors duration-200'>
                         <div className='flex items-center justify-between px-3 py-3.5'>
                           <div className='flex items-center gap-[9px]'>
