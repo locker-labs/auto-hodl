@@ -12,7 +12,7 @@ export const SingleChainBalanceCard = ({ loading: isLoading, amount }: { loading
         </div>
         {/* Text Content */}
         <div>
-          <p className='text-black text-base text-left sm:text-center md:text-left'>Single Chain Balance</p>
+          <p className='text-black text-base text-left sm:text-center md:text-left'>Single Chain Savings</p>
           <p className='font-bold text-[#187710] text-2xl mt-1 text-left sm:text-center md:text-left'>
             {isLoading ? <Loader2 className={'animate-spin size-8'} color={'#187710'} /> : `$${formattedAmount}`}
           </p>

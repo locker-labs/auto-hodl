@@ -33,18 +33,17 @@ export const Portfolio = (): React.JSX.Element => {
   return (
     <div className='w-full px-2 sm:px-5 py-5 grid grid-cols-12 gap-5'>
       {/* Left side */}
-      <div className='col-span-12 lg:col-span-9 grid sm:grid-cols-3 gap-5'>
-        {/* 1 - 2 - 3 */}
+      <div className='col-span-12 lg:col-span-9 grid gap-5'>
+        {/* 1 - 2 */}
         <SavingsInfoCards loading={loading} totalSavings={totalSavings} />
 
-        {/* 5 - How to use section */}
-        {/*  col-span-12 mt-8 */}
-        <div className='m-0 p-0 sm:col-span-3 w-full h-full rounded-xl shadow-[0px_1px_4.2px_#00000040]'>
+        {/* How to use section */}
+        <div className='w-full h-full rounded-xl shadow-[0px_1px_4.2px_#00000040]'>
           <Card className='w-full rounded-xl shadow-[0px_1px_4.2px_#00000040]'>
             <CardContent className='p-6 md:p-8'>
               <h2 className='font-medium text-black text-2xl mb-6'>How to use Auto-HODL</h2>
 
-              <div className='grid md:grid-cols-3 gap-6 break-all'>
+              <div className='grid md:grid-cols-3 gap-6'>
                 {/* Step 1 */}
                 <div className='flex flex-col items-start'>
                   <div className='w-8 h-8 bg-[#ff7a45] rounded-full flex items-center justify-center text-white font-bold text-sm mb-3'>
@@ -62,7 +61,7 @@ export const Portfolio = (): React.JSX.Element => {
                     <>
                       <p className='text-gray-600 text-sm mb-3'>
                         Send USDC from{' '}
-                        <span className='font-mono text-xs bg-gray-100 px-1 rounded'>{triggerAddress}</span>
+                        <span className='font-mono text-xs bg-gray-100 px-1 rounded break-all'>{triggerAddress}</span>
                         {' '}to any simulated MetaMask Card address on {VIEM_CHAIN.name}:
                       </p>
                       <p className='text-gray-600 text-sm mb-3'>

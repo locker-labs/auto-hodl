@@ -12,7 +12,7 @@ export function MultiChainBalanceCard({ loading, amount }: { loading: boolean; a
         </div>
         {/* Text Content */}
         <div>
-          <p className='text-black text-base text-left sm:text-center md:text-left'>Multi Chain Balance</p>
+          <p className='text-black text-base text-left sm:text-center md:text-left'>Multi Chain Savings</p>
           <p className='font-bold text-[#ff7a45] text-2xl mt-1 text-left sm:text-center md:text-left'>
             {loading ? <Loader2 className={'animate-spin size-8'} color={'#ff7a45'} /> : `$${formattedAmount}`}
           </p>
