@@ -73,12 +73,12 @@ export function UpdateChainModeModal() {
               size={20}
               color='white'
             />
-            Switch chain mode
+            Switch mode
           </Button>
         </DialogTrigger>
         <DialogContent className='sm:max-w-[425px]'>
           <DialogHeader>
-            <DialogTitle>Switch chain mode</DialogTitle>
+            <DialogTitle>Switch mode</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
           <div className='grid gap-4'>
@@ -102,12 +102,6 @@ export function UpdateChainModeModal() {
               </div>
             )}
           </div>
-          {/*<DialogFooter>*/}
-          {/*<DialogClose asChild>*/}
-          {/*  <Button variant='outline'>Cancel</Button>*/}
-          {/*</DialogClose>*/}
-          {/*<Button type='submit'>Save changes</Button>*/}
-          {/*</DialogFooter>*/}
         </DialogContent>
       </form>
     </Dialog>
