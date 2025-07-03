@@ -5,6 +5,7 @@
 Some of the features include: 
 
 - Round up payments to the nearest USDC dollar and send the change to AAVE.
+- MetaMask SDK for wallet connect.
 - MetaMask DTK/DeleGators for protecting users funds. The protocol can only send up to your round-up amount.
 - Realtime multi-chain Aave yield optimization.
 - Cross chain with LiFi/CCTP v2.
