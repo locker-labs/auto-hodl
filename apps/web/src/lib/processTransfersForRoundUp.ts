@@ -16,6 +16,7 @@ import { parseUnits } from 'viem';
 import { updateTransactionWithYieldDepositByTxHash, type YieldDepositInfo } from './supabase/updateTransaction';
 import { pimlicoClient } from '@/clients/pimlicoClient';
 import { bridgeAndRedeem } from './lifi';
+import { base } from 'viem/chains';
 /**
  * Redeems Aave delegations using the DTK pattern from the documentation
  * Based on: https://docs.metamask.io/delegation-toolkit/how-to/redeem-delegation/
@@ -189,7 +190,8 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
     return null;
   }
   let transactionHash: `0x${string}` | null = null;
-  if (account.chainMode === "single-chain") {
+  let destinationChainId = chainId;
+  if (account.chainMode === 'single-chain') {
     // Create executions for Aave pool operations (approve + supply)
     const encodedApproveCallData = encodeApproveTokensCallData(AAVE_POOL_ADDRESS, savingsAmount);
     const encodedSupplyCallData = encodeSupplyCallData(asset, savingsAmount, onBehalfOf);
@@ -210,9 +212,16 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
 
     // Redeem delegation using the proper DTK pattern with the fetched delegation
     transactionHash = await redeemAaveDelegations([delegation, delegation], executions);
-
-  } else if (account.chainMode === "multi-chain") {
-    transactionHash = await bridgeAndRedeem(delegation,chainId,amount, onBehalfOf, account.circleAddress as `0x${string}`);
+  } else if (account.chainMode === 'multi-chain') {
+    destinationChainId = base.id;
+    transactionHash = await bridgeAndRedeem(
+      delegation,
+      destinationChainId,
+      // Always bridge $1 to ensure there is a route
+      '1000000',
+      onBehalfOf,
+      account.circleAddress as `0x${string}`,
+    );
   }
   console.log('Redeem Delegation Transaction Hash:', transactionHash);
   // Check if transactionHash is valid
@@ -225,7 +234,7 @@ export async function processTransferForRoundUp(transfer: IAutoHodlTx) {
   try {
     const yieldDepositInfo: YieldDepositInfo = {
       yieldDepositAmount: savingsAmount.toString(),
-      yieldDepositChainId: chainId,
+      yieldDepositChainId: destinationChainId,
       yieldDepositToken: asset,
       yieldDepositTxHash: transactionHash,
       yieldDepositAt: new Date().toISOString(),
