@@ -1,12 +1,10 @@
 import { toModularTransport } from '@circle-fin/modular-wallets-core';
 import { createPublicClient } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
-import { CIRCLE_CLIENT_URL, CIRCLE_CLIENT_KEY } from '@/config';
-import { base } from 'viem/chains';
+import { VIEM_CHAIN as chain, CIRCLE_CLIENT_URL, CIRCLE_CLIENT_KEY } from '@/config';
 
-const chain = base;
-const chainName = 'base';
 // For demo purposes, recipient will always be Base.
+const chainName: string = 'base';
 
 // Create modular transport
 export function createCircleTransport() {
