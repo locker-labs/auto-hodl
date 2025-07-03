@@ -57,6 +57,9 @@ export const FundSavingsSource = ({ onNext }: FundSavingsSourceProps): React.Rea
         <p className='w-fit mx-auto mt-2 font-medium text-[#5D5D5D] text-base tracking-[0] leading-[normal]'>
           Deploy this new delegator account by signing a mock transaction.
         </p>
+        <p className='w-fit mx-auto mt-2 font-medium text-[#5D5D5D] text-base tracking-[0] leading-[normal]'>
+          In production the source of funds would be one of the accounts funding your Card.
+          </p>
       </div>
       <CardContent className='pb-0 px-[30px]'>
         <Alert className='flex items-center gap-[30px] bg-[#FFF1ED] border-[#ffa2a2] mb-6'>
@@ -108,7 +111,7 @@ export const FundSavingsSource = ({ onNext }: FundSavingsSourceProps): React.Rea
           Linea does not currently support DTK/Gator. We are using {VIEM_CHAIN.name} for demo purposes.
         </p>
         <p className={'mt-3 text-sm text-[#6B6B6B]'}>
-          We listen for deposit to the MM Card contract address from the trigger account you'll specify. This simulates usage of MM Card.
+          We listen for deposits to the MM Card contract address from the trigger account you'll specify. This simulates usage of MM Card.
         </p>
       </CardContent>
     </Card>

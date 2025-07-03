@@ -84,6 +84,7 @@ export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => 
         // Create the delegation (this will update signedDelegation state)
         // TODO: Ideally circleAccount.address should not be passed as parameter, and we should refactor this to make more sense
         await createDelegation(circleAccount.address);
+        
         console.log('createDelegation() completed - should have signature now');
       }
     } catch (error) {
@@ -105,7 +106,8 @@ export const CreateDelegation = ({ onNext, onBack }: Props): React.ReactNode => 
 
         <ol className='w-fit mx-auto mt-8 font-medium text-[#773410] text-base tracking-[0] leading-[normal] list-decimal list-inside space-y-4'>
           <li>Use or simulate usage of a MetaMask Card by sending USDC from your wallet.</li>
-          <li>We'll withdraw funds from your source of funds and deposit into Aave to earn yield.</li>
+          <li>In single chain mode, Auto HODL withdraw funds from your source of funds and deposit into Aave to earn yield.</li>
+          <li>In multi chain mode, Auto HODL willd bridge USDC via LiFi/CCTPv2 to a Circle Wallet on the network with the highest USDC yield.</li>
         </ol>
       </div>
 

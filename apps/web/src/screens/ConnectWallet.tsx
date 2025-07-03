@@ -34,7 +34,7 @@ export const ConnectWallet = (): React.ReactNode => {
           Linea does not currently support DTK/Gator. We are using {VIEM_CHAIN.name} for demo purposes.
         </p>
         <p className={'mt-3 text-sm text-[#6B6B6B]'}>
-          We listen for deposit to the MM Card contract address from the trigger account you'll specify. This simulates usage of MM Card.
+          We listen for deposits to the MM Card contract address from the trigger account you'll specify. This simulates usage of MM Card.
         </p>
       </CardContent>
     </Card>

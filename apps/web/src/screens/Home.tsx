@@ -56,7 +56,7 @@ function Home() {
             height='67'
           />
           <div className='hidden md:block md:pl-[16px] font-normal text-[#6b6b6b] text-xl md:text-2xl tracking-[0.24px] leading-[normal]'>
-            save USDC by rounding up your MM card purchases
+            save USDC by rounding up your MM Card purchases
           </div>
         </div>
         {isPortfolioStep ? <ConnectButton className='w-30 md:w-40 min-w-30' /> : null}
