@@ -21,8 +21,9 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@lifi/sdk": "^3.7.9",
+    "@bgd-labs/aave-address-book": "^4.24.1",
     "@circle-fin/modular-wallets-core": "^1.0.9",
+    "@lifi/sdk": "^3.7.9",
     "@metamask/delegation-toolkit": "^0.11.0",
     "@metamask/sdk": "^0.33.0",
     "@radix-ui/react-dialog": "^1.1.14",

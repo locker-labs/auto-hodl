@@ -13,20 +13,22 @@ import { VIEM_CHAIN } from '@/config';
 import { SavingsInfoCards } from '@/components/feature/SavingsInfoCards';
 import { UpdateChainModeModal } from '@/components/feature/UpdateChainModeModal';
 import { EChainMode } from '@/enums/chainMode.enums';
+import { useAaveAPY } from '@/hooks/useAaveAPY';
 
 export const Portfolio = (): React.JSX.Element => {
   const { txs: transactions, loading } = useTransactions();
   const { triggerAddress, tokenSourceAddress, circleAddress, chainMode } = useAutoHodl();
+  
+  // Use Arbitrum for single-chain mode, Base for multi-chain mode
+  const targetChain = chainMode === EChainMode.SINGLE_CHAIN ? 'arbitrum' : 'base';
+  const { apy, loading: apyLoading, chainName } = useAaveAPY(targetChain);
+  
   let totalSavings = 0;
 
   for (const tx of transactions) {
     const amount = Number(formatUnits(BigInt(tx.yieldDepositAmount ?? 0), TOKEN_DECIMALS));
     totalSavings += amount;
   }
-
-  const data = {
-    apy: '4.8',
-  };
 
   return (
     <div className='w-full px-2 sm:px-5 py-5 grid grid-cols-12 gap-5'>
@@ -42,7 +44,7 @@ export const Portfolio = (): React.JSX.Element => {
             <CardContent className='p-6 md:p-8'>
               <h2 className='font-medium text-black text-2xl mb-6'>How to use Auto-HODL</h2>
 
-              <div className='grid md:grid-cols-3 gap-6'>
+              <div className='grid md:grid-cols-3 gap-6 break-all'>
                 {/* Step 1 */}
                 <div className='flex flex-col items-start'>
                   <div className='w-8 h-8 bg-[#ff7a45] rounded-full flex items-center justify-center text-white font-bold text-sm mb-3'>
@@ -61,7 +63,7 @@ export const Portfolio = (): React.JSX.Element => {
                   <p className='text-gray-600 text-sm mb-3'>
                     <strong>Token Source Address:</strong>{' '}
                     {tokenSourceAddress ? (
-                      <span className='font-mono text-xs bg-blue-100 px-1 rounded'>{tokenSourceAddress}</span>
+                      <span className='font-mono text-xs bg-blue-100 px-1 rounded break-all'>{tokenSourceAddress}</span>
                     ) : (
                       'Loading...'
                     )}{' '}
@@ -181,7 +183,7 @@ export const Portfolio = (): React.JSX.Element => {
         <Card className='w-full h-fit rounded-xl shadow-[0px_1px_4.2px_#00000040]'>
           <CardContent className='px-5'>
             <div className='w-full flex justify-between items-start gap-5'>
-              <p className='font-normal text-black text-base'>Currently earning</p>
+              <p className='font-normal text-black text-base'>Optimized Yield</p>
               {chainMode === EChainMode.SINGLE_CHAIN ? (
                 <Badge className='bg-purple-100 text-[#3c1077] font-normal rounded-xl'>Single-Chain</Badge>
               ) : chainMode === EChainMode.MULTI_CHAIN ? (
@@ -196,8 +198,10 @@ export const Portfolio = (): React.JSX.Element => {
                 <Shield className='min-w-12 min-h-12' size={48} color='#818526' />
               </div>
               <div>
-                <p className='text-xl font-bold text-[#187710]'>~{data.apy}% APY</p>
-                <p className='font-medium text-black text-sm'>USDC on Aave</p>
+                <p className='text-xl font-bold text-[#187710]'>
+                  ~{apyLoading ? '--' : apy}% APY
+                </p>
+                <p className='font-medium text-black text-sm'>USDC on Aave {chainName}</p>
               </div>
             </div>
 
@@ -228,7 +232,7 @@ export const Portfolio = (): React.JSX.Element => {
             ) : (
               <div className='mt-[15px] overflow-y-auto max-h-[274px]'>
                 {transactions.map((transaction) => {
-                  const hash = transaction.spendTxHash ?? transaction.yieldDepositTxHash;
+                  const hash = transaction.yieldDepositTxHash ?? transaction.spendTxHash;
 
                   return (
                     <Link key={transaction.id} href={getTransactionLink(hash)} target='_blank' className='no-underline'>
